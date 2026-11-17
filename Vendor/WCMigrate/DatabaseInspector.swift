@@ -28,7 +28,7 @@ public enum DatabaseInspector {
             try fm.copyItem(at: original, to: copy)
             var sides: [String: Bool] = [:]
             for suffix in ["-wal", "-shm"] {
-                let found = manifest.files.contains { $0.path == file.relativePath + suffix }
+                let found = manifest.files.contains { $0.relativePath == file.relativePath + suffix }
                 sides[suffix] = found
                 if found { try fm.copyItem(at: NexaBackupPathSafety.resolve(file.relativePath + suffix, in: payload), to: URL(fileURLWithPath: copy.path + suffix)) }
             }
