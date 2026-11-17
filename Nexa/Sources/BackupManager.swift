@@ -84,6 +84,10 @@ enum BackupManager {
         guard current.count == manifest.files.count else {
             throw BackupError.verificationFailed("数量不一致")
         }
+        let paths = manifest.files.map(\.relativePath)
+        guard Set(paths).count == paths.count else {
+            throw BackupError.verificationFailed("备份清单存在重复路径")
+        }
         let known = Dictionary(uniqueKeysWithValues: manifest.files.map { ($0.relativePath, $0) })
         for entry in current {
             guard let expected = known[entry.relativePath], expected.byteCount == entry.byteCount, expected.sha256 == entry.sha256 else {

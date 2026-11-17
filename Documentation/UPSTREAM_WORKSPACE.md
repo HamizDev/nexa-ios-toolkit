@@ -81,3 +81,7 @@ Nexa now defines **two linked native targets in a single Xcode project**: `Nexa`
 ## WQFiles container access (experimental)
 
 The original `WQAccess.m`, `WQLaunchServices.m`, and `WQScanTask.m` are now added directly to Nexa's Xcode target by reference to the pinned submodule. The SwiftUI explorer allows only user-initiated, read-only listing and a bounded preview, checks an OS/build allowlist and verifies a signed App Group. No broad scan, privileged write or silent access is enabled. See [WQFILES_CONTAINER_BACKEND.md](WQFILES_CONTAINER_BACKEND.md) for build and provisioning details. This is **not yet a verified working sandbox-escape integration on device**.
+
+## Nexa-local transactional restore (new)
+
+`NexaBackupRestore.swift` completes Nexa's own backup/restore workflow: verify a known backup, stage a separate payload, verify again, retain the previous `Imports` tree in private Application Support, replace the directory, and record a small JSON journal to recover interrupted commits. A confirmation dialog is required. It deliberately does not copy from or write to any other application's private container. See [RESTORE_SAFETY.md](RESTORE_SAFETY.md) for crash-state scenarios and remaining acceptance requirements.

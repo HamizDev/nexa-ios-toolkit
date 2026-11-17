@@ -7,6 +7,9 @@ struct BackupView: View {
     @State private var message: String?
     @State private var progressFraction: Double = 0
     @State private var estimate = OperationEstimate()
+    @State private var restoreCandidate: BackupRecord?
+    @State private var showRestoreDialog = false
+    @State private var previousImports: URL?
 
     var body: some View {
         ZStack {
@@ -40,6 +43,17 @@ struct BackupView: View {
                                 }
                                 Text(language.code == "en" ? "Copy progress is measured by top-level items." : "进度按一级文件／目录统计，大目录可能耗时较长。")
                                     .font(.caption2).foregroundStyle(NexaPalette.muted)
+                            }
+                        }
+                    }
+                    if let previousImports {
+                        NexaCard {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(language.code == "en" ? "Previous files retained" : "已保留恢复前的文件")
+                                    .font(.subheadline.weight(.semibold))
+                                ShareLink(item: previousImports) {
+                                    Label(language.code == "en" ? "Export previous files" : "导出恢复前的数据", systemImage: "square.and.arrow.up")
+                                }
                             }
                         }
                     }
@@ -85,6 +99,14 @@ struct BackupView: View {
                                     }
                                     .buttonStyle(.bordered)
                                     .disabled(busy)
+                                    Button(role: .destructive) {
+                                        restoreCandidate = record
+                                        showRestoreDialog = true
+                                    } label: {
+                                        Label(language.code == "en" ? "Restore to Nexa Files" : "恢复到 Nexa 文件区", systemImage: "arrow.uturn.backward")
+                                    }
+                                    .buttonStyle(.bordered)
+                                    .disabled(busy)
                                 }
                             }
                         }
@@ -95,7 +117,23 @@ struct BackupView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .onAppear(perform: refresh)
-        .alert(language.t("backup.error"), isPresented: Binding(
+        .confirmationDialog(
+            language.code == "en" ? "Replace imported files?" : "确定替换现有导入文件？",
+            isPresented: $showRestoreDialog,
+            titleVisibility: .visible
+        ) {
+            Button(language.code == "en" ? "Verify and restore" : "校验并恢复", role: .destructive) {
+                if let restoreCandidate { restore(restoreCandidate) }
+            }
+            Button(language.t("common.cancel"), role: .cancel) {
+                restoreCandidate = nil
+            }
+        } message: {
+            Text(language.code == "en"
+                ? "The backup will be SHA-256 verified twice. Existing imported files will be retained in a private recovery snapshot. Other apps are never modified."
+                : "将执行两次 SHA-256 校验，现有导入文件会保留为独立恢复副本。不会修改其他 App 的数据。")
+        }
+        .alert(language.code == "en" ? "Backup result" : "备份操作结果", isPresented: Binding(
             get: { message != nil },
             set: { if !$0 { message = nil } }
         )) {
@@ -104,8 +142,33 @@ struct BackupView: View {
     }
 
     private func refresh() {
-        do { backups = try BackupManager.listBackups() }
-        catch { message = error.localizedDescription }
+        do {
+            try NexaBackupRestore.recoverIfNeeded()
+            backups = try BackupManager.listBackups()
+        } catch {
+            message = error.localizedDescription
+        }
+    }
+
+    private func restore(_ record: BackupRecord) {
+        busy = true
+        restoreCandidate = nil
+        Task {
+            do {
+                let selected = record.folder
+                let result = try await Task.detached(priority: .userInitiated) {
+                    try NexaBackupRestore.restore(from: selected)
+                }.value
+                previousImports = result.priorImports
+                message = language.code == "en"
+                    ? "Restored \(result.restoredFiles) verified files. Your previous imports were preserved."
+                    : "已恢复 \(result.restoredFiles) 个校验通过的文件，原导入数据已保留。"
+                refresh()
+            } catch {
+                message = error.localizedDescription
+            }
+            busy = false
+        }
     }
 
     private func createBackup() {

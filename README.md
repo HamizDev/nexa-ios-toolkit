@@ -16,7 +16,7 @@ Nexa 是一个面向 iOS 文件、备份、设备诊断和开源系统研究的�
 | 中文 / English | 默认简体中文；设置中可立即切换英文；内置两套完整界面词条 |
 | 文件 / Files | 系统文件选择器导入、应用内文件夹浏览、分享、删除导入副本；**调用原版 WQFiles ZIP 引擎创建／解压归档** |
 | 文件检查器 | UTF-8 文本预览、只读十六进制预览和字节验证；**直接编译并调用 WQFiles 原始的 `WQCore.m/h`** |
-| 备份 / Backups | 复制用户导入的文件、生成 `manifest.json`、逐文件 SHA-256 校验、分享备份；调用 WCMigrate 的原始 SQLite 快速完整性检查代码扫描已校验备份副本 |
+| 备份 / Backups | 创建、分享、SHA-256 完整性校验、**恢复到 Nexa 导入文件区（带安全快照和中断恢复日志）**；基于 WCMigrate 原始 SQLite 诊断代码检查已校验备份副本 |
 | 设备 / Device | 公开 API 显示设备名称、系统、Build、地区、内存、存储；上游报告范围的保守提示 |
 | Apple Watch | **真实 watchOS Target 已加入 Nexa 工程**，支持手机/手表双向连接检测；尚未集成 Hermes 表盘修改 |
 | 上游项目 | 按“部分代码已接入 / 研究中 / 未移植”展示准确状态、来源与功能边界 |
@@ -80,3 +80,7 @@ Nexa 源代码以 [GPL-3.0](LICENSE) 提供；直接编译的 WQFiles/WCMigrate/
 Nexa 的开发分支已链接 WQFiles 原版 `WQAccess.m` / `WQLaunchServices.m` / `WQScanTask.m`，并在文件页提供**用户明确选择目录、只读浏览**的入口。该功能只有在设备系统构建号处于上游报告的区间、应用签名含有效 App Group，且用户确认有权访问数据时才会尝试使用。
 
 必须先在 Xcode Signing & Capabilities 中把示例 Bundle ID `com.example.Nexa` 和 `NEXA_APP_GROUP_IDENTIFIER=group.com.example.Nexa` 改为本人实际签名的标识。模拟器、漏洞已报告修复的系统以及未签入有效 App Group 的 App 都会拒绝使用。**这只是带保护的候选集成，尚未通过真机授权测试，不应宣称已可浏览其他 App。** 更多见 [WQFiles 容器后端说明](Documentation/WQFILES_CONTAINER_BACKEND.md)。
+
+## 🧰 Nexa 本地恢复与数据安全（开发分支）
+
+每个本地备份恢复操作必须先通过 SHA-256 校验、再次验证暂存副本，并由用户确认。恢复之前，原 Nexa 导入文件夹会移动至 `Application Support/Nexa/RestoreSafety/`，不会直接删除。异常中断会留下日志，后续启动会尝试安全恢复；若原文件和安全快照均缺失，将报告错误，而不是静默清空。此功能**仅恢复 Nexa 的已导入文件**，不是 WCMigrate 的微信迁移或其他 App 沙盒迁移。详见 [恢复安全说明](Documentation/RESTORE_SAFETY.md)。

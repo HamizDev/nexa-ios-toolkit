@@ -9,6 +9,25 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  provenance:
+    runs-on: macos-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout pinned upstream sources
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - name: Audit project membership, licenses and upstream source pins
+        run: python3 Scripts/check_integration.py
+      - name: Run upstream WQFiles disposable host regressions
+        timeout-minutes: 20
+        env:
+          WQ_TEST_TIMEOUT: "120"
+        run: bash ThirdParty/WQFiles/tests/run_all_tests.sh
+
   build:
     runs-on: macos-latest
     permissions:

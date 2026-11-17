@@ -19,6 +19,7 @@ final class FilesStore: ObservableObject {
 
     func refresh() {
         do {
+            try NexaBackupRestore.recoverIfNeeded()
             try FileManager.default.createDirectory(at: Self.importFolder, withIntermediateDirectories: true)
             let urls = try FileManager.default.contentsOfDirectory(
                 at: Self.importFolder,

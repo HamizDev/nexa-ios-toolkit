@@ -9,6 +9,7 @@
 - [x] User-authorized file imports, file/folder browser and sharing
 - [x] Text and hex file preview, with WQFiles' upstream `WQCore.m/h` hex validation compiled in
 - [x] Local backup manifests with SHA-256 verification
+- [x] Nexa-local backup restoration with validated staging, retained safety snapshots and interrupted-restore journal (source integration; CI/device tests pending)
 - [x] Read-only device summary, build number / capacity and conservative upstream compatibility notice
 - [x] Source credits and accurate module readiness states
 - [ ] Xcode and device compilation acceptance
