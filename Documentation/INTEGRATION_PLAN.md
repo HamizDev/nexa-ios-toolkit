@@ -16,7 +16,8 @@
 - [ ] Xcode and device compilation acceptance
 - [ ] Signed IPA and release artifacts
 - [x] Embedded NexaWatch target and bidirectional WatchConnectivity diagnostic source added (Xcode/watchOS CI pending)
-- [ ] Actual HermesEnabler face engine, entitlement review and watchOS 27+ runtime validation
+- [x] Original HermesEnabler feature source and BQCore engine linked into NexaWatch (developer branch; requires watch build validation)
+- [ ] Actual on-device entitlement review, backup verification, face changes, rollback and watchOS 27+ runtime validation
 
 ## Modules not yet integrated
 

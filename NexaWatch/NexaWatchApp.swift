@@ -9,7 +9,9 @@ struct NexaWatchApp: App {
 
     var body: some Scene {
         WindowGroup {
-            NexaWatchDashboard()
+            NavigationStack {
+                NexaWatchDashboard()
+            }
                 .environmentObject(link)
                 .environment(\.locale, Locale(identifier: language == "en" ? "en" : "zh-Hans"))
                 .preferredColorScheme(.dark)
@@ -20,6 +22,7 @@ struct NexaWatchApp: App {
 struct NexaWatchDashboard: View {
     @EnvironmentObject private var link: NexaWatchLink
     @AppStorage("nexa.language") private var language = "zh"
+    @AppStorage("nexa.hermes.consent") private var hermesConsent = false
 
     private var en: Bool { language == "en" }
 
@@ -48,17 +51,47 @@ struct NexaWatchDashboard: View {
                     Text("English").tag("en")
                 }
                 .font(.footnote)
+                Divider()
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(en ? "HermesEnabler 2" : "HermesEnabler 2 · 实验功能")
+                        .font(.headline)
+                    if NexaHermesGate.ready {
+                        Toggle(
+                            en ? "I understand that system changes can cause data loss" :
+                                 "我了解系统修改可能导致数据损坏",
+                            isOn: $hermesConsent
+                        )
+                        .font(.caption)
+                        if hermesConsent {
+                            NavigationLink {
+                                ContentView()
+                                    .onAppear { WatchConnectivityManager.shared.activate() }
+                                    .onDisappear { link.reactivate() }
+                            } label: {
+                                Label(en ? "Open upstream tools" : "进入上游功能",
+                                      systemImage: "applewatch.watchface")
+                            }
+                        }
+                    } else {
+                        Text(en
+                            ? "Requires a supported watchOS 27.0–27.2 build and a provisioned Watch App Group. No simulator access."
+                            : "需要上游已报告支持的 watchOS 27.0–27.2 和实际签名的 Watch App Group；模拟器不开放。")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                }
                 Text(en ? "Nexa 0.0.1 · Watch companion" : "Nexa 0.0.1 · 手表配套端")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
                 Text(en
-                    ? "This companion provides diagnostics. Hermes watch-face changes are not enabled."
-                    : "当前配套端仅提供连接诊断，尚未启用 Hermes 表盘修改。")
+                    ? "Connection diagnostics remain available. Experimental Hermes tools require a verified backup, supported watchOS and App Group signing."
+                    : "连接诊断始终可用；Hermes 实验功能须先备份，并在支持的 watchOS 和有效 App Group 签名下使用。")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }
             .padding(.horizontal, 8)
         }
+        .onAppear { link.reactivate() }
     }
 
     private var statusCard: some View {
@@ -88,6 +121,13 @@ final class NexaWatchLink: NSObject, ObservableObject, WCSessionDelegate {
 
     override init() {
         super.init()
+        guard WCSession.isSupported() else { return }
+        WCSession.default.delegate = self
+        WCSession.default.activate()
+        refresh()
+    }
+
+    func reactivate() {
         guard WCSession.isSupported() else { return }
         WCSession.default.delegate = self
         WCSession.default.activate()

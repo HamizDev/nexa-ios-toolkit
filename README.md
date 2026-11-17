@@ -42,7 +42,7 @@ Nexa 是一个面向 iOS 文件、备份、设备诊断和开源系统研究的�
 | [GestaltX](https://github.com/huamidev/GestaltX) | ✅ **部分源码接入**：`VersionSupport.swift` 与 `PlistValueKind.swift`。可在 Nexa 内离线查看/编辑用户导入的 plist 副本，并在保存前自动备份；无系统 MobileGestalt 写入 |
 | [WCMigrate](https://github.com/yangokok886/WCMigrate) | ✅ **部分真实源码接入**：`OperationEstimate.swift`、`BackupProgress.swift` 已用于 Nexa 本地备份进度；移植 `DatabaseInspector` 只读检查已校验数据库副本，并直接复用 `WeChatIdentityResolver` 解析用户导入的 LoginInfo2.dat；无微信跨容器迁移 |
 | [Erosion](https://github.com/jailbreakdotparty/Erosion)、[Regitela](https://github.com/ichitaso/Regitela)、[WorstGestalt](https://github.com/GoldensHQ/worstgestalt)、[WorseFiles](https://github.com/fucknima/worsefiles-ios) | 已核对仓库和候选模块，未实际移植 |
-| [HermesEnabler 2](https://github.com/pookjw/HermesEnabler) | 上游完整源码固定为子模块；**NexaWatch 是嵌入 Nexa iPhone App 的真实 watchOS Target**，支持双向 WatchConnectivity 测试。Hermes 表盘修改引擎尚未移植 |
+| [HermesEnabler 2](https://github.com/pookjw/HermesEnabler) | 上游完整源码固定为子模块；**NexaWatch 是嵌入 Nexa iPhone App 的真实 watchOS Target**，支持双向 WatchConnectivity；实验分支已添加原版 HermesEnabler 2 设备侧功能源码和签名/系统版本限制，但尚未通过真机表盘修改与恢复测试 |
 | [worse_query](https://github.com/forcequitOS/worse_query) | 仅研究参考；**尚未集成漏洞利用代码或跨 App 沙盒授权** |
 
 四个完整上游项目的源码已通过固定 Git submodule 引用纳入开发仓库，组成 [Nexa.xcworkspace](Nexa.xcworkspace/contents.xcworkspacedata) 的多个独立工程。**Workspace 中有完整源码 ≠ 这些功能已嵌入 Nexa 主程序。** 详细配置见 [上游整合工作区](Documentation/UPSTREAM_WORKSPACE.md)；源码出处、许可与 SHA 见 [上游代码清单](Documentation/UPSTREAM_SOURCES.md)，开发路线见 [整合计划](Documentation/INTEGRATION_PLAN.md)。

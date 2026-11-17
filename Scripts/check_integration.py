@@ -9,6 +9,8 @@ root = Path(__file__).resolve().parent.parent
 project = (root / "Nexa.xcodeproj/project.pbxproj").read_text()
 required_sources = [
     "NexaBackupRestore.swift",
+    "BQCore.m",
+    "NexaHermesGate.swift",
     "NexaWeChatIdentityView.swift",
     "WeChatIdentityResolver.swift",
     "NexaDatabaseReportView.swift",

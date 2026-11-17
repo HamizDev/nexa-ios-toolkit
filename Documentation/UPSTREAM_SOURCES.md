@@ -43,3 +43,7 @@ Nexa directly compiles these unchanged upstream files from `ThirdParty/WQFiles`:
 ## WCMigrate account identity parsing
 
 `Vendor/WCMigrate/WeChatIdentityResolver.swift` copies the original parser from pinned commit `55faba721fd44e04c65be481860c9d93e12f6f61` (GPL-3.0-or-later) with only a provenance comment prepended. `NexaImportedWeChatIdentity.detect(in:)` validates a path inside Nexa's imported folder, disallows symlink traversals, caps inspected account folders and LoginInfo2.dat size, then invokes the upstream parser only on explicit user action. It only identifies a probable WeChat account identity; **it does not migrate, decrypt or restore chat data**. Synthetic host fixtures test valid and invalid parser records.
+
+## HermesEnabler direct watchOS integration candidate
+
+From pinned commit `c0ae1666cba67ab7fbae6d3e481cc2731f5550a1` (MIT), NexaWatch now compiles the original `BQCore.m/h`, `BQRecoveryValidation.h`, Hermes SwiftUI feature panels, `ContentModel.swift`, WatchConnectivity manager and MG plist resources **by source reference to the submodule**; the original `HermesEnabler2App.swift` is intentionally excluded. The Nexa adapter adds a gated entry, separate Watch entitlement and bilingual wrapper, but has not verified actual watch system modification or recovery. See `NexaWatch/README.md`.
