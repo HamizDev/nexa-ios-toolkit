@@ -86,7 +86,7 @@ struct FileInspectorView: View {
                                 Button {
                                     // Validate the bytes through WQFiles' vendored WQCore parser.
                                     let encoded = preview.map { String(format: "%02X", $0) }.joined(separator: " ")
-                                    if let parsed = WQParseHexExactly(encoded, preview.count) {
+                                    if let parsed = WQParseHexExactly(encoded, UInt(preview.count)) {
                                         validation = (parsed as Data) == preview
                                             ? language.t("files.hex.ok")
                                             : language.t("files.hex.fail")

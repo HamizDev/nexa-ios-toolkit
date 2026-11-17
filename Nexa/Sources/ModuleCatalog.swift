@@ -5,7 +5,7 @@ enum ModulePhase {
     case research
     case pending
 
-    func label(_ language: NexaLanguage) -> String {
+    @MainActor func label(_ language: NexaLanguage) -> String {
         switch self {
         case .partial: return language.t("module.safe")
         case .research: return language.t("common.research")
