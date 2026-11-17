@@ -3,3 +3,4 @@
 #import "WQCore.h"
 #import "WQArchive.h"
 #import "WQAccess.h"
+#import "GXMobileGestaltImage.h"

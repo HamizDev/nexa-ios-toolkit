@@ -18,6 +18,7 @@ required_sources = [
     "WQArchive.m",
     "DatabaseInspector.swift",
     "PlistValueKind.swift",
+    "GXMobileGestaltImage.m",
 ]
 errors = []
 for item in required_sources:

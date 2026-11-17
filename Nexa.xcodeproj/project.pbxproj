@@ -140,6 +140,9 @@
     D40000000000000000000001 /* WeChatIdentityResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/WCMigrate/WeChatIdentityResolver.swift; sourceTree = SOURCE_ROOT; };
     D40000000000000000000004 /* NexaWeChatIdentityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40000000000000000000003 /* NexaWeChatIdentityView.swift */; };
     D40000000000000000000003 /* NexaWeChatIdentityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaWeChatIdentityView.swift; sourceTree = "<group>"; };
+    F10000000000000000000002 /* GXMobileGestaltImage.m in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000001 /* GXMobileGestaltImage.m */; };
+    F10000000000000000000001 /* GXMobileGestaltImage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThirdParty/GestaltX/GestaltX/GXMobileGestaltImage.m; sourceTree = SOURCE_ROOT; };
+    F10000000000000000000003 /* GXMobileGestaltImage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ThirdParty/GestaltX/GestaltX/GXMobileGestaltImage.h; sourceTree = SOURCE_ROOT; };
     964BD5656C7A016EF0C9ADA7 /* Nexa.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nexa.app; sourceTree = BUILT_PRODUCTS_DIR; };
     EC981767C62EA833B107403F /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
     984AA73C6A3518E356174B49 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
@@ -181,6 +184,7 @@
         C30000000000000000000002 /* NexaBackupRestore.swift in Sources */,
         D40000000000000000000002 /* WeChatIdentityResolver.swift in Sources */,
         D40000000000000000000004 /* NexaWeChatIdentityView.swift in Sources */,
+        F10000000000000000000002 /* GXMobileGestaltImage.m in Sources */,
       );
       runOnlyForDeploymentPostprocessing = 0;
     };
@@ -226,6 +230,8 @@
         C30000000000000000000001 /* NexaBackupRestore.swift */,
         D40000000000000000000001 /* WeChatIdentityResolver.swift */,
         D40000000000000000000003 /* NexaWeChatIdentityView.swift */,
+        F10000000000000000000001 /* GXMobileGestaltImage.m */,
+        F10000000000000000000003 /* GXMobileGestaltImage.h */,
       );
       name = Nexa;
       path = Nexa;
@@ -295,7 +301,7 @@
         CODE_SIGN_ENTITLEMENTS = Nexa/Nexa.entitlements;
         NEXA_APP_GROUP_IDENTIFIER = group.com.example.Nexa;
         SWIFT_OBJC_BRIDGING_HEADER = Nexa/Nexa-Bridging-Header.h;
-        HEADER_SEARCH_PATHS = ("$(inherited)", "$(SRCROOT)/Vendor/WQFiles", "$(SRCROOT)/ThirdParty/WQFiles");
+        HEADER_SEARCH_PATHS = ("$(inherited)", "$(SRCROOT)/Vendor/WQFiles", "$(SRCROOT)/ThirdParty/WQFiles", "$(SRCROOT)/ThirdParty/GestaltX/GestaltX");
         IPHONEOS_DEPLOYMENT_TARGET = 26.0;
         LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks");
         MARKETING_VERSION = 0.0.1;
@@ -314,7 +320,7 @@
         CODE_SIGN_ENTITLEMENTS = Nexa/Nexa.entitlements;
         NEXA_APP_GROUP_IDENTIFIER = group.com.example.Nexa;
         SWIFT_OBJC_BRIDGING_HEADER = Nexa/Nexa-Bridging-Header.h;
-        HEADER_SEARCH_PATHS = ("$(inherited)", "$(SRCROOT)/Vendor/WQFiles", "$(SRCROOT)/ThirdParty/WQFiles");
+        HEADER_SEARCH_PATHS = ("$(inherited)", "$(SRCROOT)/Vendor/WQFiles", "$(SRCROOT)/ThirdParty/WQFiles", "$(SRCROOT)/ThirdParty/GestaltX/GestaltX");
         IPHONEOS_DEPLOYMENT_TARGET = 26.0;
         LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks");
         MARKETING_VERSION = 0.0.1;

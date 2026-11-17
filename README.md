@@ -84,3 +84,7 @@ Nexa 的开发分支已链接 WQFiles 原版 `WQAccess.m` / `WQLaunchServices.m`
 ## 🧰 Nexa 本地恢复与数据安全（开发分支）
 
 每个本地备份恢复操作必须先通过 SHA-256 校验、再次验证暂存副本，并由用户确认。恢复之前，原 Nexa 导入文件夹会移动至 `Application Support/Nexa/RestoreSafety/`，不会直接删除。异常中断会留下日志，后续启动会尝试安全恢复；若原文件和安全快照均缺失，将报告错误，而不是静默清空。此功能**仅恢复 Nexa 的已导入文件**，不是 WCMigrate 的微信迁移或其他 App 沙盒迁移。详见 [恢复安全说明](Documentation/RESTORE_SAFETY.md)。
+
+## GestaltX 只读系统库诊断（开发分支）
+
+设备信息页新增“检查已加载的 MobileGestalt 系统库”，直接编译和调用固定版本 GestaltX 上游的 `GXMobileGestaltImage.m/h`。只显示从当前进程读取到的系统库字符串段/常量段大小，不显示原始字节或序列化系统数据；不会修改系统缓存、启动越狱服务或获取跨应用权限。模拟器等不可用环境会显示“快照不可用”。这不是 MobileGestalt 更改或启用设备功能。

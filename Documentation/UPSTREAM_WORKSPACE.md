@@ -89,3 +89,7 @@ The original `WQAccess.m`, `WQLaunchServices.m`, and `WQScanTask.m` are now adde
 ## WCMigrate local account identity inspection
 
 Nexa's imported-folder browser now offers an explicit, local-only LoginInfo2.dat inspection action. The unchanged upstream WCMigrate protobuf/account parser is compiled under `Vendor/WCMigrate/`; a Nexa wrapper limits inputs to imported paths, rejects symlinks and bounds file sizes and directory counts. It displays an identity only on the current device, with no network transmission. This is a **migration-preparation diagnostic**, not cross-app WeChat transfer.
+
+## GestaltX loaded-library read-only diagnostics
+
+The original pinned `GXMobileGestaltImage.m/h` helper from the GestaltX submodule is now compiled into Nexa. On explicit user request it reports whether a read-only snapshot of loaded MobileGestalt library sections is available, with section count and byte lengths. The helper does not access other app containers, modify MobileGestalt cache entries or change capabilities. Build and physical iPhone behavior need revalidation.

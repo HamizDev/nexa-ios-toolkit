@@ -43,3 +43,7 @@ Nexa directly compiles these unchanged upstream files from `ThirdParty/WQFiles`:
 ## WCMigrate account identity parsing
 
 `Vendor/WCMigrate/WeChatIdentityResolver.swift` copies the original parser from pinned commit `55faba721fd44e04c65be481860c9d93e12f6f61` (GPL-3.0-or-later) with only a provenance comment prepended. `NexaImportedWeChatIdentity.detect(in:)` validates a path inside Nexa's imported folder, disallows symlink traversals, caps inspected account folders and LoginInfo2.dat size, then invokes the upstream parser only on explicit user action. It only identifies a probable WeChat account identity; **it does not migrate, decrypt or restore chat data**. Synthetic host fixtures test valid and invalid parser records.
+
+## GestaltX loaded-library read-only helper
+
+The unmodified `ThirdParty/GestaltX/GestaltX/GXMobileGestaltImage.m/h` files from pinned commit `311f78999d9f5f062f7e3b4c6374684782be5382` (GPL-3.0-only) compile directly into the Nexa iOS target and are declared in its Swift bridging header. Device diagnostics invoke `GXCopyMobileGestaltImage()` only on user request to summarize the **loaded system library**'s string and constant section byte counts. The raw section bytes are never displayed, saved or uploaded. This is **not** an exploit or on-disk MobileGestalt cache modification.
