@@ -123,8 +123,16 @@ enum BackupManager {
             let values = try file.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey, .fileSizeKey])
             guard values.isSymbolicLink != true else { throw BackupError.symbolicLinkNotAllowed }
             guard values.isRegularFile == true else { continue }
-            let prefix = root.path + "/"
-            let relative = String(file.path.dropFirst(prefix.count))
+            // A path can be presented as /var/... or /private/var/... on
+            // macOS. Never compute relative paths by trimming a string length;
+            // canonicalize both URLs and compare full path components instead.
+            let rootParts = root.resolvingSymlinksInPath().standardizedFileURL.pathComponents
+            let fileParts = file.resolvingSymlinksInPath().standardizedFileURL.pathComponents
+            guard fileParts.count > rootParts.count,
+                  fileParts.starts(with: rootParts) else {
+                throw BackupError.verificationFailed("文件路径超出备份目录：" + file.lastPathComponent)
+            }
+            let relative = fileParts.dropFirst(rootParts.count).joined(separator: "/")
             result.append(FileDigest(relativePath: relative, byteCount: Int64(values.fileSize ?? 0), sha256: try sha256(file)))
         }
         return result.sorted { $0.relativePath < $1.relativePath }
