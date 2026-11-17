@@ -45,6 +45,16 @@ jobs:
             Tests/WeChatIdentityHostTests.swift \
             -o "$scratch/identity-tests"
           NEXA_TEST_ROOT="$scratch/Fixture" "$scratch/identity-tests"
+      - name: Test original GestaltX typed plist parser
+        run: |
+          set -euo pipefail
+          scratch="$(mktemp -d)"
+          trap 'rm -rf "$scratch"' EXIT
+          swiftc \
+            Vendor/GestaltX/PlistValueKind.swift \
+            Tests/GestaltPlistHostTests.swift \
+            -o "$scratch/gestalt-parser-tests"
+          "$scratch/gestalt-parser-tests"
       - name: Targeted upstream WQFiles core, archive and access safety regressions
         timeout-minutes: 12
         run: bash Scripts/test_wqfiles_integrated.sh
