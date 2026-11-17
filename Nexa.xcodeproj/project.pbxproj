@@ -1,0 +1,152 @@
+// !$*UTF8*$!
+{
+  archiveVersion = 1;
+  classes = {};
+  objectVersion = 56;
+  objects = {
+    1D08BCB5D1BE8E02D7DC284B /* AppPaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E72F08454CF343A06FF1D2C /* AppPaths.swift */; };
+    3E72F08454CF343A06FF1D2C /* AppPaths.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/AppPaths.swift; sourceTree = "<group>"; };
+    099133132358868E863B4F9A /* BackupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 333E00E297BB7F802BD30620 /* BackupManager.swift */; };
+    333E00E297BB7F802BD30620 /* BackupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/BackupManager.swift; sourceTree = "<group>"; };
+    7F7E25383B25585D32ADB956 /* BackupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6739543836353519EBC814F0 /* BackupView.swift */; };
+    6739543836353519EBC814F0 /* BackupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/BackupView.swift; sourceTree = "<group>"; };
+    5B9880EE40FF9C88441BE56E /* DeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF1EB445374AB1DBF6B3183D /* DeviceView.swift */; };
+    CF1EB445374AB1DBF6B3183D /* DeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/DeviceView.swift; sourceTree = "<group>"; };
+    CC7DEDC8E1B0C761C4E9979E /* FilesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BBD9DE7CB1C4FAF63E0C1E0 /* FilesStore.swift */; };
+    4BBD9DE7CB1C4FAF63E0C1E0 /* FilesStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/FilesStore.swift; sourceTree = "<group>"; };
+    FF9E95EDDAE646C274A5D287 /* FilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CFD0982CC571DB3E0D00203 /* FilesView.swift */; };
+    3CFD0982CC571DB3E0D00203 /* FilesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/FilesView.swift; sourceTree = "<group>"; };
+    A949A2C6639D028C458FBEDF /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085AA118715DF8E44A2D9D49 /* HomeView.swift */; };
+    085AA118715DF8E44A2D9D49 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/HomeView.swift; sourceTree = "<group>"; };
+    9EC7CC9C3E9C7DC2B49A66BE /* ModuleCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87410939A88823AE92339ED3 /* ModuleCatalog.swift */; };
+    87410939A88823AE92339ED3 /* ModuleCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ModuleCatalog.swift; sourceTree = "<group>"; };
+    E0372611C888428FFFB6FDC5 /* NexaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 718E3E4C27A82D24106D8B15 /* NexaApp.swift */; };
+    718E3E4C27A82D24106D8B15 /* NexaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaApp.swift; sourceTree = "<group>"; };
+    C327F02C787959398E83E316 /* WatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E172A2FA6F17E3B28241662D /* WatchView.swift */; };
+    E172A2FA6F17E3B28241662D /* WatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/WatchView.swift; sourceTree = "<group>"; };
+    964BD5656C7A016EF0C9ADA7 /* Nexa.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nexa.app; sourceTree = BUILT_PRODUCTS_DIR; };
+    EC981767C62EA833B107403F /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+    984AA73C6A3518E356174B49 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+    A3E0018A89AAE54963D28A13 /* Sources */ = {
+      isa = PBXSourcesBuildPhase;
+      buildActionMask = 2147483647;
+      files = (
+        1D08BCB5D1BE8E02D7DC284B /* AppPaths.swift in Sources */,
+        099133132358868E863B4F9A /* BackupManager.swift in Sources */,
+        7F7E25383B25585D32ADB956 /* BackupView.swift in Sources */,
+        5B9880EE40FF9C88441BE56E /* DeviceView.swift in Sources */,
+        CC7DEDC8E1B0C761C4E9979E /* FilesStore.swift in Sources */,
+        FF9E95EDDAE646C274A5D287 /* FilesView.swift in Sources */,
+        A949A2C6639D028C458FBEDF /* HomeView.swift in Sources */,
+        9EC7CC9C3E9C7DC2B49A66BE /* ModuleCatalog.swift in Sources */,
+        E0372611C888428FFFB6FDC5 /* NexaApp.swift in Sources */,
+        C327F02C787959398E83E316 /* WatchView.swift in Sources */,
+      );
+      runOnlyForDeploymentPostprocessing = 0;
+    };
+    3C9D7F1ECE6B1C2C05B9A223 /* Main */ = {isa = PBXGroup; children = (CC6A140804F390EB618F6366 /* Nexa */, 8A226E0C47ACC7183C1F4F91 /* Products */); sourceTree = "<group>"; };
+    CC6A140804F390EB618F6366 /* Nexa */ = {
+      isa = PBXGroup;
+      children = (
+        3E72F08454CF343A06FF1D2C /* AppPaths.swift */,
+        333E00E297BB7F802BD30620 /* BackupManager.swift */,
+        6739543836353519EBC814F0 /* BackupView.swift */,
+        CF1EB445374AB1DBF6B3183D /* DeviceView.swift */,
+        4BBD9DE7CB1C4FAF63E0C1E0 /* FilesStore.swift */,
+        3CFD0982CC571DB3E0D00203 /* FilesView.swift */,
+        085AA118715DF8E44A2D9D49 /* HomeView.swift */,
+        87410939A88823AE92339ED3 /* ModuleCatalog.swift */,
+        718E3E4C27A82D24106D8B15 /* NexaApp.swift */,
+        E172A2FA6F17E3B28241662D /* WatchView.swift */,
+      );
+      name = Nexa;
+      path = Nexa;
+      sourceTree = "<group>";
+    };
+    8A226E0C47ACC7183C1F4F91 /* Products */ = {isa = PBXGroup; children = (964BD5656C7A016EF0C9ADA7 /* Nexa.app */); name = Products; sourceTree = "<group>"; };
+    F762108CA727F0BCD961FC74 /* Nexa */ = {
+      isa = PBXNativeTarget;
+      buildConfigurationList = 281EA7C4EFE2067F920FB1D9;
+      buildPhases = (A3E0018A89AAE54963D28A13, EC981767C62EA833B107403F, 984AA73C6A3518E356174B49);
+      buildRules = ();
+      dependencies = ();
+      name = Nexa;
+      productReference = 964BD5656C7A016EF0C9ADA7;
+      productName = Nexa;
+      productType = "com.apple.product-type.application";
+    };
+    16EEAF57BAFC2A41CAB7C99A /* Project */ = {
+      isa = PBXProject;
+      attributes = {
+        BuildIndependentTargetsInParallel = YES;
+        LastUpgradeCheck = 1600;
+        TargetAttributes = {F762108CA727F0BCD961FC74 = {CreatedOnToolsVersion = 16.0; ProvisioningStyle = Automatic; }; };
+      };
+      buildConfigurationList = 0B47E1D6E323FD3DE693085E;
+      compatibilityVersion = "Xcode 14.0";
+      developmentRegion = zh-Hans;
+      hasScannedForEncodings = 0;
+      knownRegions = (zh-Hans, en, Base);
+      mainGroup = 3C9D7F1ECE6B1C2C05B9A223;
+      productRefGroup = 8A226E0C47ACC7183C1F4F91;
+      projectDirPath = "";
+      projectRoot = "";
+      targets = (F762108CA727F0BCD961FC74);
+    };
+    2CE647D298F7377539BDA550 /* Project Debug */ = {isa = XCBuildConfiguration; buildSettings = {
+        ALWAYS_SEARCH_USER_PATHS = NO;
+        CLANG_ENABLE_MODULES = YES;
+        CLANG_ENABLE_OBJC_ARC = YES;
+        CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+        CODE_SIGN_STYLE = Automatic;
+        GCC_C_LANGUAGE_STANDARD = gnu17;
+        IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+        SDKROOT = iphoneos;
+        SWIFT_VERSION = 5.0;
+        TARGETED_DEVICE_FAMILY = "1,2";
+    }; name = Debug; };
+    5B9A8EB41E15F7E3691B6EE3 /* Project Release */ = {isa = XCBuildConfiguration; buildSettings = {
+        ALWAYS_SEARCH_USER_PATHS = NO;
+        CLANG_ENABLE_MODULES = YES;
+        CLANG_ENABLE_OBJC_ARC = YES;
+        CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+        CODE_SIGN_STYLE = Automatic;
+        GCC_C_LANGUAGE_STANDARD = gnu17;
+        IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+        SDKROOT = iphoneos;
+        SWIFT_VERSION = 5.0;
+        TARGETED_DEVICE_FAMILY = "1,2";
+    }; name = Release; };
+    A61834CFCE19FE57555A45A0 /* Target Debug */ = {isa = XCBuildConfiguration; buildSettings = {
+        CODE_SIGN_STYLE = Automatic;
+        CURRENT_PROJECT_VERSION = 1;
+        GENERATE_INFOPLIST_FILE = NO;
+        INFOPLIST_FILE = Nexa/Info.plist;
+        IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+        LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks");
+        MARKETING_VERSION = 0.1.0;
+        PRODUCT_BUNDLE_IDENTIFIER = com.example.Nexa;
+        PRODUCT_NAME = "$(TARGET_NAME)";
+        SWIFT_VERSION = 5.0;
+        SUPPORTS_MACCATALYST = NO;
+        TARGETED_DEVICE_FAMILY = "1,2";
+    }; name = Debug; };
+    E87D7CEB36F91952591F2518 /* Target Release */ = {isa = XCBuildConfiguration; buildSettings = {
+        CODE_SIGN_STYLE = Automatic;
+        CURRENT_PROJECT_VERSION = 1;
+        GENERATE_INFOPLIST_FILE = NO;
+        INFOPLIST_FILE = Nexa/Info.plist;
+        IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+        LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks");
+        MARKETING_VERSION = 0.1.0;
+        PRODUCT_BUNDLE_IDENTIFIER = com.example.Nexa;
+        PRODUCT_NAME = "$(TARGET_NAME)";
+        SWIFT_VERSION = 5.0;
+        SUPPORTS_MACCATALYST = NO;
+        TARGETED_DEVICE_FAMILY = "1,2";
+    }; name = Release; };
+    0B47E1D6E323FD3DE693085E /* Project configs */ = {isa = XCConfigurationList; buildConfigurations = (2CE647D298F7377539BDA550, 5B9A8EB41E15F7E3691B6EE3); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+    281EA7C4EFE2067F920FB1D9 /* Target configs */ = {isa = XCConfigurationList; buildConfigurations = (A61834CFCE19FE57555A45A0, E87D7CEB36F91952591F2518); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+  };
+  rootObject = 16EEAF57BAFC2A41CAB7C99A;
+}
