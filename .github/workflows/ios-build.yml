@@ -22,6 +22,19 @@ jobs:
           persist-credentials: false
       - name: Audit project membership, licenses and upstream source pins
         run: python3 Scripts/check_integration.py
+      - name: Compile and test Nexa journaled backup/restore on a disposable host root
+        run: |
+          set -euo pipefail
+          scratch="$(mktemp -d)"
+          trap 'rm -rf "$scratch"' EXIT
+          swiftc -D NEXA_LOCAL_TEST \
+            Nexa/Sources/AppPaths.swift \
+            Vendor/WCMigrate/BackupProgress.swift \
+            Nexa/Sources/BackupManager.swift \
+            Nexa/Sources/NexaBackupRestore.swift \
+            Tests/BackupRestoreHostTests.swift \
+            -o "$scratch/nexa-restore-tests"
+          NEXA_TEST_ROOT="$scratch/TestRoot" "$scratch/nexa-restore-tests"
       - name: Run upstream WQFiles disposable host regressions
         timeout-minutes: 20
         env:

@@ -39,7 +39,13 @@ enum NexaBackupRestore {
     }
 
     private static var support: URL {
-        FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        #if NEXA_LOCAL_TEST
+        if let root = ProcessInfo.processInfo.environment["NEXA_TEST_ROOT"], !root.isEmpty {
+            return URL(fileURLWithPath: root, isDirectory: true)
+                .appendingPathComponent("ApplicationSupport/Nexa", isDirectory: true)
+        }
+        #endif
+        return FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("Nexa", isDirectory: true)
     }
     private static var journalURL: URL {
