@@ -8,4 +8,4 @@
 
 These are **copied upstream source files**, not placeholders. Nexa compiles `WQCore.m` and exposes the declarations through `Nexa/Nexa-Bridging-Header.h`.
 
-**Currently used function:** `WQParseHexExactly` in Nexa's read-only hex file inspector, for files explicitly imported by the user. Other WQCore symbols are retained unmodified but not yet used. This is **not** the full WQFiles application, cross-app access engine, App Group capability, or container manager exploit.
+**Currently used:** `WQParseHexExactly` in the read-only hex inspector; `WQArchive.h/m` plus `WQLocalization.h/m` are also copied verbatim from the same pinned upstream commit and compiled, exposing original ZIP write/extract functionality on files explicitly imported by the user. `-lz` links the system zlib library. Other WQCore symbols are retained unmodified but not yet used. This is **not** the full WQFiles application, cross-app access engine, App Group capability, or container manager exploit.

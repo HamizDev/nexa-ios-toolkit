@@ -65,3 +65,7 @@ The full sources and respective LICENSE files stay inside their original submodu
 ## Local plist editing added to this branch
 
 Nexa can now open a **user-imported** .plist via its file inspector. A typed editor uses GestaltX's original `PlistValueKind` parser, stages a modified property list, makes a backup under the app's Application Support, and atomically saves the imported local copy. No system cache path, exploit, or arbitrary external file mutation is involved. Xcode/device compilation and a test of these edits remain outstanding.
+
+## WQFiles original ZIP engine integrated
+
+The original `WQArchive.h/m` and `WQLocalization.h/m` from the pinned upstream commit are compiled directly into the Nexa main target and linked against system zlib. Nexa uses the upstream ZIP writer to archive app-imported files into `Documents/Archives`, and the upstream ZIP extractor for explicitly imported ZIP archives with an extraction size cap and a fresh, app-local destination directory. The underlying engine rejects unsafe paths and special archive entries. ZIP operations do **not** access other app sandboxes. As always, Xcode compilation and runtime regression tests must pass before release.

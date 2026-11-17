@@ -5,6 +5,9 @@ struct FilesView: View {
     @EnvironmentObject private var language: NexaLanguage
     @StateObject private var store = FilesStore()
     @State private var importSheet = false
+    @State private var archiveURL: URL?
+    @State private var archiveBusy = false
+    @State private var archiveNotice: String?
 
     var body: some View {
         ZStack {
@@ -23,6 +26,27 @@ struct FilesView: View {
                     }
                     NexaActionButton(title: language.t("files.import"), symbol: "plus") {
                         importSheet = true
+                    }
+                    HStack(spacing: 12) {
+                        Button { createArchive() } label: {
+                            Label(language.code == "en" ? "Create ZIP" : "打包为 ZIP", systemImage: "archivebox")
+                        }
+                        .buttonStyle(.bordered)
+                        .disabled(archiveBusy || store.entries.isEmpty)
+                        if let archiveURL {
+                            ShareLink(item: archiveURL) {
+                                Label(language.code == "en" ? "Share ZIP" : "分享 ZIP", systemImage: "square.and.arrow.up")
+                            }
+                            .buttonStyle(.bordered)
+                        }
+                    }
+                    if archiveBusy {
+                        ProgressView().tint(NexaPalette.mint)
+                    }
+                    if let archiveNotice {
+                        Text(archiveNotice)
+                            .font(.footnote)
+                            .foregroundStyle(NexaPalette.muted)
                     }
                     if store.entries.isEmpty {
                         NexaCard {
@@ -98,6 +122,25 @@ struct FilesView: View {
             Button(language.t("common.confirm"), role: .cancel) { store.errorMessage = nil }
         } message: {
             Text(store.errorMessage ?? "")
+        }
+    }
+
+    private func createArchive() {
+        archiveBusy = true
+        archiveNotice = nil
+        Task {
+            do {
+                let result = try await Task.detached(priority: .userInitiated) {
+                    try NexaZipManager.createImportedArchive()
+                }.value
+                archiveURL = result.file
+                archiveNotice = language.code == "en"
+                    ? "Archive ready. Skipped entries: \(result.skipped)."
+                    : "ZIP 已创建，跳过条目：\(result.skipped)。"
+            } catch {
+                store.errorMessage = error.localizedDescription
+            }
+            archiveBusy = false
         }
     }
 }

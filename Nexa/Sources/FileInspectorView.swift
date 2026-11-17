@@ -52,6 +52,8 @@ struct FileInspectorView: View {
     @State private var showHex = true
     @State private var validation: String?
     @State private var readError: String?
+    @State private var extracting = false
+    @State private var archiveNotice: String?
 
     var body: some View {
         ZStack {
@@ -115,6 +117,16 @@ struct FileInspectorView: View {
                         }
                         .buttonStyle(.bordered)
                     }
+                    if file.pathExtension.lowercased() == "zip" {
+                        Button { extractZip() } label: {
+                            Label(
+                                language.code == "en" ? "Extract ZIP into Nexa" : "解压 ZIP 到 Nexa",
+                                systemImage: "archivebox.fill"
+                            )
+                        }
+                        .buttonStyle(.bordered)
+                        .disabled(extracting)
+                    }
                     ShareLink(item: file) {
                         Label(language.t("files.export"), systemImage: "square.and.arrow.up")
                     }
@@ -126,6 +138,32 @@ struct FileInspectorView: View {
         .navigationTitle(file.lastPathComponent)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear(perform: read)
+        .alert(language.code == "en" ? "Archive result" : "压缩包操作", isPresented: Binding(
+            get: { archiveNotice != nil },
+            set: { if !$0 { archiveNotice = nil } }
+        )) {
+            Button(language.t("common.confirm"), role: .cancel) { archiveNotice = nil }
+        } message: {
+            Text(archiveNotice ?? "")
+        }
+    }
+
+    private func extractZip() {
+        extracting = true
+        Task {
+            do {
+                let source = file
+                let result = try await Task.detached(priority: .userInitiated) {
+                    try NexaZipManager.extractImportedArchive(source)
+                }.value
+                archiveNotice = language.code == "en"
+                    ? "Extracted to \(result.file.lastPathComponent). Skipped entries: \(result.skipped)."
+                    : "已解压到 \(result.file.lastPathComponent)，跳过条目：\(result.skipped)。"
+            } catch {
+                archiveNotice = error.localizedDescription
+            }
+            extracting = false
+        }
     }
 
     private var size: Int64 {

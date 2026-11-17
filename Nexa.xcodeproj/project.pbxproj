@@ -48,6 +48,14 @@
     0AA7CD1285B14C72A104E332 /* PlistValueKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/GestaltX/PlistValueKind.swift; sourceTree = SOURCE_ROOT; };
     84E9004A7ED94971A8302126 /* NexaPlistInspectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C786E1AA03ED432DB9530311 /* NexaPlistInspectorView.swift */; };
     C786E1AA03ED432DB9530311 /* NexaPlistInspectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaPlistInspectorView.swift; sourceTree = "<group>"; };
+    F5A200000000000000000002 /* NexaZipManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A200000000000000000001 /* NexaZipManager.swift */; };
+    F5A200000000000000000001 /* NexaZipManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaZipManager.swift; sourceTree = "<group>"; };
+    F5A200000000000000000003 /* WQArchive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Vendor/WQFiles/WQArchive.h; sourceTree = SOURCE_ROOT; };
+    F5A200000000000000000005 /* WQArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = F5A200000000000000000004 /* WQArchive.m */; };
+    F5A200000000000000000004 /* WQArchive.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Vendor/WQFiles/WQArchive.m; sourceTree = SOURCE_ROOT; };
+    F5A200000000000000000006 /* WQLocalization.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Vendor/WQFiles/WQLocalization.h; sourceTree = SOURCE_ROOT; };
+    F5A200000000000000000008 /* WQLocalization.m in Sources */ = {isa = PBXBuildFile; fileRef = F5A200000000000000000007 /* WQLocalization.m */; };
+    F5A200000000000000000007 /* WQLocalization.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Vendor/WQFiles/WQLocalization.m; sourceTree = SOURCE_ROOT; };
     964BD5656C7A016EF0C9ADA7 /* Nexa.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nexa.app; sourceTree = BUILT_PRODUCTS_DIR; };
     EC981767C62EA833B107403F /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
     984AA73C6A3518E356174B49 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
@@ -76,6 +84,9 @@
         6D83C9BA9C0C428BA104FA07 /* VersionSupport.swift in Sources */,
         D9D789ABF81948798B31C01F /* PlistValueKind.swift in Sources */,
         84E9004A7ED94971A8302126 /* NexaPlistInspectorView.swift in Sources */,
+        F5A200000000000000000002 /* NexaZipManager.swift in Sources */,
+        F5A200000000000000000005 /* WQArchive.m in Sources */,
+        F5A200000000000000000008 /* WQLocalization.m in Sources */,
       );
       runOnlyForDeploymentPostprocessing = 0;
     };
@@ -106,6 +117,11 @@
         6D83C9BA9C0C428BA104FA06 /* VersionSupport.swift */,
         0AA7CD1285B14C72A104E332 /* PlistValueKind.swift */,
         C786E1AA03ED432DB9530311 /* NexaPlistInspectorView.swift */,
+        F5A200000000000000000001 /* NexaZipManager.swift */,
+        F5A200000000000000000003 /* WQArchive.h */,
+        F5A200000000000000000004 /* WQArchive.m */,
+        F5A200000000000000000006 /* WQLocalization.h */,
+        F5A200000000000000000007 /* WQLocalization.m */,
       );
       name = Nexa;
       path = Nexa;
@@ -175,6 +191,7 @@
         IPHONEOS_DEPLOYMENT_TARGET = 26.0;
         LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks");
         MARKETING_VERSION = 0.0.1;
+        OTHER_LDFLAGS = ("$(inherited)", "-lz");
         PRODUCT_BUNDLE_IDENTIFIER = com.example.Nexa;
         PRODUCT_NAME = "$(TARGET_NAME)";
         SWIFT_VERSION = 5.0;
@@ -191,6 +208,7 @@
         IPHONEOS_DEPLOYMENT_TARGET = 26.0;
         LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks");
         MARKETING_VERSION = 0.0.1;
+        OTHER_LDFLAGS = ("$(inherited)", "-lz");
         PRODUCT_BUNDLE_IDENTIFIER = com.example.Nexa;
         PRODUCT_NAME = "$(TARGET_NAME)";
         SWIFT_VERSION = 5.0;
