@@ -2,6 +2,10 @@
 
 ## Unreleased — upstream integration branch
 
+- Added zh-Hans/en Localizable.strings for 82 original HermesEnabler watchOS panel labels and warnings, keeping the original upstream Swift source unchanged. Runtime-generated messages still require review.
+
+- Staged the **original HermesEnabler 2 watchOS BQCore engine and feature SwiftUI panels** in NexaWatch, with a consent-gated watchOS 27.0–27.2 entry, signed Watch App Group requirement and original plist resources. Physical Watch write/rollback testing is still required; this is **not a verified Hermes release**.
+
 - Compiled WCMigrate's original `WeChatIdentityResolver.swift` and added an on-demand identity inspector to the imported-folder UI. Bounds checking, local-only operation and synthetic parser tests protect the flow; this is **not** full WeChat data migration.
 
 - Added a recoverable, verified **Nexa-local restore workflow**: backup SHA-256 preflight, independent staged verification, retained previous-import snapshot, confirmation UI, and disk journal for interrupted swaps. This does not read/write other apps' data.

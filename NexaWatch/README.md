@@ -1,11 +1,16 @@
-# Nexa Watch companion (0.0.1)
+# NexaWatch — 0.0.1 upstream Hermes integration (experimental)
 
-This is a **real watchOS application target** embedded into Nexa's iPhone app, using public WatchConnectivity APIs for bidirectional connectivity diagnostics.
+NexaWatch is a genuine embedded watchOS app target. This development branch now additionally references **the original pinned HermesEnabler 2 watchOS functionality**, not only the old WatchConnectivity status shell.
 
-- Default language: Simplified Chinese; an independent English option is provided on the watch.
-- Minimum watchOS: 26.0 (watchOS 27+ is required by the pinned HermesEnabler upstream for its **face modification engine**; no such code is built into this target).
-- No Hermes face modifications, private Watch frameworks, boot changes or system writes are enabled.
-- Source of the watch architecture: [HermesEnabler 2](https://github.com/pookjw/HermesEnabler), MIT-licensed and preserved in `ThirdParty/HermesEnabler`. This target does **not** claim to embed its unpublished or untested privileged routines.
-- Testing: build both app targets on macOS Xcode and run on a **paired iPhone + Apple Watch** under a provisioned Apple developer team. Simulator compilation alone does not prove WatchConnectivity reachability.
+- Upstream: https://github.com/pookjw/HermesEnabler (MIT license), commit `c0ae1666cba67ab7fbae6d3e481cc2731f5550a1`.
+- Directly compiled source refs from `ThirdParty/HermesEnabler/HermesEnabler2/`: original `BQCore.m`, all original feature views, `ContentModel.swift`, WatchConnectivity manager, MG Defaults/Offsets plist resources. The original `@main` app entry is **excluded** to avoid a duplicate process entry point.
+- Swift bridge: `NexaWatch/NexaWatch-Bridging-Header.h`.
+- Watch App Group entitlement: `NexaWatch/NexaWatch.entitlements`, ID resolved from `NEXA_WATCH_APP_GROUP_IDENTIFIER`. **The example ID must be replaced with one actually provisioned for the watchOS app**.
+- NexaWatch dashboard: Chinese default / English switching, two-way ping, and an additional consent-gated entry to upstream Hermes UI.
+- Eligibility is deliberately narrower than the upstream README: **watchOS 27.0–27.2 only**, unavailable on simulators and on unprovisioned watch builds. Other builds remain disabled until tested.
+- **82 upstream fixed SwiftUI text keys** now have Simplified Chinese and English Localizable.strings resources without modifying upstream feature source. Dynamic messages and other runtime strings still need localization and UI device validation.
+- The original engine can modify watch system configuration. Its own backup and recovery logic must be tested thoroughly on a physical Watch before any distribution. Compiling its source alone does not verify a safe or supported exploit.
 
-Bundle IDs are derived from the shared `NEXA_COMPANION_BUNDLE_IDENTIFIER` build setting. Use your own unique identifier and signing team.
+**Not yet validated:** paired iPhone/Watch signing, MobileGestalt read/write and rollback, original Hermes view navigation, actual face capabilities, restart behavior, and physical watchOS runs. No signed IPA is published.
+
+The separate upstream source/License remains in the pinned Git submodule and must remain attributed on distribution.

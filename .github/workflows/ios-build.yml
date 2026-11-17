@@ -85,10 +85,12 @@ jobs:
         with:
           submodules: recursive
           persist-credentials: false
-      - name: Check watchOS SDK
+      - name: Check watchOS SDK and translated Watch strings
         run: |
           xcodebuild -version
           xcrun --sdk watchsimulator --show-sdk-version
+          plutil -lint NexaWatch/Localization/zh-Hans.lproj/Localizable.strings
+          plutil -lint NexaWatch/Localization/en.lproj/Localizable.strings
       - name: Build NexaWatch simulator app without signing
         run: |
           xcodebuild \

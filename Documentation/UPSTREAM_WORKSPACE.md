@@ -89,3 +89,9 @@ The original `WQAccess.m`, `WQLaunchServices.m`, and `WQScanTask.m` are now adde
 ## WCMigrate local account identity inspection
 
 Nexa's imported-folder browser now offers an explicit, local-only LoginInfo2.dat inspection action. The unchanged upstream WCMigrate protobuf/account parser is compiled under `Vendor/WCMigrate/`; a Nexa wrapper limits inputs to imported paths, rejects symlinks and bounds file sizes and directory counts. It displays an identity only on the current device, with no network transmission. This is a **migration-preparation diagnostic**, not cross-app WeChat transfer.
+
+## HermesEnabler original watchOS feature source (experimental branch)
+
+NexaWatch now references the pinned upstream HermesEnabler 2 `BQCore.m/h`, `BQRecoveryValidation.h`, the feature panels, `ContentModel`, the original WatchConnectivity manager, and its MGDefaults/MGOffsets resources. The upstream `@main` is omitted; NexaWatch remains the embedded watch app, and its root dashboard gates entry on a narrower watchOS version range, provisioned Watch App Group and explicit acknowledgment. The upstream manager activates on entering the panel, and Nexa's own session delegate reactivates on return. No simulator write capability is exposed.
+
+The original Hermes engine can change MobileGestalt/face settings. **Source compilation is not a device acceptance test.** A real Watch on a confirmed supported build, prior backup, verified recovery and legal signing are mandatory before enabling or advertising this as production functionality. Some original upstream panels remain English and need Nexa bilingual localization.
