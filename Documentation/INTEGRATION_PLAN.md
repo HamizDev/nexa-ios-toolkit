@@ -1,61 +1,57 @@
-# Nexa 整合实施清单
+# Nexa integration plan
 
-## 功能分层
+**Release target:** 0.0.1 source preview. **Minimum deployment:** iOS / iPadOS 26.0.
 
-- **UI 层：** SwiftUI，各模块独立导航、状态展示、确认与日志。
-- **权限层：** 默认使用公开 API；额外访问权限需要独立审核、版本匹配与错误降级。
-- **文件层：** 优先只读；任何写入操作必须备份原文件并设计失败恢复流程。
-- **迁移层：** 用户主动选择来源和目标；默认复制，做差异预览和 SHA-256 校验，不自动删除来源。
-- **watchOS：** 独立的手表 App target、伴侣安装、签名和配对流程。
+## 0.0.1 accepted scope
 
-## 系统兼容性与功能开关（2026-11-17）
+- [x] New high-contrast midnight SwiftUI design with reusable components
+- [x] Language preference: default Simplified Chinese, switch to English, persistent across launches
+- [x] User-authorized file imports, file/folder browser and sharing
+- [x] Text and hex file preview, with WQFiles' upstream `WQCore.m/h` hex validation compiled in
+- [x] Local backup manifests with SHA-256 verification
+- [x] Read-only device summary, build number / capacity and conservative upstream compatibility notice
+- [x] Source credits and accurate module readiness states
+- [ ] Xcode and device compilation acceptance
+- [ ] Signed IPA and release artifacts
 
-本工程的 `IPHONEOS_DEPLOYMENT_TARGET` 已统一调整为 **26.0**，以对齐 worse_query 原作者公开的最低支持版本。iOS 18 及更早版本不在 Nexa 的目标部署范围。Apple 从 iOS 18 直接跳至 iOS 26，并未正式发布 iOS 19–25。普通系统文件选择器在更早系统上也能使用（不需要巨魔、越狱或 worse_query），但这与跨 App 私有容器管理是两种不同能力；调整最低部署版本也**不代表** iOS 26 所有构建或所有高级模块必然可用。
+## Modules not yet integrated
 
-### 上游公开范围
+- WQFiles full filesystem authorization / app-data browser, cache maintenance
+- GestaltX, Erosion, Regitela, WorstGestalt MobileGestalt write and rollback engines
+- WCMigrate cross-app transfer, account resolution, staging and transfer journals
+- WQToolkit advanced own-container maintenance features (license to review)
+- HermesEnabler independent watchOS target and companion communication
+- worse_query sandbox extension engine and its matching App Group signing configuration
 
-| 来源 | 报告范围 | 注意事项 |
-| --- | --- | --- |
-| [worse_query 原作者](https://github.com/forcequitOS/worse_query#readme) | iOS 26.0–26.7.2 / iOS 27.2 | 原作者的描述，非逐构建完整测试矩阵 |
-| [WQFiles](https://github.com/kolbicz/WQFiles#readme) | 26.0–26.7.2；实测 27.2.1；报告 27.3 Beta 1 可用 | 27.3 Beta 2（24C5049d）作者报告漏洞已修复 |
-| [Erosion](https://github.com/jailbreakdotparty/Erosion#readme) | 26.0–26.6.2（功能受限），27.0–27.2.1，27.3 Beta 1（24C5037i） | 这是 **Erosion 项目的支持声明**，不等同于 worse_query 原始 PoC 的全部支持版本；iOS 26 不支持该项目的 MobileGestalt 写入 |
+No unverified module should be represented as available to end users. Prefer read-only diagnostics and source-backed validation before writing system files.
 
-### 后续模块的判定流程
+## Upstream compatibility reports (not tested by Nexa)
 
-1. 采集 iOS / iPadOS **系统版本与具体 build number**，并识别设备类别与芯片差异。
-2. 将兼容信息划分为 **原作者声明、第三方实测、未经验证、已报告修复**，不要统一叫作“支持”。
-3. 每个模块单独检测：文件读取、文件写入、目标容器访问、MobileGestalt 修改、watchOS 伴侣能力分别判断。
-4. 版本不在白名单、接口不可用或无法完成只读自检时，**禁用高级操作**；基础 UI、用户主动导入文件与备份功能继续可用。
-5. 未来任何系统写入均应有明确用户确认、差异预览、完整备份和失败恢复策略；不要通过粗略的版本字符串比较自动开启功能。
-6. 每次合入上游项目时记录 **仓库、commit SHA、许可证、已测试设备、系统 build、通过和失败的功能**。
-7. iOS 26.7.3 及之后的 26.x 尚无此文档认可的验证证据；iOS 27.3 Beta 2 及之后不能沿用早期可用性结论。
+- Worse_query original README lists iOS 26.0–26.7.2 and iOS 27.2.
+- WQFiles reports successful tests across portions of iOS 26/27, including iOS 27.2.1 and iOS 27.3 Beta 1.
+- Erosion reports iOS 26 partial support and iOS 27.0–27.2.1 / 27.3 Beta 1, with no MobileGestalt writes on iOS 26.
+- WQFiles and Erosion report the flaw patched in iOS 27.3 Beta 2 (24C5049d). Later OS compatibility must be revalidated.
+- Apple skipped formal iOS 19–25 branding, naming the version after iOS 18 as iOS 26.
 
-本次已将 Xcode 项目层与 Target 层的最低部署版本统一改为 **iOS 26.0**；此表仍为研究规划，**并未集成 sandbox escape、改动运行时的权限逻辑或完成真机验证**。
+## Rules for future integration
 
-## 集成原则
+1. Pin each upstream commit and review code license and target settings.
+2. Compile imported source, wire a real feature, and provide a regression test before describing a module as integrated.
+3. Keep user-selected data separate from privileged container access, and never infer access rights from a version string alone.
+4. File operations must validate sources and targets and reject unsafe symlinks; make an original backup before mutations.
+5. Keep personal chat records and app data local, and avoid processing other users' data.
+6. System mutations require build-specific safeguards, explicit consent, backups, verification, and documented recovery.
+7. A watchOS implementation needs its own signed target and device tests; an iOS screen alone cannot unlock watch faces.
 
-1. 每个上游固定 commit，核对实际依赖和许可证。
-2. WQFiles/WorseFiles 作为文件管理架构参考，先完成只读与安全导出。
-3. GestaltX、Erosion、Regitela、WorstGestalt 先研究版本检查与回滚流程；当前版本没有系统写入。
-4. WCMigrate 涉及的文件级迁移不等于聊天数据库语义合并；登录态和密钥不保证可迁移。
-5. HermesEnabler 需要单独的 watchOS target，iPhone 界面不能代替 Watch 端运行。
-6. 不把公开 PoC 的可用性承诺扩展到所有 iOS 构建版本，特别是修复后的版本。
+## Acceptance requirements
 
-## 数据与合规
+- [ ] Build with current Xcode and iOS 26 SDK for a simulator and device
+- [ ] Verify zh default and in-app en switching on fresh install
+- [ ] Verify file import, folder navigation, hex validation and share sheet
+- [ ] Verify backup consistency, hash tamper detection and space exhaustion handling
+- [ ] Inspect Objective-C bridging headers and GPL source attribution
+- [ ] Review accessibility contrast, Dynamic Type and iPad layouts
+- [ ] Verify all nonintegrated tools remain inactive and clearly labeled
+- [ ] Record actual model / iOS build and failure logs
 
-- 不添加自动联网传输、遥测或上传聊天记录。
-- 只处理用户主动选择的文件及其本地备份。
-- 合入 GPL / MIT 项目时必须保留著作权信息并履行对应许可证义务。
-- 不复制 Apple 或 Hermès 的受保护素材。
-- 公开项目的研究和集成不意味着获得对第三方设备或账号的访问授权。
-
-## 发布前检查
-
-- [ ] 使用 Xcode 完成 Debug / Release 编译
-- [ ] iPhone 和 iPad 布局检查
-- [ ] 文件选择器权限与导入失败处理
-- [ ] 大文件备份内存占用与校验测试
-- [ ] 防止符号链接越界访问
-- [ ] 设备系统、签名和功能兼容性校验
-- [ ] 隐私安全与第三方许可证审计
-- [ ] 真机测试及备份恢复演练
+Source details: [UPSTREAM_SOURCES.md](UPSTREAM_SOURCES.md).

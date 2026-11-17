@@ -1,31 +1,88 @@
 import SwiftUI
 import UIKit
+import Darwin
+
+enum NexaDeviceStatus {
+    static func build() -> String {
+        var chars = [CChar](repeating: 0, count: 32)
+        var length = size_t(chars.count)
+        let status = sysctlbyname("kern.osversion", &chars, &length, nil, 0)
+        return status == 0 ? String(cString: chars) : "—"
+    }
+
+    static func compatibility(_ language: String) -> String {
+        let v = ProcessInfo.processInfo.operatingSystemVersion
+        let en = language == "en"
+        if v.majorVersion == 26 && (v.minorVersion < 7 || (v.minorVersion == 7 && v.patchVersion <= 2)) {
+            return en ? "Within published range (unverified)" : "处于公开报告范围（未验证）"
+        }
+        if v.majorVersion == 27 && (v.minorVersion < 2 || (v.minorVersion == 2 && v.patchVersion <= 1)) {
+            return en ? "Within published range (unverified)" : "处于公开报告范围（未验证）"
+        }
+        if v.majorVersion == 27 && v.minorVersion == 3 {
+            if build() == "24C5037i" { return en ? "Beta 1: reported compatible" : "Beta 1：报告可用" }
+            return en ? "Reported patched / not verified" : "已报告修复或未经验证"
+        }
+        return en ? "Unsupported or not verified" : "不支持或未经验证"
+    }
+
+    static func freeSpace() -> String {
+        let size = (try? AppPaths.documents.resourceValues(forKeys: [.volumeAvailableCapacityForImportantUsageKey]))?
+            .volumeAvailableCapacityForImportantUsage ?? 0
+        return ByteCountFormatter.string(fromByteCount: size, countStyle: .file)
+    }
+}
 
 struct DeviceView: View {
-    @AppStorage("readOnlyMode") private var readOnlyMode = true
+    @EnvironmentObject private var language: NexaLanguage
 
     var body: some View {
-        List {
-            Section("当前设备 · 公开信息") {
-                LabeledContent("设备名称", value: UIDevice.current.name)
-                LabeledContent("设备类别", value: UIDevice.current.model)
-                LabeledContent("系统", value: "\(UIDevice.current.systemName) \(UIDevice.current.systemVersion)")
-                LabeledContent("系统版本详情", value: ProcessInfo.processInfo.operatingSystemVersionString)
-                LabeledContent("界面地区", value: Locale.current.region?.identifier ?? "未知")
-                LabeledContent("总内存", value: ByteCountFormatter.string(fromByteCount: Int64(ProcessInfo.processInfo.physicalMemory), countStyle: .memory))
-            }
-            Section("MobileGestalt") {
-                Label("设备能力与地区标记：保留未来适配接口", systemImage: "slider.horizontal.3")
-                Label("当前版本不读取私有缓存、不修改系统配置", systemImage: "lock.shield")
-                Text("修改设备标识与强制启用功能可能导致系统异常或重启循环。接入源项目后应先做完整备份、版本预检、差异预览与恢复验证。")
-                    .font(.footnote).foregroundStyle(.secondary)
-            }
-            Section("保护设置") {
-                Toggle("默认只读模式", isOn: $readOnlyMode)
-                Text("本工程没有系统写入模块。此开关用于为后续接入预留保护配置，不代表关闭后就能执行系统修改。")
-                    .font(.footnote).foregroundStyle(.secondary)
+        ZStack {
+            NexaBackground()
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    NexaHeader(title: language.t("device.title"), subtitle: language.t("device.subtitle"))
+                    NexaCard {
+                        VStack(alignment: .leading, spacing: 14) {
+                            info(language.t("device.name"), UIDevice.current.name)
+                            info(language.t("device.family"), UIDevice.current.model)
+                            info(language.t("device.system"), "\(UIDevice.current.systemName) \(UIDevice.current.systemVersion)")
+                            info(language.t("device.build"), NexaDeviceStatus.build())
+                            info(language.t("device.region"), Locale.current.region?.identifier ?? "—")
+                            info(language.t("device.memory"), ByteCountFormatter.string(fromByteCount: Int64(ProcessInfo.processInfo.physicalMemory), countStyle: .memory))
+                            info(language.t("device.available"), NexaDeviceStatus.freeSpace())
+                        }
+                    }
+                    NexaCard {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Label(language.t("device.compat"), systemImage: "checkmark.shield")
+                                .font(.headline)
+                            NexaTag(text: NexaDeviceStatus.compatibility(language.code), color: NexaPalette.mint)
+                            Text(language.t("device.compat.note"))
+                                .font(.footnote).foregroundStyle(NexaPalette.muted)
+                            Divider().overlay(.white.opacity(0.08))
+                            HStack {
+                                Text(language.t("device.mg"))
+                                Spacer()
+                                Text(language.t("device.mg.off"))
+                                    .font(.caption).foregroundStyle(NexaPalette.muted)
+                            }
+                        }
+                    }
+                }
+                .padding(20)
             }
         }
-        .navigationTitle("设备与配置")
+        .navigationTitle(language.t("device.title"))
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private func info(_ key: String, _ value: String) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            Text(key).foregroundStyle(NexaPalette.muted)
+            Spacer(minLength: 10)
+            Text(value).multilineTextAlignment(.trailing).textSelection(.enabled)
+        }
+        .font(.subheadline)
     }
 }

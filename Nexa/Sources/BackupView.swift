@@ -1,52 +1,76 @@
 import SwiftUI
 
 struct BackupView: View {
+    @EnvironmentObject private var language: NexaLanguage
     @State private var backups: [BackupRecord] = []
     @State private var busy = false
     @State private var message: String?
 
     var body: some View {
-        List {
-            Section {
-                Text("把“我的文件”中已导入的数据复制到 App 内部备份目录，并生成 SHA-256 校验清单。不会修改原始文件、微信数据库或其他 App 容器。")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                Button {
-                    createBackup()
-                } label: {
-                    Label(busy ? "正在处理…" : "创建新备份", systemImage: "externaldrive.badge.plus")
-                }
-                .disabled(busy)
-            }
-            Section("本地备份") {
-                if backups.isEmpty {
-                    ContentUnavailableView("暂无备份", systemImage: "externaldrive", description: Text("先导入文件，再创建备份"))
-                } else {
-                    ForEach(backups) { backup in
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text(backup.name).font(.subheadline.weight(.medium)).textSelection(.enabled)
-                            HStack {
-                                Button("完整性校验") { verify(backup) }
-                                    .buttonStyle(.bordered)
-                                ShareLink(item: backup.folder) {
-                                    Label("导出", systemImage: "square.and.arrow.up")
-                                }.buttonStyle(.bordered)
-                            }
-                            .disabled(busy)
+        ZStack {
+            NexaBackground()
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    NexaHeader(title: language.t("backup.title"), subtitle: language.t("backup.subtitle"))
+                    NexaCard {
+                        HStack(spacing: 12) {
+                            Image(systemName: "shield.lefthalf.filled")
+                                .foregroundStyle(NexaPalette.mint)
+                            Text(language.t("backup.info"))
+                                .font(.footnote).foregroundStyle(NexaPalette.muted)
                         }
-                        .padding(.vertical, 5)
+                    }
+                    NexaActionButton(title: language.t(busy ? "backup.creating" : "backup.create"), symbol: "externaldrive.badge.plus") {
+                        createBackup()
+                    }
+                    .disabled(busy)
+                    Text(language.t("backup.list")).font(.title3.weight(.semibold))
+                    if backups.isEmpty {
+                        NexaCard {
+                            VStack(spacing: 10) {
+                                Image(systemName: "externaldrive")
+                                    .font(.system(size: 36))
+                                    .foregroundStyle(NexaPalette.violet)
+                                Text(language.t("backup.empty"))
+                                    .font(.subheadline)
+                                    .foregroundStyle(NexaPalette.muted)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 24)
+                        }
+                    } else {
+                        ForEach(backups) { record in
+                            NexaCard {
+                                VStack(alignment: .leading, spacing: 13) {
+                                    Label(record.name, systemImage: "checkmark.shield")
+                                        .font(.subheadline.weight(.medium))
+                                        .lineLimit(2)
+                                    HStack {
+                                        Button { verify(record) } label: {
+                                            Label(language.t("backup.verify"), systemImage: "checkmark.seal")
+                                        }
+                                        .buttonStyle(.bordered)
+                                        ShareLink(item: record.folder) {
+                                            Label(language.t("backup.export"), systemImage: "square.and.arrow.up")
+                                        }
+                                        .buttonStyle(.bordered)
+                                    }
+                                    .disabled(busy)
+                                }
+                            }
+                        }
                     }
                 }
+                .padding(20)
             }
         }
-        .navigationTitle("备份与校验")
-        .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("刷新") { refresh() } } }
-        .onAppear { refresh() }
-        .alert("操作结果", isPresented: Binding(
+        .navigationBarTitleDisplayMode(.inline)
+        .onAppear(perform: refresh)
+        .alert(language.t("backup.error"), isPresented: Binding(
             get: { message != nil },
             set: { if !$0 { message = nil } }
         )) {
-            Button("确定", role: .cancel) { message = nil }
+            Button(language.t("common.confirm"), role: .cancel) { message = nil }
         } message: { Text(message ?? "") }
     }
 
@@ -59,10 +83,8 @@ struct BackupView: View {
         busy = true
         Task {
             do {
-                let _ = try await Task.detached(priority: .userInitiated) {
-                    try BackupManager.createBackup()
-                }.value
-                message = "备份已创建，并记录了各文件的 SHA-256。"
+                _ = try await Task.detached(priority: .userInitiated) { try BackupManager.createBackup() }.value
+                message = language.t("backup.success")
                 refresh()
             } catch { message = error.localizedDescription }
             busy = false
@@ -76,7 +98,7 @@ struct BackupView: View {
                 let count = try await Task.detached(priority: .userInitiated) {
                     try BackupManager.verify(backup.folder)
                 }.value
-                message = "校验通过：\(count) 个文件均与备份清单一致。"
+                message = String(format: language.t("backup.ok"), count)
             } catch { message = error.localizedDescription }
             busy = false
         }

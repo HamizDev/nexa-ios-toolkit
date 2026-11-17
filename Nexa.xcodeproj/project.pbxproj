@@ -24,6 +24,18 @@
     718E3E4C27A82D24106D8B15 /* NexaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaApp.swift; sourceTree = "<group>"; };
     C327F02C787959398E83E316 /* WatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E172A2FA6F17E3B28241662D /* WatchView.swift */; };
     E172A2FA6F17E3B28241662D /* WatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/WatchView.swift; sourceTree = "<group>"; };
+    5E2D2D9A9A7C443BBA89F8C0 /* FileInspectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C4A824DD2C341E58F0E7290 /* FileInspectorView.swift */; };
+    8C4A824DD2C341E58F0E7290 /* FileInspectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/FileInspectorView.swift; sourceTree = "<group>"; };
+    901F7B6953D94529BE1C9051 /* NexaLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA4427D7E1724D989F54CD10 /* NexaLanguage.swift */; };
+    AA4427D7E1724D989F54CD10 /* NexaLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaLanguage.swift; sourceTree = "<group>"; };
+    DC7B219A079A4F6E8594F3E4 /* NexaTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40C4DC682D10463A96FD4C4B /* NexaTheme.swift */; };
+    40C4DC682D10463A96FD4C4B /* NexaTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaTheme.swift; sourceTree = "<group>"; };
+    6672E1FA71E347D6B69E128B /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2141A45B24414AA981A2C479 /* SettingsView.swift */; };
+    2141A45B24414AA981A2C479 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SettingsView.swift; sourceTree = "<group>"; };
+    2EC95D90E9F14DE6A00F57F3 /* WQCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AA0940D80E94CA48D83E6F1 /* WQCore.m */; };
+    4AA0940D80E94CA48D83E6F1 /* WQCore.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Vendor/WQFiles/WQCore.m; sourceTree = SOURCE_ROOT; };
+    AC178C2160F04A64A62D3BA0 /* WQCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Vendor/WQFiles/WQCore.h; sourceTree = SOURCE_ROOT; };
+    17B0E9BCA1B74316BC5C2B32 /* Nexa-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Nexa-Bridging-Header.h; sourceTree = "<group>"; };
     964BD5656C7A016EF0C9ADA7 /* Nexa.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nexa.app; sourceTree = BUILT_PRODUCTS_DIR; };
     EC981767C62EA833B107403F /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
     984AA73C6A3518E356174B49 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
@@ -41,6 +53,11 @@
         9EC7CC9C3E9C7DC2B49A66BE /* ModuleCatalog.swift in Sources */,
         E0372611C888428FFFB6FDC5 /* NexaApp.swift in Sources */,
         C327F02C787959398E83E316 /* WatchView.swift in Sources */,
+        5E2D2D9A9A7C443BBA89F8C0 /* FileInspectorView.swift in Sources */,
+        901F7B6953D94529BE1C9051 /* NexaLanguage.swift in Sources */,
+        DC7B219A079A4F6E8594F3E4 /* NexaTheme.swift in Sources */,
+        6672E1FA71E347D6B69E128B /* SettingsView.swift in Sources */,
+        2EC95D90E9F14DE6A00F57F3 /* WQCore.m in Sources */,
       );
       runOnlyForDeploymentPostprocessing = 0;
     };
@@ -58,6 +75,13 @@
         87410939A88823AE92339ED3 /* ModuleCatalog.swift */,
         718E3E4C27A82D24106D8B15 /* NexaApp.swift */,
         E172A2FA6F17E3B28241662D /* WatchView.swift */,
+        8C4A824DD2C341E58F0E7290 /* FileInspectorView.swift */,
+        AA4427D7E1724D989F54CD10 /* NexaLanguage.swift */,
+        40C4DC682D10463A96FD4C4B /* NexaTheme.swift */,
+        2141A45B24414AA981A2C479 /* SettingsView.swift */,
+        4AA0940D80E94CA48D83E6F1 /* WQCore.m */,
+        AC178C2160F04A64A62D3BA0 /* WQCore.h */,
+        17B0E9BCA1B74316BC5C2B32 /* Nexa-Bridging-Header.h */,
       );
       name = Nexa;
       path = Nexa;
@@ -122,9 +146,11 @@
         CURRENT_PROJECT_VERSION = 1;
         GENERATE_INFOPLIST_FILE = NO;
         INFOPLIST_FILE = Nexa/Info.plist;
+        SWIFT_OBJC_BRIDGING_HEADER = Nexa/Nexa-Bridging-Header.h;
+        HEADER_SEARCH_PATHS = ("$(inherited)", "$(SRCROOT)/Vendor/WQFiles");
         IPHONEOS_DEPLOYMENT_TARGET = 26.0;
         LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks");
-        MARKETING_VERSION = 0.1.0;
+        MARKETING_VERSION = 0.0.1;
         PRODUCT_BUNDLE_IDENTIFIER = com.example.Nexa;
         PRODUCT_NAME = "$(TARGET_NAME)";
         SWIFT_VERSION = 5.0;
@@ -136,9 +162,11 @@
         CURRENT_PROJECT_VERSION = 1;
         GENERATE_INFOPLIST_FILE = NO;
         INFOPLIST_FILE = Nexa/Info.plist;
+        SWIFT_OBJC_BRIDGING_HEADER = Nexa/Nexa-Bridging-Header.h;
+        HEADER_SEARCH_PATHS = ("$(inherited)", "$(SRCROOT)/Vendor/WQFiles");
         IPHONEOS_DEPLOYMENT_TARGET = 26.0;
         LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks");
-        MARKETING_VERSION = 0.1.0;
+        MARKETING_VERSION = 0.0.1;
         PRODUCT_BUNDLE_IDENTIFIER = com.example.Nexa;
         PRODUCT_NAME = "$(TARGET_NAME)";
         SWIFT_VERSION = 5.0;

@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 
 struct ImportedEntry: Identifiable {
     var id: String { url.path }
@@ -24,14 +25,14 @@ final class FilesStore: ObservableObject {
                 includingPropertiesForKeys: [.isDirectoryKey, .isSymbolicLinkKey],
                 options: [.skipsHiddenFiles]
             )
-            entries = urls.sorted { $0.lastPathComponent.localizedStandardCompare($1.lastPathComponent) == .orderedAscending }
+            entries = urls
+                .filter { (try? $0.resourceValues(forKeys: [.isSymbolicLinkKey]).isSymbolicLink) != true }
+                .sorted { $0.lastPathComponent.localizedStandardCompare($1.lastPathComponent) == .orderedAscending }
                 .map { url in
                     let values = try? url.resourceValues(forKeys: [.isDirectoryKey])
                     return ImportedEntry(url: url, isDirectory: values?.isDirectory ?? false)
                 }
-        } catch {
-            errorMessage = error.localizedDescription
-        }
+        } catch { errorMessage = error.localizedDescription }
     }
 
     func importURLs(_ urls: [URL]) {
@@ -42,19 +43,14 @@ final class FilesStore: ObservableObject {
                 let destination = Self.importFolder
                     .appendingPathComponent(String(UUID().uuidString.prefix(8)) + "_" + url.lastPathComponent)
                 try FileManager.default.copyItem(at: url, to: destination)
-            } catch {
-                errorMessage = "导入 \(url.lastPathComponent) 失败：\(error.localizedDescription)"
-            }
+            } catch { errorMessage = "Import \(url.lastPathComponent): \(error.localizedDescription)" }
         }
         refresh()
     }
 
-    func delete(at offsets: IndexSet) {
-        let selected = offsets.map { entries[$0].url }
-        for url in selected {
-            do { try FileManager.default.removeItem(at: url) }
-            catch { errorMessage = error.localizedDescription }
-        }
+    func remove(_ entry: ImportedEntry) {
+        do { try FileManager.default.removeItem(at: entry.url) }
+        catch { errorMessage = error.localizedDescription }
         refresh()
     }
 }

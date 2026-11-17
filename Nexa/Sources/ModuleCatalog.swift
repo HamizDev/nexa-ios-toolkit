@@ -1,47 +1,150 @@
 import SwiftUI
 
+enum ModulePhase {
+    case partial
+    case research
+    case pending
+
+    func label(_ language: NexaLanguage) -> String {
+        switch self {
+        case .partial: return language.t("module.safe")
+        case .research: return language.t("common.research")
+        case .pending: return language.t("module.upstream")
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .partial: return NexaPalette.mint
+        case .research: return NexaPalette.blue
+        case .pending: return NexaPalette.violet
+        }
+    }
+}
+
 struct SourceModule: Identifiable {
     let id: String
     let title: String
-    let subtitle: String
+    let subtitleZh: String
+    let subtitleEn: String
+    let detailsZh: String
+    let detailsEn: String
     let symbol: String
     let repository: URL
-    let status: String
-    let note: String
+    let phase: ModulePhase
+
+    func subtitle(_ code: String) -> String { code == "en" ? subtitleEn : subtitleZh }
+    func details(_ code: String) -> String { code == "en" ? detailsEn : detailsZh }
 }
 
 enum ModuleCatalog {
     static let modules: [SourceModule] = [
-        .init(id: "wqfiles", title: "WQ Files", subtitle: "文件与容器管理", symbol: "folder", repository: URL(string: "https://github.com/kolbicz/WQFiles")!, status: "接口预留", note: "当前只访问用户主动导入的文件；没有移植跨 App 容器浏览能力。"),
-        .init(id: "wqtoolkit", title: "WQ Toolkit", subtitle: "存储分析与维护", symbol: "wrench.and.screwdriver", repository: URL(string: "https://github.com/MchinaMd57764/WQToolkit")!, status: "接口预留", note: "未合入上游实现。"),
-        .init(id: "gestaltx", title: "GestaltX", subtitle: "MobileGestalt 配置", symbol: "slider.horizontal.3", repository: URL(string: "https://github.com/huamidev/GestaltX")!, status: "只读", note: "显示公开设备信息；不写入 MobileGestalt 或其他系统缓存。"),
-        .init(id: "wcmigrate", title: "WCMigrate", subtitle: "聊天与应用数据迁移", symbol: "arrow.left.arrow.right", repository: URL(string: "https://github.com/yangokok886/WCMigrate")!, status: "安全备份", note: "现支持用户导入文件的备份、SHA-256 清单与校验；没有自动读取微信容器。"),
-        .init(id: "erosion", title: "Erosion", subtitle: "外观与系统定制", symbol: "paintbrush.pointed", repository: URL(string: "https://github.com/jailbreakdotparty/Erosion")!, status: "研究候选", note: "当前未移植，不进行系统写入。"),
-        .init(id: "regitela", title: "Regitela", subtitle: "文件与设备配置", symbol: "slider.horizontal.3", repository: URL(string: "https://github.com/ichitaso/Regitela")!, status: "研究候选", note: "当前未合入。"),
-        .init(id: "worstgestalt", title: "WorstGestalt", subtitle: "设备能力编辑", symbol: "gearshape.2", repository: URL(string: "https://github.com/GoldensHQ/worstgestalt")!, status: "研究候选", note: "当前不写入系统缓存。"),
-        .init(id: "worsefiles", title: "WorseFiles", subtitle: "中文文件管理", symbol: "folder.badge.gearshape", repository: URL(string: "https://github.com/fucknima/worsefiles-ios")!, status: "研究候选", note: "当前仅支持用户选择的文件。"),
-        .init(id: "hermes", title: "HermesEnabler 2", subtitle: "Apple Watch 扩展", symbol: "applewatch", repository: URL(string: "https://github.com/pookjw/HermesEnabler")!, status: "待接入 watchOS target", note: "需要单独的手表原生 App、配对与签名，不能由 iPhone 单方面完成。")
+        .init(id: "wqfiles", title: "WQFiles", subtitleZh: "文件检查与十六进制解析", subtitleEn: "File inspection & hex parsing", detailsZh: "已原样引入 WQFiles 的 WQCore.m/h 辅助组件，供 Nexa 已导入文件的十六进制校验使用。尚未集成跨容器授权、App 数据浏览、缓存清理等功能。", detailsEn: "WQFiles' WQCore.m/h helper is vendored and used to validate hex previews for explicitly imported files. Cross-container authorization, app-data browsing and cache cleaning are not integrated.", symbol: "doc.text.magnifyingglass", repository: URL(string: "https://github.com/kolbicz/WQFiles")!, phase: .partial),
+        .init(id: "wqtoolkit", title: "WQToolkit", subtitleZh: "自身容器诊断及维护", subtitleEn: "Owned-container diagnostics", detailsZh: "上游 README 将功能限定为自己的数据容器和 App Group。Nexa 暂未移植其系统维护、缓存扫描和写入组件，且需要进一步确认授权声明。", detailsEn: "Upstream scope is limited to app-owned containers and App Groups. Its maintenance, cache scanning and write components are not integrated, and licensing requires review.", symbol: "wrench.and.screwdriver", repository: URL(string: "https://github.com/MchinaMd57764/WQToolkit")!, phase: .research),
+        .init(id: "gestaltx", title: "GestaltX", subtitleZh: "MobileGestalt 与设备能力", subtitleEn: "MobileGestalt & capabilities", detailsZh: "目前仅通过公开 API 显示设备信息。MobileGestalt 缓存读取、修改、地区/机型伪装和回滚功能都尚未移植。", detailsEn: "Only public device APIs are used. MobileGestalt cache access, writes, region/model changes and rollback are not integrated.", symbol: "slider.horizontal.3", repository: URL(string: "https://github.com/huamidev/GestaltX")!, phase: .pending),
+        .init(id: "wcmigrate", title: "WCMigrate", subtitleZh: "个人应用数据备份与迁移", subtitleEn: "User data backup & migration", detailsZh: "当前的 SHA-256 备份仅覆盖 Nexa 用户导入文件。WCMigrate 的微信多开迁移、数据库处理、持久化恢复和容器权限逻辑尚未移植。", detailsEn: "SHA-256 backups currently cover files imported by the user only. WCMigrate's WeChat migration, database handling, recovery and container access are not integrated.", symbol: "arrow.left.arrow.right", repository: URL(string: "https://github.com/yangokok886/WCMigrate")!, phase: .research),
+        .init(id: "erosion", title: "Erosion", subtitleZh: "界面外观与系统定制", subtitleEn: "Appearance & system customization", detailsZh: "项目作为后续兼容性及安全回滚研究对象，目前没有系统写入功能。", detailsEn: "Tracked for compatibility and safe rollback research. No system writes are available.", symbol: "paintbrush.pointed", repository: URL(string: "https://github.com/jailbreakdotparty/Erosion")!, phase: .research),
+        .init(id: "regitela", title: "Regitela", subtitleZh: "文件管理与设备设置", subtitleEn: "File utilities & device settings", detailsZh: "尚未移植 Regitela 的文件或系统配置代码。", detailsEn: "Regitela file and system configuration code has not been integrated.", symbol: "gearshape.2", repository: URL(string: "https://github.com/ichitaso/Regitela")!, phase: .pending),
+        .init(id: "worstgestalt", title: "WorstGestalt", subtitleZh: "配置预设与备份恢复", subtitleEn: "Presets, backups & recovery", detailsZh: "未集成其 MobileGestalt 写入引擎或配置预设；任何将来的系统更改必须先通过风险审核。", detailsEn: "The MobileGestalt write engine and presets are not integrated. Future changes require a safety review.", symbol: "square.stack.3d.up", repository: URL(string: "https://github.com/GoldensHQ/worstgestalt")!, phase: .pending),
+        .init(id: "worsefiles", title: "WorseFiles", subtitleZh: "中文文件浏览和备份工具", subtitleEn: "Localized file browser & backup", detailsZh: "目前没有移植 WorseFiles 的跨容器文件操作。Nexa 自有文件管理功能仅作用于已导入的文件。", detailsEn: "Cross-container operations from WorseFiles are not integrated. Nexa's own browser is limited to imported files.", symbol: "folder.badge.gearshape", repository: URL(string: "https://github.com/fucknima/worsefiles-ios")!, phase: .research),
+        .init(id: "hermes", title: "HermesEnabler 2", subtitleZh: "Apple Watch 伴侣 App", subtitleEn: "Apple Watch companion app", detailsZh: "目前只显示手表配对状态。没有 watchOS Target，也没有表盘解锁或系统修改实现。", detailsEn: "Only pairing state is displayed. There is no watchOS target, watch-face enabling or system modification.", symbol: "applewatch", repository: URL(string: "https://github.com/pookjw/HermesEnabler")!, phase: .pending)
     ]
+
+    static var highlighted: [SourceModule] {
+        modules.filter { ["wqfiles", "gestaltx", "wcmigrate"].contains($0.id) }
+    }
 }
 
-struct ModuleTile: View {
+struct ModuleRow: View {
+    @EnvironmentObject private var language: NexaLanguage
     let module: SourceModule
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
+        NexaCard {
+            HStack(spacing: 13) {
                 Image(systemName: module.symbol)
-                    .font(.title2)
-                    .foregroundStyle(.indigo)
-                Spacer()
-                Text(module.status)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
+                    .font(.title3.weight(.medium))
+                    .foregroundStyle(module.phase.color)
+                    .frame(width: 44, height: 44)
+                    .background(module.phase.color.opacity(0.12), in: RoundedRectangle(cornerRadius: 14))
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(module.title).font(.subheadline.weight(.semibold))
+                    Text(module.subtitle(language.code)).font(.caption).foregroundStyle(NexaPalette.muted)
+                    Text(module.phase.label(language)).font(.caption2.weight(.medium)).foregroundStyle(module.phase.color)
+                }
+                Spacer(minLength: 0)
+                Image(systemName: "chevron.right").font(.caption).foregroundStyle(NexaPalette.muted)
             }
-            Text(module.title).font(.headline)
-            Text(module.subtitle).font(.caption).foregroundStyle(.secondary)
         }
-        .frame(maxWidth: .infinity, minHeight: 106, alignment: .leading)
-        .padding(14)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+    }
+}
+
+struct ModulesView: View {
+    @EnvironmentObject private var language: NexaLanguage
+
+    var body: some View {
+        ZStack {
+            NexaBackground()
+            ScrollView {
+                VStack(alignment: .leading, spacing: 12) {
+                    NexaHeader(title: language.t("module.title"), subtitle: language.t("module.subtitle"))
+                    ForEach(ModuleCatalog.modules) { module in
+                        NavigationLink(destination: ModuleDetailView(module: module)) {
+                            ModuleRow(module: module)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    Text(language.t("module.warning"))
+                        .font(.footnote)
+                        .foregroundStyle(NexaPalette.muted)
+                        .padding(.vertical, 16)
+                }
+                .padding(20)
+            }
+        }
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+struct ModuleDetailView: View {
+    @EnvironmentObject private var language: NexaLanguage
+    let module: SourceModule
+
+    var body: some View {
+        ZStack {
+            NexaBackground()
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    NexaCard {
+                        VStack(alignment: .leading, spacing: 14) {
+                            Image(systemName: module.symbol)
+                                .font(.system(size: 40))
+                                .foregroundStyle(module.phase.color)
+                            Text(module.title).font(.largeTitle.weight(.bold))
+                            Text(module.subtitle(language.code)).foregroundStyle(NexaPalette.muted)
+                            NexaTag(text: module.phase.label(language), color: module.phase.color)
+                        }
+                    }
+                    NexaCard {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text(module.details(language.code))
+                                .font(.body)
+                                .fixedSize(horizontal: false, vertical: true)
+                            Link(destination: module.repository) {
+                                Label(language.t("common.source"), systemImage: "arrow.up.right.square")
+                                    .font(.callout.weight(.medium))
+                            }
+                        }
+                    }
+                    if module.phase != .partial {
+                        Text(language.t("module.warning"))
+                            .font(.footnote).foregroundStyle(NexaPalette.muted)
+                    }
+                }
+                .padding(20)
+            }
+        }
+        .navigationTitle(module.title)
+        .navigationBarTitleDisplayMode(.inline)
     }
 }

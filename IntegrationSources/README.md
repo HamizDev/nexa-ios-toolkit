@@ -1,5 +1,9 @@
-# 上游模块接入区
+# Nexa integration sources
 
-这里预留各个上游项目的源代码接入位置。当前**没有下载或合并第三方代码**，也没有写入漏洞利用实现。
+Nexa **0.0.1** vendors a narrowly scoped upstream component at:
 
-请在 macOS 开发环境独立获取、审计并固定各项目的 commit 后再进行移植；完成许可证审查前勿直接在这里拼接代码。
+- `../Vendor/WQFiles/WQCore.h` and `WQCore.m` — copied from [WQFiles](https://github.com/kolbicz/WQFiles), used for read-only hex validation.
+
+All other upstream projects are **research references**, not integrated components. See [source inventory](../Documentation/UPSTREAM_SOURCES.md). Future modules must be audited, adapted to one signing and App Group model, and verified in Xcode on supported test devices before marking them available.
+
+Never present a module launcher or GitHub source link as evidence that a tool's functionality is compiled into Nexa.

@@ -2,27 +2,35 @@ import SwiftUI
 
 @main
 struct NexaApp: App {
+    @StateObject private var language = NexaLanguage()
+
     var body: some Scene {
         WindowGroup {
-            ToolboxRootView()
-                .tint(.indigo)
+            NexaRootView()
+                .environmentObject(language)
+                .preferredColorScheme(.dark)
+                .tint(NexaPalette.violet)
         }
     }
 }
 
-struct ToolboxRootView: View {
+struct NexaRootView: View {
+    @EnvironmentObject private var language: NexaLanguage
+
     var body: some View {
         TabView {
             NavigationStack { HomeView() }
-                .tabItem { Label("首页", systemImage: "square.grid.2x2.fill") }
+                .tabItem { Label(language.t("tab.home"), systemImage: "house.fill") }
             NavigationStack { FilesView() }
-                .tabItem { Label("文件", systemImage: "folder.fill") }
+                .tabItem { Label(language.t("tab.files"), systemImage: "folder.fill") }
             NavigationStack { BackupView() }
-                .tabItem { Label("备份", systemImage: "externaldrive.fill") }
-            NavigationStack { DeviceView() }
-                .tabItem { Label("设备", systemImage: "iphone.gen3") }
-            NavigationStack { WatchView() }
-                .tabItem { Label("手表", systemImage: "applewatch") }
+                .tabItem { Label(language.t("tab.backups"), systemImage: "externaldrive.fill") }
+            NavigationStack { ModulesView() }
+                .tabItem { Label(language.t("tab.explore"), systemImage: "square.grid.2x2.fill") }
+            NavigationStack { SettingsView() }
+                .tabItem { Label(language.t("tab.settings"), systemImage: "slider.horizontal.3") }
         }
+        .toolbarBackground(.visible, for: .tabBar)
+        .toolbarBackground(NexaPalette.ink2, for: .tabBar)
     }
 }
