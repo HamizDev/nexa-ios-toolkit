@@ -33,6 +33,18 @@ struct LocalFolderView: View {
             }
         }
         .navigationTitle(folder.lastPathComponent)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                NavigationLink {
+                    NexaWeChatIdentityView(folder: folder)
+                } label: {
+                    Image(systemName: "person.text.rectangle")
+                }
+                .accessibilityLabel(
+                    language.code == "en" ? "Inspect imported WeChat identity" : "检查已导入的微信账号身份"
+                )
+            }
+        }
         .onAppear {
             children = ((try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: [.isSymbolicLinkKey])) ?? [])
                 .filter { (try? $0.resourceValues(forKeys: [.isSymbolicLinkKey]).isSymbolicLink) != true }

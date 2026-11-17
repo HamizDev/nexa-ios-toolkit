@@ -14,7 +14,7 @@ Nexa 是一个面向 iOS 文件、备份、设备诊断和开源系统研究的�
 | --- | --- |
 | UI | 全新深色玻璃质感主页、模块卡片、设备概览、五栏导航，适配 SwiftUI |
 | 中文 / English | 默认简体中文；设置中可立即切换英文；内置两套完整界面词条 |
-| 文件 / Files | 系统文件选择器导入、应用内文件夹浏览、分享、删除导入副本；**调用原版 WQFiles ZIP 引擎创建／解压归档** |
+| 文件 / Files | 系统文件选择器导入、应用内文件夹浏览、分享、删除导入副本；**调用原版 WQFiles ZIP 引擎创建／解压归档**，可手动检查导入的微信账号身份数据（WCMigrate 原版解析器） |
 | 文件检查器 | UTF-8 文本预览、只读十六进制预览和字节验证；**直接编译并调用 WQFiles 原始的 `WQCore.m/h`** |
 | 备份 / Backups | 创建、分享、SHA-256 完整性校验、**恢复到 Nexa 导入文件区（带安全快照和中断恢复日志）**；基于 WCMigrate 原始 SQLite 诊断代码检查已校验备份副本 |
 | 设备 / Device | 公开 API 显示设备名称、系统、Build、地区、内存、存储；上游报告范围的保守提示 |
@@ -40,7 +40,7 @@ Nexa 是一个面向 iOS 文件、备份、设备诊断和开源系统研究的�
 | [WQFiles](https://github.com/kolbicz/WQFiles) | ✅ **部分真实源码接入**：`WQCore.m/h` + Hex 校验，`WQArchive.m/h` + ZIP 压缩／解压；原版 WQAccess 授权引擎源码已链接，增加需用户明确同意的实验性只读容器入口；尚未通过真机验证，且没有跨容器写入 |
 | [WQToolkit](https://github.com/MchinaMd57764/WQToolkit) | 源码研究；上游公开说明功能面向自身容器 / App Group，需核对授权 |
 | [GestaltX](https://github.com/huamidev/GestaltX) | ✅ **部分源码接入**：`VersionSupport.swift` 与 `PlistValueKind.swift`。可在 Nexa 内离线查看/编辑用户导入的 plist 副本，并在保存前自动备份；无系统 MobileGestalt 写入 |
-| [WCMigrate](https://github.com/yangokok886/WCMigrate) | ✅ **部分真实源码接入**：`OperationEstimate.swift`、`BackupProgress.swift` 已用于 Nexa 本地备份进度；移植 `DatabaseInspector` 只读检查已校验数据库副本；无微信跨容器迁移 |
+| [WCMigrate](https://github.com/yangokok886/WCMigrate) | ✅ **部分真实源码接入**：`OperationEstimate.swift`、`BackupProgress.swift` 已用于 Nexa 本地备份进度；移植 `DatabaseInspector` 只读检查已校验数据库副本，并直接复用 `WeChatIdentityResolver` 解析用户导入的 LoginInfo2.dat；无微信跨容器迁移 |
 | [Erosion](https://github.com/jailbreakdotparty/Erosion)、[Regitela](https://github.com/ichitaso/Regitela)、[WorstGestalt](https://github.com/GoldensHQ/worstgestalt)、[WorseFiles](https://github.com/fucknima/worsefiles-ios) | 已核对仓库和候选模块，未实际移植 |
 | [HermesEnabler 2](https://github.com/pookjw/HermesEnabler) | 上游完整源码固定为子模块；**NexaWatch 是嵌入 Nexa iPhone App 的真实 watchOS Target**，支持双向 WatchConnectivity 测试。Hermes 表盘修改引擎尚未移植 |
 | [worse_query](https://github.com/forcequitOS/worse_query) | 仅研究参考；**尚未集成漏洞利用代码或跨 App 沙盒授权** |

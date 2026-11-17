@@ -2,6 +2,8 @@
 
 ## Unreleased — upstream integration branch
 
+- Compiled WCMigrate's original `WeChatIdentityResolver.swift` and added an on-demand identity inspector to the imported-folder UI. Bounds checking, local-only operation and synthetic parser tests protect the flow; this is **not** full WeChat data migration.
+
 - Added a recoverable, verified **Nexa-local restore workflow**: backup SHA-256 preflight, independent staged verification, retained previous-import snapshot, confirmation UI, and disk journal for interrupted swaps. This does not read/write other apps' data.
 
 - Linked the unmodified WQFiles WQAccess/WQLaunchServices/WQScanTask backend from the pinned submodule into Nexa, with an entitlement placeholder and consent-gated, read-only container browser. **Real-device capability is not verified**, and cross-app writes remain disabled.

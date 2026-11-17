@@ -85,3 +85,7 @@ The original `WQAccess.m`, `WQLaunchServices.m`, and `WQScanTask.m` are now adde
 ## Nexa-local transactional restore (new)
 
 `NexaBackupRestore.swift` completes Nexa's own backup/restore workflow: verify a known backup, stage a separate payload, verify again, retain the previous `Imports` tree in private Application Support, replace the directory, and record a small JSON journal to recover interrupted commits. A confirmation dialog is required. It deliberately does not copy from or write to any other application's private container. See [RESTORE_SAFETY.md](RESTORE_SAFETY.md) for crash-state scenarios and remaining acceptance requirements.
+
+## WCMigrate local account identity inspection
+
+Nexa's imported-folder browser now offers an explicit, local-only LoginInfo2.dat inspection action. The unchanged upstream WCMigrate protobuf/account parser is compiled under `Vendor/WCMigrate/`; a Nexa wrapper limits inputs to imported paths, rejects symlinks and bounds file sizes and directory counts. It displays an identity only on the current device, with no network transmission. This is a **migration-preparation diagnostic**, not cross-app WeChat transfer.

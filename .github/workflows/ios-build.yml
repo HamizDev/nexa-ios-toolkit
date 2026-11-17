@@ -35,6 +35,16 @@ jobs:
             Tests/BackupRestoreHostTests.swift \
             -o "$scratch/nexa-restore-tests"
           NEXA_TEST_ROOT="$scratch/TestRoot" "$scratch/nexa-restore-tests"
+      - name: Test upstream WCMigrate LoginInfo2 parser with synthetic fixtures
+        run: |
+          set -euo pipefail
+          scratch="$(mktemp -d)"
+          trap 'rm -rf "$scratch"' EXIT
+          swiftc \
+            Vendor/WCMigrate/WeChatIdentityResolver.swift \
+            Tests/WeChatIdentityHostTests.swift \
+            -o "$scratch/identity-tests"
+          NEXA_TEST_ROOT="$scratch/Fixture" "$scratch/identity-tests"
       - name: Targeted upstream WQFiles core, archive and access safety regressions
         timeout-minutes: 12
         run: bash Scripts/test_wqfiles_integrated.sh
