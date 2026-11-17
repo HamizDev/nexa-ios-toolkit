@@ -39,7 +39,7 @@ Nexa 是一个面向 iOS 文件、备份、设备诊断和开源系统研究的�
 | --- | --- |
 | [WQFiles](https://github.com/kolbicz/WQFiles) | ✅ **部分真实源码接入**：`WQCore.m/h` + Hex 校验；其容器访问和缓存清理尚未集成 |
 | [WQToolkit](https://github.com/MchinaMd57764/WQToolkit) | 源码研究；上游公开说明功能面向自身容器 / App Group，需核对授权 |
-| [GestaltX](https://github.com/huamidev/GestaltX) | ✅ **仅只读辅助源码**：`VersionSupport.swift` 已编译用于系统兼容性标注；无 MobileGestalt 写入 |
+| [GestaltX](https://github.com/huamidev/GestaltX) | ✅ **部分源码接入**：`VersionSupport.swift` 与 `PlistValueKind.swift`。可在 Nexa 内离线查看/编辑用户导入的 plist 副本，并在保存前自动备份；无系统 MobileGestalt 写入 |
 | [WCMigrate](https://github.com/yangokok886/WCMigrate) | ✅ **部分真实源码接入**：`OperationEstimate.swift`、`BackupProgress.swift` 已用于 Nexa 本地备份进度；无微信跨容器迁移 |
 | [Erosion](https://github.com/jailbreakdotparty/Erosion)、[Regitela](https://github.com/ichitaso/Regitela)、[WorstGestalt](https://github.com/GoldensHQ/worstgestalt)、[WorseFiles](https://github.com/fucknima/worsefiles-ios) | 已核对仓库和候选模块，未实际移植 |
 | [HermesEnabler 2](https://github.com/pookjw/HermesEnabler) | 上游完整源码固定为子模块；Nexa 已接入 Apple Watch 会话/配对状态诊断，仍无 Nexa watchOS Target 或表盘修改 |

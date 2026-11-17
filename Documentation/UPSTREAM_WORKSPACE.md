@@ -61,3 +61,7 @@ The full sources and respective LICENSE files stay inside their original submodu
 | WCMigrate | `55faba721fd44e04c65be481860c9d93e12f6f61` |
 | GestaltX | `311f78999d9f5f062f7e3b4c6374684782be5382` |
 | HermesEnabler | `c0ae1666cba67ab7fbae6d3e481cc2731f5550a1` |
+
+## Local plist editing added to this branch
+
+Nexa can now open a **user-imported** .plist via its file inspector. A typed editor uses GestaltX's original `PlistValueKind` parser, stages a modified property list, makes a backup under the app's Application Support, and atomically saves the imported local copy. No system cache path, exploit, or arbitrary external file mutation is involved. Xcode/device compilation and a test of these edits remain outstanding.

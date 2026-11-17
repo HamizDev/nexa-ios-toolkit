@@ -31,3 +31,7 @@ The `ThirdParty/` folder contains four Git submodules: WQFiles, WCMigrate, Gesta
 | [fucknima/worsefiles-ios](https://github.com/fucknima/worsefiles-ios) | `fe10fc84137e522692ec685fb51c0cfa37378941` | Reference only |
 
 No third-party IPA or binary has been copied into Nexa. Please examine each upstream's license and dependencies **before** copying any additional files. For reuse, retain original notices, modify with attribution, and document how code is actually invoked and tested.
+
+## Offline plist editing (GestaltX excerpt)
+
+`Vendor/GestaltX/PlistValueKind.swift` preserves an exact excerpt of `GestaltDocument.swift` (`GestaltFailure` and `PlistValueKind`), from the same pinned SHA. It is compiled into Nexa's `NexaPlistInspectorView` for type detection, safe input parsing, and local plist serialization. Changes are limited to files that the user explicitly imported, with a backup of the imported copy taken before each write. This **does not** write to system MobileGestalt or access other app containers.

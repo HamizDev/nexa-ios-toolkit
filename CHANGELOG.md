@@ -2,6 +2,8 @@
 
 ## Unreleased — upstream integration branch
 
+- Added offline user-imported plist inspection and editing using GestaltX's original value parser; each local edit creates an app-private backup of the imported copy.
+
 - Added pinned Git submodules for WQFiles, WCMigrate, GestaltX and HermesEnabler, with a single development workspace (independent upstream targets remain separate).
 - Wired WCMigrate’s original backup progress/ETA components into Nexa’s local backup UI.
 - Wired GestaltX’s upstream VersionSupport helper into the read-only device diagnostics UI.

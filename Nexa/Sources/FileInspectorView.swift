@@ -106,6 +106,15 @@ struct FileInspectorView: View {
                                 .textSelection(.enabled)
                         }
                     }
+                    if file.pathExtension.lowercased() == "plist" {
+                        NavigationLink {
+                            NexaPlistInspectorView(file: file)
+                        } label: {
+                            Label(language.code == "en" ? "Open plist editor" : "打开属性列表编辑器",
+                                  systemImage: "slider.horizontal.3")
+                        }
+                        .buttonStyle(.bordered)
+                    }
                     ShareLink(item: file) {
                         Label(language.t("files.export"), systemImage: "square.and.arrow.up")
                     }
