@@ -78,7 +78,7 @@ localized = []
 for locale in ["zh-Hans", "en"]:
     path = root / "NexaWatch/Localization" / (locale + ".lproj/Localizable.strings")
     if path.is_file():
-        keys = set(re.findall(r'^"((?:[^"\\]|\\.)*)"\\s*=', path.read_text(), flags=re.MULTILINE))
+        keys = set(re.findall(r'^"((?:[^"\\]|\\.)*)"\s*=', path.read_text(), flags=re.MULTILINE))
         localized.append(keys)
         if len(keys) < 82:
             errors.append(f"Missing Hermes watch translations: {locale}")
