@@ -39,22 +39,22 @@ Nexa 是一个面向 iOS 文件、备份、设备诊断和开源系统研究的�
 | --- | --- |
 | [WQFiles](https://github.com/kolbicz/WQFiles) | ✅ **部分真实源码接入**：`WQCore.m/h` + Hex 校验；其容器访问和缓存清理尚未集成 |
 | [WQToolkit](https://github.com/MchinaMd57764/WQToolkit) | 源码研究；上游公开说明功能面向自身容器 / App Group，需核对授权 |
-| [GestaltX](https://github.com/huamidev/GestaltX) | 未集成 MobileGestalt 读写 |
-| [WCMigrate](https://github.com/yangokok886/WCMigrate) | 未移植微信跨容器迁移、数据库处理、检查点恢复；Nexa 自身备份与其不同 |
+| [GestaltX](https://github.com/huamidev/GestaltX) | ✅ **仅只读辅助源码**：`VersionSupport.swift` 已编译用于系统兼容性标注；无 MobileGestalt 写入 |
+| [WCMigrate](https://github.com/yangokok886/WCMigrate) | ✅ **部分真实源码接入**：`OperationEstimate.swift`、`BackupProgress.swift` 已用于 Nexa 本地备份进度；无微信跨容器迁移 |
 | [Erosion](https://github.com/jailbreakdotparty/Erosion)、[Regitela](https://github.com/ichitaso/Regitela)、[WorstGestalt](https://github.com/GoldensHQ/worstgestalt)、[WorseFiles](https://github.com/fucknima/worsefiles-ios) | 已核对仓库和候选模块，未实际移植 |
-| [HermesEnabler 2](https://github.com/pookjw/HermesEnabler) | 暂无 watchOS Target；无表盘修改功能 |
+| [HermesEnabler 2](https://github.com/pookjw/HermesEnabler) | 上游完整源码固定为子模块；Nexa 已接入 Apple Watch 会话/配对状态诊断，仍无 Nexa watchOS Target 或表盘修改 |
 | [worse_query](https://github.com/forcequitOS/worse_query) | 仅研究参考；**尚未集成漏洞利用代码或跨 App 沙盒授权** |
 
-详细源码出处、固定 SHA 与许可证见 [上游代码清单](Documentation/UPSTREAM_SOURCES.md)，开发路线见 [整合计划](Documentation/INTEGRATION_PLAN.md)。
+四个完整上游项目的源码已通过固定 Git submodule 引用纳入开发仓库，组成 [Nexa.xcworkspace](Nexa.xcworkspace/contents.xcworkspacedata) 的多个独立工程。**Workspace 中有完整源码 ≠ 这些功能已嵌入 Nexa 主程序。** 详细配置见 [上游整合工作区](Documentation/UPSTREAM_WORKSPACE.md)；源码出处、许可与 SHA 见 [上游代码清单](Documentation/UPSTREAM_SOURCES.md)，开发路线见 [整合计划](Documentation/INTEGRATION_PLAN.md)。
 
 ## 🛠️ 编译 / Build
 
 需要 **macOS + 支持 iOS 26 SDK 的 Xcode**。
 
-1. 克隆仓库，打开 `Nexa.xcodeproj`。
+1. 使用 `git clone --recurse-submodules https://github.com/HamizDev/nexa-ios-toolkit.git` 获取代码，再打开 `Nexa.xcworkspace`（或仅打开 `Nexa.xcodeproj` 构建 Nexa 主 App）。
 2. 选择 `Nexa` Target，在 Signing & Capabilities 中设置开发团队和**自己的** Bundle Identifier（默认仅为 `com.example.Nexa` 示例）。
 3. 选择 iOS 26+ 的模拟器或已签名的受控测试设备，编译运行。
-4. 工程包含 Objective-C 源文件 `Vendor/WQFiles/WQCore.m` 和 Swift 桥接头 `Nexa/Nexa-Bridging-Header.h`。不需要第三方二进制依赖。
+4. 主工程编译 `Vendor/WQFiles/WQCore.m`、`Vendor/WCMigrate/*.swift` 和 `Vendor/GestaltX/VersionSupport.swift`。原始上游工程在 Workspace 中仍为**独立 Target**，不能直接用一个 Nexa IPA 安装全部上游应用。
 
 **目前未生成 IPA，也没有 Xcode 真机编译验收结果。** 编译成功不意味着 worse_query 在该设备可用。
 
@@ -67,7 +67,7 @@ Nexa 是一个面向 iOS 文件、备份、设备诊断和开源系统研究的�
 
 ## 📄 开源许可 / Licensing
 
-Nexa 源代码以 [GPL-3.0](LICENSE) 提供；内含的 WQFiles `WQCore.m/h` 受 **GPL-3.0-or-later** 许可，保留其原始版权/许可证头，原仓库 [LICENSE](https://github.com/kolbicz/WQFiles/blob/main/LICENSE)。其他项目仅提供来源链接，**并未复制其源码**。未经授权不要复制 Apple、Hermès 或第三方 App 的受保护素材或数据。
+Nexa 源代码以 [GPL-3.0](LICENSE) 提供；直接编译的 WQFiles/WCMigrate/GestaltX 来源文件分别保留 GPL-3.0-or-later / GPL-3.0-only 的版权许可说明，原始完整仓库在 `ThirdParty/` 下以子模块固定 SHA 引用。HermesEnabler 原项目采用 MIT 许可证，但其源码尚未作为 Nexa Watch Target 编译。具体文件与许可见 [上游清单](Documentation/UPSTREAM_SOURCES.md)。未经授权不要复制 Apple、Hermès 或第三方 App 的受保护素材或数据。
 
 [Changelog](CHANGELOG.md) · [Source inventory](Documentation/UPSTREAM_SOURCES.md) · [Integration plan](Documentation/INTEGRATION_PLAN.md)
 

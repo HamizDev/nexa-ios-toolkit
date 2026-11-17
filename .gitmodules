@@ -1,0 +1,12 @@
+[submodule "ThirdParty/WQFiles"]
+	path = ThirdParty/WQFiles
+	url = https://github.com/kolbicz/WQFiles.git
+[submodule "ThirdParty/WCMigrate"]
+	path = ThirdParty/WCMigrate
+	url = https://github.com/yangokok886/WCMigrate.git
+[submodule "ThirdParty/GestaltX"]
+	path = ThirdParty/GestaltX
+	url = https://github.com/huamidev/GestaltX.git
+[submodule "ThirdParty/HermesEnabler"]
+	path = ThirdParty/HermesEnabler
+	url = https://github.com/pookjw/HermesEnabler.git

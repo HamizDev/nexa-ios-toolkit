@@ -60,6 +60,11 @@ struct DeviceView: View {
                             NexaTag(text: NexaDeviceStatus.compatibility(language.code), color: NexaPalette.mint)
                             Text(language.t("device.compat.note"))
                                 .font(.footnote).foregroundStyle(NexaPalette.muted)
+                            Text(VersionSupport.contains(ProcessInfo.processInfo.operatingSystemVersion)
+                                ? (language.code == "en" ? "GestaltX source targets iOS 27.x; no writes are enabled." : "GestaltX 上游目标为 iOS 27.x；Nexa 没有启用系统写入。")
+                                : (language.code == "en" ? "GestaltX source does not target this OS version." : "GestaltX 上游源码未将此系统列为目标版本。"))
+                                .font(.caption)
+                                .foregroundStyle(NexaPalette.muted)
                             Divider().overlay(.white.opacity(0.08))
                             HStack {
                                 Text(language.t("device.mg"))

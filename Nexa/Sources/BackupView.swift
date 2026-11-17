@@ -5,6 +5,8 @@ struct BackupView: View {
     @State private var backups: [BackupRecord] = []
     @State private var busy = false
     @State private var message: String?
+    @State private var progressFraction: Double = 0
+    @State private var estimate = OperationEstimate()
 
     var body: some View {
         ZStack {
@@ -24,6 +26,23 @@ struct BackupView: View {
                         createBackup()
                     }
                     .disabled(busy)
+                    if busy {
+                        NexaCard {
+                            VStack(alignment: .leading, spacing: 8) {
+                                ProgressView(value: progressFraction)
+                                    .tint(NexaPalette.mint)
+                                if let remaining = estimate.remaining {
+                                    Text(language.code == "en"
+                                        ? "Estimated remaining: \(Int(remaining)) seconds"
+                                        : "预计剩余：\(OperationEstimate.timeText(remaining))")
+                                        .font(.caption)
+                                        .foregroundStyle(NexaPalette.muted)
+                                }
+                                Text(language.code == "en" ? "Copy progress is measured by top-level items." : "进度按一级文件／目录统计，大目录可能耗时较长。")
+                                    .font(.caption2).foregroundStyle(NexaPalette.muted)
+                            }
+                        }
+                    }
                     Text(language.t("backup.list")).font(.title3.weight(.semibold))
                     if backups.isEmpty {
                         NexaCard {
@@ -81,9 +100,18 @@ struct BackupView: View {
 
     private func createBackup() {
         busy = true
+        progressFraction = 0
+        estimate.reset()
         Task {
             do {
-                _ = try await Task.detached(priority: .userInitiated) { try BackupManager.createBackup() }.value
+                _ = try await Task.detached(priority: .userInitiated) {
+                    try BackupManager.createBackup(onProgress: { progress in
+                        Task { @MainActor in
+                            progressFraction = progress.fraction ?? 0
+                            estimate.update(progress)
+                        }
+                    })
+                }.value
                 message = language.t("backup.success")
                 refresh()
             } catch { message = error.localizedDescription }

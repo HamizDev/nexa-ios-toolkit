@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased — upstream integration branch
+
+- Added pinned Git submodules for WQFiles, WCMigrate, GestaltX and HermesEnabler, with a single development workspace (independent upstream targets remain separate).
+- Wired WCMigrate’s original backup progress/ETA components into Nexa’s local backup UI.
+- Wired GestaltX’s upstream VersionSupport helper into the read-only device diagnostics UI.
+- Added real WatchConnectivity session status monitoring on iPhone. No watchOS target or watch face enabling is included.
+- Added provenance and license references for newly integrated source files and clarified build blockers for a true single-app merge.
+
+**Not completed:** cross-app WQFiles engine, full WeChat data migration, MobileGestalt writes/rollback, and HermesEnabler watchOS integration. This branch needs Xcode compilation verification before it should be merged/released.
+
 ## [0.0.1] — 2026-11-17 (source preview)
 
 - Redesigned the main SwiftUI interface with a dark, layered, gradient visual language.

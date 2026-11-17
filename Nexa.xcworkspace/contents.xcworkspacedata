@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace version="1.0">
+  <!-- Nexa is the only combined app target. Upstream projects remain independent build targets. -->
+  <FileRef location="group:Nexa.xcodeproj"/>
+  <FileRef location="group:ThirdParty/GestaltX/GestaltX.xcodeproj"/>
+  <FileRef location="group:ThirdParty/WCMigrate/XChatTransfer.xcodeproj"/>
+  <FileRef location="group:ThirdParty/HermesEnabler/HermesEnabler2.xcodeproj"/>
+  <!-- WQFiles provides build.sh rather than an .xcodeproj. -->
+  <FileRef location="group:ThirdParty/WQFiles"/>
+</Workspace>

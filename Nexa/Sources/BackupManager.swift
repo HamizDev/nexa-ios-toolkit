@@ -44,7 +44,7 @@ enum BackupManager {
             .map { BackupRecord(folder: $0) }
     }
 
-    static func createBackup() throws -> URL {
+    static func createBackup(onProgress: ((BackupProgress) -> Void)? = nil) throws -> URL {
         let fm = FileManager.default
         let source = AppPaths.importFolder
         try fm.createDirectory(at: source, withIntermediateDirectories: true)
@@ -56,8 +56,12 @@ enum BackupManager {
         let payload = folder.appendingPathComponent("Payload", isDirectory: true)
         try fm.createDirectory(at: payload, withIntermediateDirectories: true)
         do {
-            for item in imports {
+            // Progress counts completed top-level items (including directories),
+            // not the bytes inside each directory.
+            onProgress?(BackupProgress("copy", 0, imports.count, 0, fraction: 0))
+            for (index, item) in imports.enumerated() {
                 try fm.copyItem(at: item, to: payload.appendingPathComponent(item.lastPathComponent))
+                onProgress?(BackupProgress("copy", index + 1, imports.count, 0, fraction: Double(index + 1) / Double(imports.count)))
             }
             let manifest = BackupManifest(createdAt: Date(), files: try digests(in: payload), formatVersion: 1)
             let encoder = JSONEncoder()

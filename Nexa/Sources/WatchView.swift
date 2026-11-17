@@ -4,9 +4,7 @@ import WatchConnectivity
 struct WatchView: View {
     @EnvironmentObject private var language: NexaLanguage
 
-    private var paired: Bool {
-        WCSession.isSupported() && WCSession.default.isPaired
-    }
+    @StateObject private var monitor = NexaWatchMonitor()
 
     var body: some View {
         ZStack {
@@ -22,8 +20,23 @@ struct WatchView: View {
                             HStack {
                                 Text(language.t("watch.paired"))
                                 Spacer()
-                                NexaTag(text: paired ? language.t("watch.yes") : language.t("watch.no"), color: paired ? NexaPalette.mint : NexaPalette.muted)
+                                NexaTag(text: monitor.paired ? language.t("watch.yes") : language.t("watch.no"), color: monitor.paired ? NexaPalette.mint : NexaPalette.muted)
                             }
+                            HStack {
+                                Text(language.code == "en" ? "Watch session" : "手表会话")
+                                Spacer()
+                                Text(monitor.activationState).foregroundStyle(NexaPalette.muted)
+                            }
+                            .font(.caption)
+                            HStack {
+                                Text(language.code == "en" ? "Nexa watch app" : "Nexa 手表端")
+                                Spacer()
+                                Text(monitor.watchAppInstalled ? (language.code == "en" ? "Installed" : "已安装") : (language.code == "en" ? "Not installed" : "未安装"))
+                                    .foregroundStyle(NexaPalette.muted)
+                            }
+                            .font(.caption)
+                            Button(language.t("common.refresh")) { monitor.refresh() }
+                                .font(.caption)
                             Text(language.t("watch.none"))
                                 .font(.footnote).foregroundStyle(NexaPalette.muted)
                         }

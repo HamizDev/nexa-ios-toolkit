@@ -1,0 +1,63 @@
+# Nexa upstream integration workspace
+
+This branch contains **real, pinned upstream source repositories** as Git submodules, rather than duplicated or fabricated app logic. **This is an integration workspace, not yet a single functioning merged IPA.**
+
+## Initial source checkout
+
+```sh
+git clone --recurse-submodules https://github.com/HamizDev/nexa-ios-toolkit.git
+cd nexa-ios-toolkit
+git submodule status
+```
+
+For an existing checkout:
+
+```sh
+git submodule update --init --recursive
+```
+
+Open `Nexa.xcworkspace` with a current macOS Xcode that supports the iOS 26 SDK. The workspace includes:
+
+| Project | Folder | Project structure | Status in Nexa |
+|---|---|---|---|
+| WQFiles | `ThirdParty/WQFiles` | Clang/`build.sh`, **no .xcodeproj** | WQCore already compiled into Nexa. Full browser NOT merged |
+| WCMigrate | `ThirdParty/WCMigrate` | `XChatTransfer.xcodeproj` | Independent Xcode target; not installed as Nexa submodule |
+| GestaltX | `ThirdParty/GestaltX` | `GestaltX.xcodeproj` | Independent Xcode target; writes NOT wired to Nexa |
+| HermesEnabler | `ThirdParty/HermesEnabler` | `HermesEnabler2.xcodeproj`, includes watchOS | Independent signed watch app/companion; NOT bundled in Nexa |
+
+Do not assume a workspace reference embeds another App target or grants its capabilities. All upstream Bundle IDs, App Groups, bridging headers, build settings and watch extension provisioning must be reviewed and reconciled before distributing a unified app.
+
+## Working functional integration in Nexa
+
+- WQFiles' `WQCore.m/h`: read-only hex parsing on imported files.
+- [Next] WCMigrate's standalone progress estimator and app-local staging (no third-party private container access).
+- [Next] GestaltX's OS version helper (read-only gating; no system modifications).
+- [Next] Apple Watch connectivity status (no watch-face modification).
+
+## Build blockers for an actual unified IPA
+
+1. **WQFiles** requires its container/extension backend, special entitlements, and integration of C/ObjC source dependencies.
+2. **WCMigrate** brings its own `@main` app, C/ObjC bridge, App Group identity and migration state machine; those cannot coexist unchanged in Nexa's single app target.
+3. **GestaltX** expects a separate configuration database and its own signed access environment; do not enable system writes until backup and rollback behavior is verified.
+4. **HermesEnabler** depends on a real watchOS target, paired Apple Watch, watch app installation, and matching companion identities. An iPhone-only UI cannot enable watch faces.
+5. **Signing**: Only one bundle identity per app, explicit App Group entitlements and a compatible Xcode toolchain. No macOS/Xcode build has been performed for this integration.
+
+The actual policy is to keep upstream projects pinned and credited, build verifiable read-only functionality first, then reconcile target/product structures on a macOS host. Never mark cross-app, system-write or watch modification capabilities as working solely because submodules are checked out.
+
+## Licenses
+
+- WQFiles: GPL-3.0-or-later.
+- WCMigrate: GPL-3.0-or-later.
+- GestaltX: GPL-3.0-only (individual upstream source headers).
+- HermesEnabler: MIT (see its LICENSE).
+
+The full sources and respective LICENSE files stay inside their original submodule folders. Vendored portions of WQFiles already present in Nexa maintain their original notices. Preserve original notices and comply with the license of each component in any combined distribution.
+
+## Pinned commits
+
+| Source | Commit SHA |
+|---|---|
+| WQFiles | `fe92ae94067983b94fd927e0b4eee52e5a99a4e7` |
+| WCMigrate | `55faba721fd44e04c65be481860c9d93e12f6f61` |
+| GestaltX | `311f78999d9f5f062f7e3b4c6374684782be5382` |
+| HermesEnabler | `c0ae1666cba67ab7fbae6d3e481cc2731f5550a1` |
