@@ -15,3 +15,7 @@ The sample entitlements use the build setting `NEXA_APP_GROUP_IDENTIFIER=group.c
 This feature has not been verified on a physical device; do not claim the worse_query grants work until tested on an authorized iOS version with a real development signature and complete audit log. This code is research-only and not suitable for App Store distribution.
 
 Upstream: https://github.com/kolbicz/WQFiles — GPL-3.0-or-later, pinned source commit `fe92ae94067983b94fd927e0b4eee52e5a99a4e7`.
+
+### Side effects and recovery
+
+Even though the Nexa UI exposes only read-only listing and preview, the original worse_query sandbox-lease mechanism **may alter Nexa's own App Group cache** while requesting a token. Do not mistake "read-only user data" for "no filesystem changes whatsoever". Preserve the upstream repair/release semantics and validate recovery after interruption before device release. Avoid accessing another person's private app data without their authorization.

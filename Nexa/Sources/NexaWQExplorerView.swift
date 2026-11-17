@@ -77,8 +77,8 @@ struct NexaWQExplorerView: View {
                                   systemImage: "lock.shield")
                                 .foregroundStyle(.orange)
                             Text(en ?
-                                 "This uses the pinned WQFiles sandbox extension backend. It needs an eligible iOS build and an App Group provisioned for your signing team. It never automatically scans containers or writes data." :
-                                 "该功能使用 WQFiles 原版容器访问引擎，要求匹配的 iOS 构建号及签名 App Group。不会自动扫描其他应用数据，也不会在此页面写入文件。")
+                                 "This uses the pinned WQFiles sandbox extension backend. It needs an eligible iOS build and an App Group provisioned for your signing team. It never scans other containers automatically and offers no file-write control. The upstream access mechanism may update this app's own App Group cache." :
+                                 "该功能使用 WQFiles 原版容器访问引擎，要求匹配的 iOS 构建号及签名 App Group。不会自动扫描其他应用数据，也不提供文件写入操作；但上游授权机制可能修改本应用自己的 App Group 缓存。")
                                 .font(.footnote)
                                 .foregroundStyle(NexaPalette.muted)
                             Text(NexaContainerAccess.eligible
