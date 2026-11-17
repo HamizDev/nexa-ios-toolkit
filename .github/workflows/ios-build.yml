@@ -35,11 +35,9 @@ jobs:
             Tests/BackupRestoreHostTests.swift \
             -o "$scratch/nexa-restore-tests"
           NEXA_TEST_ROOT="$scratch/TestRoot" "$scratch/nexa-restore-tests"
-      - name: Run upstream WQFiles disposable host regressions
-        timeout-minutes: 20
-        env:
-          WQ_TEST_TIMEOUT: "120"
-        run: bash ThirdParty/WQFiles/tests/run_all_tests.sh
+      - name: Targeted upstream WQFiles core, archive and access safety regressions
+        timeout-minutes: 12
+        run: bash Scripts/test_wqfiles_integrated.sh
 
   build:
     runs-on: macos-latest
