@@ -69,3 +69,7 @@ Nexa can now open a **user-imported** .plist via its file inspector. A typed edi
 ## WQFiles original ZIP engine integrated
 
 The original `WQArchive.h/m` and `WQLocalization.h/m` from the pinned upstream commit are compiled directly into the Nexa main target and linked against system zlib. Nexa uses the upstream ZIP writer to archive app-imported files into `Documents/Archives`, and the upstream ZIP extractor for explicitly imported ZIP archives with an extraction size cap and a fresh, app-local destination directory. The underlying engine rejects unsafe paths and special archive entries. ZIP operations do **not** access other app sandboxes. As always, Xcode compilation and runtime regression tests must pass before release.
+
+## WCMigrate database validation integrated
+
+The original read-only WCMigrate `DatabaseInspector.swift` was adapted to the Nexa backup manifest and its PascalCase `Payload` directory. It verifies each backup before reading, then copies databases and SQLite sidecars to a temporary isolated location and performs a bounded `quick_check(1)`. Its `DatabaseReport` model is extracted from WCMigrate's `Core/Models.swift`. This is a **file integrity and schema diagnostic**, not WeChat record restoration or a semantic database merge.

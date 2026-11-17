@@ -7,7 +7,7 @@ This file distinguishes **vendored, compiled, and used code** from projects that
 | Project | Pinned upstream SHA | Files copied | License | Runtime usage |
 | --- | --- | --- | --- | --- |
 | [kolbicz/WQFiles](https://github.com/kolbicz/WQFiles) | `fe92ae94067983b94fd927e0b4eee52e5a99a4e7` | `WQCore.h/m`, `WQArchive.h/m`, `WQLocalization.h/m` → `Vendor/WQFiles/` | GPL-3.0-or-later | Hex validation; ZIP writer and safe extractor on imported files |
-| [yangokok886/WCMigrate](https://github.com/yangokok886/WCMigrate) | `55faba721fd44e04c65be481860c9d93e12f6f61` | Original `OperationEstimate.swift` and extracted `BackupProgress` model → `Vendor/WCMigrate/` | GPL-3.0-or-later | Backup progress / ETA only |
+| [yangokok886/WCMigrate](https://github.com/yangokok886/WCMigrate) | `55faba721fd44e04c65be481860c9d93e12f6f61` | Original `OperationEstimate.swift`, extracted `BackupProgress` / `DatabaseReport` models, adapted `DatabaseInspector.swift` → `Vendor/WCMigrate/` | GPL-3.0-or-later | Backup progress / ETA; SQLite quick_check on verified local backup copies (not chat recovery) |
 | [huamidev/GestaltX](https://github.com/huamidev/GestaltX) | `311f78999d9f5f062f7e3b4c6374684782be5382` | Adapted `VersionSupport.swift` → `Vendor/GestaltX/` | GPL-3.0-only | Read-only version gating only |
 
 The copied WQCore files are unchanged upstream source; attribution and license headers are preserved. `Nexa/Nexa-Bridging-Header.h` and Xcode project compilation/linking settings are Nexa glue code. **No WQFiles container-access implementation is included.**

@@ -16,7 +16,7 @@ Nexa 是一个面向 iOS 文件、备份、设备诊断和开源系统研究的�
 | 中文 / English | 默认简体中文；设置中可立即切换英文；内置两套完整界面词条 |
 | 文件 / Files | 系统文件选择器导入、应用内文件夹浏览、分享、删除导入副本；**调用原版 WQFiles ZIP 引擎创建／解压归档** |
 | 文件检查器 | UTF-8 文本预览、只读十六进制预览和字节验证；**直接编译并调用 WQFiles 原始的 `WQCore.m/h`** |
-| 备份 / Backups | 复制用户导入的文件、生成 `manifest.json`、逐文件 SHA-256 校验、分享备份 |
+| 备份 / Backups | 复制用户导入的文件、生成 `manifest.json`、逐文件 SHA-256 校验、分享备份；调用 WCMigrate 的原始 SQLite 快速完整性检查代码扫描已校验备份副本 |
 | 设备 / Device | 公开 API 显示设备名称、系统、Build、地区、内存、存储；上游报告范围的保守提示 |
 | Apple Watch | 显示公开的基础配对状态，提供上游源码入口；**没有 watchOS Target** |
 | 上游项目 | 按“部分代码已接入 / 研究中 / 未移植”展示准确状态、来源与功能边界 |
@@ -40,7 +40,7 @@ Nexa 是一个面向 iOS 文件、备份、设备诊断和开源系统研究的�
 | [WQFiles](https://github.com/kolbicz/WQFiles) | ✅ **部分真实源码接入**：`WQCore.m/h` + Hex 校验，`WQArchive.m/h` + ZIP 压缩／解压；跨容器管理仍未集成 |
 | [WQToolkit](https://github.com/MchinaMd57764/WQToolkit) | 源码研究；上游公开说明功能面向自身容器 / App Group，需核对授权 |
 | [GestaltX](https://github.com/huamidev/GestaltX) | ✅ **部分源码接入**：`VersionSupport.swift` 与 `PlistValueKind.swift`。可在 Nexa 内离线查看/编辑用户导入的 plist 副本，并在保存前自动备份；无系统 MobileGestalt 写入 |
-| [WCMigrate](https://github.com/yangokok886/WCMigrate) | ✅ **部分真实源码接入**：`OperationEstimate.swift`、`BackupProgress.swift` 已用于 Nexa 本地备份进度；无微信跨容器迁移 |
+| [WCMigrate](https://github.com/yangokok886/WCMigrate) | ✅ **部分真实源码接入**：`OperationEstimate.swift`、`BackupProgress.swift` 已用于 Nexa 本地备份进度；移植 `DatabaseInspector` 只读检查已校验数据库副本；无微信跨容器迁移 |
 | [Erosion](https://github.com/jailbreakdotparty/Erosion)、[Regitela](https://github.com/ichitaso/Regitela)、[WorstGestalt](https://github.com/GoldensHQ/worstgestalt)、[WorseFiles](https://github.com/fucknima/worsefiles-ios) | 已核对仓库和候选模块，未实际移植 |
 | [HermesEnabler 2](https://github.com/pookjw/HermesEnabler) | 上游完整源码固定为子模块；Nexa 已接入 Apple Watch 会话/配对状态诊断，仍无 Nexa watchOS Target 或表盘修改 |
 | [worse_query](https://github.com/forcequitOS/worse_query) | 仅研究参考；**尚未集成漏洞利用代码或跨 App 沙盒授权** |
@@ -54,7 +54,7 @@ Nexa 是一个面向 iOS 文件、备份、设备诊断和开源系统研究的�
 1. 使用 `git clone --recurse-submodules https://github.com/HamizDev/nexa-ios-toolkit.git` 获取代码，再打开 `Nexa.xcworkspace`（或仅打开 `Nexa.xcodeproj` 构建 Nexa 主 App）。
 2. 选择 `Nexa` Target，在 Signing & Capabilities 中设置开发团队和**自己的** Bundle Identifier（默认仅为 `com.example.Nexa` 示例）。
 3. 选择 iOS 26+ 的模拟器或已签名的受控测试设备，编译运行。
-4. 主工程编译 `Vendor/WQFiles/WQCore.m`、`WQArchive.m`、`WQLocalization.m`（链接 zlib）、`Vendor/WCMigrate/*.swift` 和 `Vendor/GestaltX/*.swift`。原始上游工程在 Workspace 中仍为**独立 Target**，不能直接用一个 Nexa IPA 安装全部上游应用。
+4. 主工程编译 `Vendor/WQFiles/WQCore.m`、`WQArchive.m`、`WQLocalization.m`（链接 zlib）、`Vendor/WCMigrate/*.swift`（链接 SQLite3）和 `Vendor/GestaltX/*.swift`。原始上游工程在 Workspace 中仍为**独立 Target**，不能直接用一个 Nexa IPA 安装全部上游应用。
 
 **目前未生成 IPA，也没有 Xcode 真机编译验收结果。** 编译成功不意味着 worse_query 在该设备可用。
 

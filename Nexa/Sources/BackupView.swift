@@ -75,6 +75,16 @@ struct BackupView: View {
                                         .buttonStyle(.bordered)
                                     }
                                     .disabled(busy)
+                                    NavigationLink {
+                                        NexaDatabaseReportView(folder: record.folder)
+                                    } label: {
+                                        Label(
+                                            language.code == "en" ? "SQLite integrity report" : "SQLite 完整性检查",
+                                            systemImage: "externaldrive.badge.checkmark"
+                                        )
+                                    }
+                                    .buttonStyle(.bordered)
+                                    .disabled(busy)
                                 }
                             }
                         }

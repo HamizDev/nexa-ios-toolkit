@@ -56,6 +56,12 @@
     F5A200000000000000000006 /* WQLocalization.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Vendor/WQFiles/WQLocalization.h; sourceTree = SOURCE_ROOT; };
     F5A200000000000000000008 /* WQLocalization.m in Sources */ = {isa = PBXBuildFile; fileRef = F5A200000000000000000007 /* WQLocalization.m */; };
     F5A200000000000000000007 /* WQLocalization.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Vendor/WQFiles/WQLocalization.m; sourceTree = SOURCE_ROOT; };
+    F5A300000000000000000002 /* DatabaseInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A300000000000000000001 /* DatabaseInspector.swift */; };
+    F5A300000000000000000001 /* DatabaseInspector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/WCMigrate/DatabaseInspector.swift; sourceTree = SOURCE_ROOT; };
+    F5A300000000000000000004 /* DatabaseReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A300000000000000000003 /* DatabaseReport.swift */; };
+    F5A300000000000000000003 /* DatabaseReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/WCMigrate/DatabaseReport.swift; sourceTree = SOURCE_ROOT; };
+    F5A300000000000000000006 /* NexaDatabaseReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A300000000000000000005 /* NexaDatabaseReportView.swift */; };
+    F5A300000000000000000005 /* NexaDatabaseReportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaDatabaseReportView.swift; sourceTree = "<group>"; };
     964BD5656C7A016EF0C9ADA7 /* Nexa.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nexa.app; sourceTree = BUILT_PRODUCTS_DIR; };
     EC981767C62EA833B107403F /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
     984AA73C6A3518E356174B49 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
@@ -87,6 +93,9 @@
         F5A200000000000000000002 /* NexaZipManager.swift in Sources */,
         F5A200000000000000000005 /* WQArchive.m in Sources */,
         F5A200000000000000000008 /* WQLocalization.m in Sources */,
+        F5A300000000000000000002 /* DatabaseInspector.swift in Sources */,
+        F5A300000000000000000004 /* DatabaseReport.swift in Sources */,
+        F5A300000000000000000006 /* NexaDatabaseReportView.swift in Sources */,
       );
       runOnlyForDeploymentPostprocessing = 0;
     };
@@ -122,6 +131,9 @@
         F5A200000000000000000004 /* WQArchive.m */,
         F5A200000000000000000006 /* WQLocalization.h */,
         F5A200000000000000000007 /* WQLocalization.m */,
+        F5A300000000000000000001 /* DatabaseInspector.swift */,
+        F5A300000000000000000003 /* DatabaseReport.swift */,
+        F5A300000000000000000005 /* NexaDatabaseReportView.swift */,
       );
       name = Nexa;
       path = Nexa;
@@ -191,7 +203,7 @@
         IPHONEOS_DEPLOYMENT_TARGET = 26.0;
         LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks");
         MARKETING_VERSION = 0.0.1;
-        OTHER_LDFLAGS = ("$(inherited)", "-lz");
+        OTHER_LDFLAGS = ("$(inherited)", "-lz", "-lsqlite3");
         PRODUCT_BUNDLE_IDENTIFIER = com.example.Nexa;
         PRODUCT_NAME = "$(TARGET_NAME)";
         SWIFT_VERSION = 5.0;
@@ -208,7 +220,7 @@
         IPHONEOS_DEPLOYMENT_TARGET = 26.0;
         LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks");
         MARKETING_VERSION = 0.0.1;
-        OTHER_LDFLAGS = ("$(inherited)", "-lz");
+        OTHER_LDFLAGS = ("$(inherited)", "-lz", "-lsqlite3");
         PRODUCT_BUNDLE_IDENTIFIER = com.example.Nexa;
         PRODUCT_NAME = "$(TARGET_NAME)";
         SWIFT_VERSION = 5.0;
