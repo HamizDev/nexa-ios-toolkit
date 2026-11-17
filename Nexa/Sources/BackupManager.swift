@@ -76,10 +76,18 @@ enum BackupManager {
     }
 
     static func verify(_ folder: URL) throws -> Int {
+        try verifyFiles(in: folder.appendingPathComponent("Payload", isDirectory: true), usingManifestAt: folder)
+    }
+
+    // The same manifest verification is used for a staged restore payload
+    // and for post-commit recovery checks.
+    static func verifyFiles(in payload: URL, usingManifestAt folder: URL) throws -> Int {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
         let manifest = try decoder.decode(BackupManifest.self, from: Data(contentsOf: folder.appendingPathComponent("manifest.json")))
-        let payload = folder.appendingPathComponent("Payload", isDirectory: true)
+        guard manifest.formatVersion == 1 else {
+            throw BackupError.verificationFailed("不支持的备份清单版本")
+        }
         let current = try digests(in: payload)
         guard current.count == manifest.files.count else {
             throw BackupError.verificationFailed("数量不一致")
