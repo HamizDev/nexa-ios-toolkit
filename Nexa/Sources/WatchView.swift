@@ -47,7 +47,6 @@ struct WatchView: View {
                             if let pingResult = monitor.pingResult {
                                 Text(pingResult).font(.caption).foregroundStyle(NexaPalette.muted)
                             }
-                                .font(.caption)
                             Text(language.t("watch.none"))
                                 .font(.footnote).foregroundStyle(NexaPalette.muted)
                         }
