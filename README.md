@@ -32,6 +32,30 @@ Nexa 是一个开源的 iOS 探索与设备管理项目，目标是将文件管�
 
 > **项目状态：Alpha / 基础工程。** 上表所列项目是研究与集成候选，**并不表示这些项目的代码或完整功能已经移植到 Nexa**。当前没有跨 App 容器读取、微信聊天数据库迁移、MobileGestalt 写入、Apple Watch 表盘解锁或已签名的 IPA。
 
+## 📱 iOS 版本兼容性 · Compatibility
+
+> **更新时间：2026-11-17。** 本表描述的是 **worse_query 及其第三方衍生工具公开报告的兼容范围**，不是 Nexa 已实现或已在真机验证的功能。实际可用性还取决于 iOS 构建号、应用签名、权限、硬件和具体模块。
+
+| iOS / iPadOS | worse_query 相关能力 | 证据与说明 |
+| --- | --- | --- |
+| 17.x–25.x | 未确认支持 | Nexa 的普通文件选择、备份和诊断不依赖 worse_query |
+| 26.0–26.7.2 | 原作者声明的支持区间 | **部分功能受限**；某些 MobileGestalt 写入在 iOS 26 不可用 |
+| 26.7.3 及之后的 26.x | 未经确认 | 不能直接按 26.7.2 的结果推断 |
+| 27.0–27.2 | 公开衍生项目声明支持 | worse_query 原作者明确列出 27.2；不同设备/构建仍需验证 |
+| 27.2.1 | 第三方工具实测支持 | WQFiles 维护者公布了测试设备，Erosion 也列入支持范围 |
+| 27.3 Beta 1（24C5037i） | 第三方工具报告支持 | 不能等同于 Apple 官方确认 |
+| 27.3 Beta 2（24C5049d）及之后 | 第三方维护者报告漏洞已修复 | 不应把依赖此漏洞的模块标为可用；未来是否存在新方法需重新评估 |
+
+**区分两个版本概念：**
+
+- **Nexa App 基础功能的最低部署版本：iOS 17.0。** 公开 API 文件导入、SHA-256 校验和设备诊断等基础能力不使用该漏洞。
+- **未来的 worse_query 实验性模块：仅能考虑已验证的系统与构建号。** 即使漏洞在某个版本可用，也不意味着 MobileGestalt、微信数据迁移或手表功能自动可用；这些功能目前**没有集成或真机验证**。
+- **不要仅靠系统主版本号启用写入。** 应按具体构建号与模块能力进行检查，未验证时保持只读/禁用状态，并提供备份及恢复方案。
+
+**上游证据：** [原始 worse_query README](https://github.com/forcequitOS/worse_query#readme) · [WQFiles 测试设备及修复说明](https://github.com/kolbicz/WQFiles#readme) · [Erosion 支持范围与限制](https://github.com/jailbreakdotparty/Erosion#readme)。上述为各维护者公开说明，不是 Apple 的官方漏洞公告。
+
+详见 [兼容性与测试策略](Documentation/INTEGRATION_PLAN.md)。
+
 ## 🛠️ 构建 · Build
 
 1. 使用 macOS 上的 Xcode 打开 `Nexa.xcodeproj`。
