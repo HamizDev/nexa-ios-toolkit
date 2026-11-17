@@ -2,6 +2,8 @@
 
 ## Unreleased — upstream integration branch
 
+- Linked the unmodified WQFiles WQAccess/WQLaunchServices/WQScanTask backend from the pinned submodule into Nexa, with an entitlement placeholder and consent-gated, read-only container browser. **Real-device capability is not verified**, and cross-app writes remain disabled.
+
 - Added a true embedded `NexaWatch` watchOS app target with SwiftUI bilingual UI and two-way WatchConnectivity ping diagnostics; not the upstream Hermes face engine.
 
 - Adapted WCMigrate's original read-only SQLite database inspector for Nexa's SHA-256 verified local backup manifests. The scanner checks disposable database copies and does not imply chat recovery.

@@ -37,7 +37,7 @@ Nexa 是一个面向 iOS 文件、备份、设备诊断和开源系统研究的�
 
 | 项目 | 0.0.1 实际状态 |
 | --- | --- |
-| [WQFiles](https://github.com/kolbicz/WQFiles) | ✅ **部分真实源码接入**：`WQCore.m/h` + Hex 校验，`WQArchive.m/h` + ZIP 压缩／解压；跨容器管理仍未集成 |
+| [WQFiles](https://github.com/kolbicz/WQFiles) | ✅ **部分真实源码接入**：`WQCore.m/h` + Hex 校验，`WQArchive.m/h` + ZIP 压缩／解压；原版 WQAccess 授权引擎源码已链接，增加需用户明确同意的实验性只读容器入口；尚未通过真机验证，且没有跨容器写入 |
 | [WQToolkit](https://github.com/MchinaMd57764/WQToolkit) | 源码研究；上游公开说明功能面向自身容器 / App Group，需核对授权 |
 | [GestaltX](https://github.com/huamidev/GestaltX) | ✅ **部分源码接入**：`VersionSupport.swift` 与 `PlistValueKind.swift`。可在 Nexa 内离线查看/编辑用户导入的 plist 副本，并在保存前自动备份；无系统 MobileGestalt 写入 |
 | [WCMigrate](https://github.com/yangokok886/WCMigrate) | ✅ **部分真实源码接入**：`OperationEstimate.swift`、`BackupProgress.swift` 已用于 Nexa 本地备份进度；移植 `DatabaseInspector` 只读检查已校验数据库副本；无微信跨容器迁移 |
@@ -74,3 +74,9 @@ Nexa 源代码以 [GPL-3.0](LICENSE) 提供；直接编译的 WQFiles/WCMigrate/
 ---
 
 **Nexa 0.0.1 — Explore Beyond Limits.**
+
+## ⚠️ 跨容器实验性入口 / Advanced access
+
+Nexa 的开发分支已链接 WQFiles 原版 `WQAccess.m` / `WQLaunchServices.m` / `WQScanTask.m`，并在文件页提供**用户明确选择目录、只读浏览**的入口。该功能只有在设备系统构建号处于上游报告的区间、应用签名含有效 App Group，且用户确认有权访问数据时才会尝试使用。
+
+必须先在 Xcode Signing & Capabilities 中把示例 Bundle ID `com.example.Nexa` 和 `NEXA_APP_GROUP_IDENTIFIER=group.com.example.Nexa` 改为本人实际签名的标识。模拟器、漏洞已报告修复的系统以及未签入有效 App Group 的 App 都会拒绝使用。**这只是带保护的候选集成，尚未通过真机授权测试，不应宣称已可浏览其他 App。** 更多见 [WQFiles 容器后端说明](Documentation/WQFILES_CONTAINER_BACKEND.md)。

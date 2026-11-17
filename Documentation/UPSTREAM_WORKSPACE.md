@@ -77,3 +77,7 @@ The original read-only WCMigrate `DatabaseInspector.swift` was adapted to the Ne
 ## NexaWatch companion target
 
 Nexa now defines **two linked native targets in a single Xcode project**: `Nexa` for iOS and `NexaWatch` for watchOS. The iOS target embeds `NexaWatch.app` into its Watch bundle and depends on the watch target; both derive their IDs from `NEXA_COMPANION_BUNDLE_IDENTIFIER` in Xcode Build Settings. The included watch app implements bilingual SwiftUI and a two-way WatchConnectivity ping. It **does not** embed HermesEnabler's watch-face modification engine; the full original source remains pinned in `ThirdParty/HermesEnabler` for licensed integration. Real Watch pairing, provisioning, signing and device execution remain acceptance requirements.
+
+## WQFiles container access (experimental)
+
+The original `WQAccess.m`, `WQLaunchServices.m`, and `WQScanTask.m` are now added directly to Nexa's Xcode target by reference to the pinned submodule. The SwiftUI explorer allows only user-initiated, read-only listing and a bounded preview, checks an OS/build allowlist and verifies a signed App Group. No broad scan, privileged write or silent access is enabled. See [WQFILES_CONTAINER_BACKEND.md](WQFILES_CONTAINER_BACKEND.md) for build and provisioning details. This is **not yet a verified working sandbox-escape integration on device**.

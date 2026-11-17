@@ -35,3 +35,7 @@ No third-party IPA or binary has been copied into Nexa. Please examine each upst
 ## Offline plist editing (GestaltX excerpt)
 
 `Vendor/GestaltX/PlistValueKind.swift` preserves an exact excerpt of `GestaltDocument.swift` (`GestaltFailure` and `PlistValueKind`), from the same pinned SHA. It is compiled into Nexa's `NexaPlistInspectorView` for type detection, safe input parsing, and local plist serialization. Changes are limited to files that the user explicitly imported, with a backup of the imported copy taken before each write. This **does not** write to system MobileGestalt or access other app containers.
+
+## Additional WQFiles original backend references
+
+Nexa directly compiles these unchanged upstream files from `ThirdParty/WQFiles`: `WQAccess.m`, `WQLaunchServices.m`, `WQScanTask.m`, with corresponding headers from the same pinned commit. A consent-gated SwiftUI read-only container browser calls `wq_list` and bounded `wq_read`. Real-device functioning depends on the installed App Group entitlement, supported OS/build and the results of an on-device grant; no such acceptance tests have been completed. License: GPL-3.0-or-later.

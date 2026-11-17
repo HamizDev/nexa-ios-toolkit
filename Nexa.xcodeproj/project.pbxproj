@@ -126,6 +126,14 @@
       WATCHOS_DEPLOYMENT_TARGET = 26.0;
     }; name = Release; };
     B0000000000000000000000A /* NexaWatch configurations */ = {isa = XCConfigurationList; buildConfigurations = (B00000000000000000000008, B00000000000000000000009); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+    C20000000000000000000002 /* NexaWQExplorerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000000000000000000001 /* NexaWQExplorerView.swift */; };
+    C20000000000000000000001 /* NexaWQExplorerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaWQExplorerView.swift; sourceTree = "<group>"; };
+    C20000000000000000000004 /* WQAccess.m in Sources */ = {isa = PBXBuildFile; fileRef = C20000000000000000000003 /* WQAccess.m */; };
+    C20000000000000000000003 /* WQAccess.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThirdParty/WQFiles/WQAccess.m; sourceTree = SOURCE_ROOT; };
+    C20000000000000000000006 /* WQLaunchServices.m in Sources */ = {isa = PBXBuildFile; fileRef = C20000000000000000000005 /* WQLaunchServices.m */; };
+    C20000000000000000000005 /* WQLaunchServices.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThirdParty/WQFiles/WQLaunchServices.m; sourceTree = SOURCE_ROOT; };
+    C20000000000000000000008 /* WQScanTask.m in Sources */ = {isa = PBXBuildFile; fileRef = C20000000000000000000007 /* WQScanTask.m */; };
+    C20000000000000000000007 /* WQScanTask.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThirdParty/WQFiles/WQScanTask.m; sourceTree = SOURCE_ROOT; };
     964BD5656C7A016EF0C9ADA7 /* Nexa.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nexa.app; sourceTree = BUILT_PRODUCTS_DIR; };
     EC981767C62EA833B107403F /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
     984AA73C6A3518E356174B49 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
@@ -160,6 +168,10 @@
         F5A300000000000000000002 /* DatabaseInspector.swift in Sources */,
         F5A300000000000000000004 /* DatabaseReport.swift in Sources */,
         F5A300000000000000000006 /* NexaDatabaseReportView.swift in Sources */,
+        C20000000000000000000002 /* NexaWQExplorerView.swift in Sources */,
+        C20000000000000000000004 /* WQAccess.m in Sources */,
+        C20000000000000000000006 /* WQLaunchServices.m in Sources */,
+        C20000000000000000000008 /* WQScanTask.m in Sources */,
       );
       runOnlyForDeploymentPostprocessing = 0;
     };
@@ -198,6 +210,10 @@
         F5A300000000000000000001 /* DatabaseInspector.swift */,
         F5A300000000000000000003 /* DatabaseReport.swift */,
         F5A300000000000000000005 /* NexaDatabaseReportView.swift */,
+        C20000000000000000000001 /* NexaWQExplorerView.swift */,
+        C20000000000000000000003 /* WQAccess.m */,
+        C20000000000000000000005 /* WQLaunchServices.m */,
+        C20000000000000000000007 /* WQScanTask.m */,
       );
       name = Nexa;
       path = Nexa;
@@ -264,8 +280,10 @@
         CURRENT_PROJECT_VERSION = 1;
         GENERATE_INFOPLIST_FILE = NO;
         INFOPLIST_FILE = Nexa/Info.plist;
+        CODE_SIGN_ENTITLEMENTS = Nexa/Nexa.entitlements;
+        NEXA_APP_GROUP_IDENTIFIER = group.com.example.Nexa;
         SWIFT_OBJC_BRIDGING_HEADER = Nexa/Nexa-Bridging-Header.h;
-        HEADER_SEARCH_PATHS = ("$(inherited)", "$(SRCROOT)/Vendor/WQFiles");
+        HEADER_SEARCH_PATHS = ("$(inherited)", "$(SRCROOT)/Vendor/WQFiles", "$(SRCROOT)/ThirdParty/WQFiles");
         IPHONEOS_DEPLOYMENT_TARGET = 26.0;
         LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks");
         MARKETING_VERSION = 0.0.1;
@@ -281,8 +299,10 @@
         CURRENT_PROJECT_VERSION = 1;
         GENERATE_INFOPLIST_FILE = NO;
         INFOPLIST_FILE = Nexa/Info.plist;
+        CODE_SIGN_ENTITLEMENTS = Nexa/Nexa.entitlements;
+        NEXA_APP_GROUP_IDENTIFIER = group.com.example.Nexa;
         SWIFT_OBJC_BRIDGING_HEADER = Nexa/Nexa-Bridging-Header.h;
-        HEADER_SEARCH_PATHS = ("$(inherited)", "$(SRCROOT)/Vendor/WQFiles");
+        HEADER_SEARCH_PATHS = ("$(inherited)", "$(SRCROOT)/Vendor/WQFiles", "$(SRCROOT)/ThirdParty/WQFiles");
         IPHONEOS_DEPLOYMENT_TARGET = 26.0;
         LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks");
         MARKETING_VERSION = 0.0.1;

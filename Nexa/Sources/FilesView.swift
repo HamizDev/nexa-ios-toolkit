@@ -27,6 +27,18 @@ struct FilesView: View {
                     NexaActionButton(title: language.t("files.import"), symbol: "plus") {
                         importSheet = true
                     }
+                    NavigationLink {
+                        NexaWQExplorerView()
+                    } label: {
+                        HStack {
+                            Image(systemName: "lock.doc")
+                            Text(language.code == "en" ? "Experimental container browser" : "实验性容器只读浏览")
+                                .font(.subheadline.weight(.semibold))
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                        }
+                    }
+                    .buttonStyle(.bordered)
                     HStack(spacing: 12) {
                         Button { createArchive() } label: {
                             Label(language.code == "en" ? "Create ZIP" : "打包为 ZIP", systemImage: "archivebox")
