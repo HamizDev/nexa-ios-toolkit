@@ -8,7 +8,7 @@ Nexa 是一个开源的 iOS 探索与设备管理项目，目标是将文件管�
 
 **English:** Nexa is an open-source, modular iOS exploration toolkit built with SwiftUI. It focuses on user-controlled file management, verifiable backups, device diagnostics, and carefully scoped customization research.
 
-![Platform](https://img.shields.io/badge/platform-iOS%2017%2B-informational) ![SwiftUI](https://img.shields.io/badge/UI-SwiftUI-blue) ![Status](https://img.shields.io/badge/status-early%20development-orange)
+![Platform](https://img.shields.io/badge/platform-iOS%2026%2B-informational) ![SwiftUI](https://img.shields.io/badge/UI-SwiftUI-blue) ![Status](https://img.shields.io/badge/status-early%20development-orange)
 
 ## ✨ 当前已实现 · Implemented
 
@@ -38,7 +38,7 @@ Nexa 是一个开源的 iOS 探索与设备管理项目，目标是将文件管�
 
 | iOS / iPadOS | worse_query 相关能力 | 证据与说明 |
 | --- | --- | --- |
-| 17.x–25.x | 未确认支持 | Nexa 的普通文件选择、备份和诊断不依赖 worse_query |
+| 17.x–25.x | **不在 Nexa 的目标支持范围** | 普通文件选择器可用，但无法据此实现本项目计划的跨 App 容器管理；不支持 worse_query |
 | 26.0–26.7.2 | 原作者声明的支持区间 | **部分功能受限**；某些 MobileGestalt 写入在 iOS 26 不可用 |
 | 26.7.3 及之后的 26.x | 未经确认 | 不能直接按 26.7.2 的结果推断 |
 | 27.0–27.2 | 公开衍生项目声明支持 | worse_query 原作者明确列出 27.2；不同设备/构建仍需验证 |
@@ -48,7 +48,7 @@ Nexa 是一个开源的 iOS 探索与设备管理项目，目标是将文件管�
 
 **区分两个版本概念：**
 
-- **Nexa App 基础功能的最低部署版本：iOS 17.0。** 公开 API 文件导入、SHA-256 校验和设备诊断等基础能力不使用该漏洞。
+- **Nexa App 最低部署版本：iOS 26.0。** 这是为了与 worse_query 原作者公布的最低支持版本对齐，而不是因为系统文件选择器必须从 iOS 26 才能使用。基础文件导入、SHA-256 校验和设备诊断仍然采用公开 API，**不需要漏洞、巨魔或越狱**。
 - **未来的 worse_query 实验性模块：仅能考虑已验证的系统与构建号。** 即使漏洞在某个版本可用，也不意味着 MobileGestalt、微信数据迁移或手表功能自动可用；这些功能目前**没有集成或真机验证**。
 - **不要仅靠系统主版本号启用写入。** 应按具体构建号与模块能力进行检查，未验证时保持只读/禁用状态，并提供备份及恢复方案。
 
@@ -62,7 +62,7 @@ Nexa 是一个开源的 iOS 探索与设备管理项目，目标是将文件管�
 2. 在 Nexa Target 的 **Signing & Capabilities** 中选择自己的开发团队，并将示例 Bundle Identifier 修改为唯一值。
 3. 选择 iPhone 模拟器或自己的测试设备，运行 **Build / Run**。
 
-项目目标部署版本为 iOS 17 或更新版本；实际 SDK、签名与兼容性需以你的 Xcode 和设备为准。**当前尚未完成真实 Xcode 编译和真机测试**，可能需要适配。
+项目最低部署版本为 **iOS 26.0**；该设置仅控制安装所需的最低系统版本，**不保证所有 iOS 26/27 构建均可使用 worse_query**。跨 App 容器访问不是普通文件选择器的功能，也尚未在 Nexa 中集成。实际 SDK、签名与兼容性需以你的 Xcode 和设备为准。**当前尚未完成真实 Xcode 编译和真机测试**，可能需要适配。
 
 ## 🔐 安全与隐私 · Safety & Privacy
 
