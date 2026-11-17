@@ -2,6 +2,8 @@
 
 ## Unreleased — upstream integration branch
 
+- Added a true embedded `NexaWatch` watchOS app target with SwiftUI bilingual UI and two-way WatchConnectivity ping diagnostics; not the upstream Hermes face engine.
+
 - Adapted WCMigrate's original read-only SQLite database inspector for Nexa's SHA-256 verified local backup manifests. The scanner checks disposable database copies and does not imply chat recovery.
 
 - Compiled the original WQFiles ZIP archive engine and its localization helpers with zlib; added archive creation and safe extraction for imported files.

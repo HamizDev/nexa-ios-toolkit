@@ -13,6 +13,8 @@
 - [x] Source credits and accurate module readiness states
 - [ ] Xcode and device compilation acceptance
 - [ ] Signed IPA and release artifacts
+- [x] Embedded NexaWatch target and bidirectional WatchConnectivity diagnostic source added (Xcode/watchOS CI pending)
+- [ ] Actual HermesEnabler face engine, entitlement review and watchOS 27+ runtime validation
 
 ## Modules not yet integrated
 
@@ -20,7 +22,7 @@
 - GestaltX, Erosion, Regitela, WorstGestalt MobileGestalt write and rollback engines
 - WCMigrate cross-app transfer, account resolution, staging and transfer journals
 - WQToolkit advanced own-container maintenance features (license to review)
-- HermesEnabler independent watchOS target and companion communication
+- HermesEnabler's watch-face modification routines (the NexaWatch companion target and ping are now present, not yet validated)
 - worse_query sandbox extension engine and its matching App Group signing configuration
 
 No unverified module should be represented as available to end users. Prefer read-only diagnostics and source-backed validation before writing system files.

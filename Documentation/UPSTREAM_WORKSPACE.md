@@ -73,3 +73,7 @@ The original `WQArchive.h/m` and `WQLocalization.h/m` from the pinned upstream c
 ## WCMigrate database validation integrated
 
 The original read-only WCMigrate `DatabaseInspector.swift` was adapted to the Nexa backup manifest and its PascalCase `Payload` directory. It verifies each backup before reading, then copies databases and SQLite sidecars to a temporary isolated location and performs a bounded `quick_check(1)`. Its `DatabaseReport` model is extracted from WCMigrate's `Core/Models.swift`. This is a **file integrity and schema diagnostic**, not WeChat record restoration or a semantic database merge.
+
+## NexaWatch companion target
+
+Nexa now defines **two linked native targets in a single Xcode project**: `Nexa` for iOS and `NexaWatch` for watchOS. The iOS target embeds `NexaWatch.app` into its Watch bundle and depends on the watch target; both derive their IDs from `NEXA_COMPANION_BUNDLE_IDENTIFIER` in Xcode Build Settings. The included watch app implements bilingual SwiftUI and a two-way WatchConnectivity ping. It **does not** embed HermesEnabler's watch-face modification engine; the full original source remains pinned in `ThirdParty/HermesEnabler` for licensed integration. Real Watch pairing, provisioning, signing and device execution remain acceptance requirements.

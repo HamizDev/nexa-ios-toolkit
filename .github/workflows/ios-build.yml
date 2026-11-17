@@ -30,3 +30,28 @@ jobs:
             -destination 'generic/platform=iOS Simulator' \
             CODE_SIGNING_ALLOWED=NO \
             build
+
+  watch-build:
+    runs-on: macos-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - name: Check watchOS SDK
+        run: |
+          xcodebuild -version
+          xcrun --sdk watchsimulator --show-sdk-version
+      - name: Build NexaWatch simulator app without signing
+        run: |
+          xcodebuild \
+            -project Nexa.xcodeproj \
+            -target NexaWatch \
+            -configuration Debug \
+            -sdk watchsimulator \
+            -destination 'generic/platform=watchOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO \
+            build

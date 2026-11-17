@@ -62,6 +62,70 @@
     F5A300000000000000000003 /* DatabaseReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/WCMigrate/DatabaseReport.swift; sourceTree = SOURCE_ROOT; };
     F5A300000000000000000006 /* NexaDatabaseReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A300000000000000000005 /* NexaDatabaseReportView.swift */; };
     F5A300000000000000000005 /* NexaDatabaseReportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaDatabaseReportView.swift; sourceTree = "<group>"; };
+    B00000000000000000000003 /* NexaWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000002 /* NexaWatchApp.swift */; };
+    B0000000000000000000000C /* NexaWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = B00000000000000000000001 /* NexaWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+    B00000000000000000000002 /* NexaWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NexaWatchApp.swift; sourceTree = "<group>"; };
+    B00000000000000000000001 /* NexaWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NexaWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+    B00000000000000000000004 /* NexaWatch Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (B00000000000000000000003 /* NexaWatchApp.swift in Sources */, ); runOnlyForDeploymentPostprocessing = 0; };
+    B00000000000000000000005 /* NexaWatch Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+    B00000000000000000000006 /* NexaWatch Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+    B0000000000000000000000B /* Embed Watch Content */ = {
+      isa = PBXCopyFilesBuildPhase;
+      buildActionMask = 2147483647;
+      dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+      dstSubfolderSpec = 16;
+      files = (B0000000000000000000000C /* NexaWatch.app in Embed Watch Content */, );
+      name = "Embed Watch Content";
+      runOnlyForDeploymentPostprocessing = 0;
+    };
+    B0000000000000000000000F /* NexaWatch */ = {isa = PBXGroup; children = (B00000000000000000000002 /* NexaWatchApp.swift */, ); path = NexaWatch; sourceTree = "<group>"; };
+    B0000000000000000000000E /* PBXContainerItemProxy */ = {isa = PBXContainerItemProxy; containerPortal = 16EEAF57BAFC2A41CAB7C99A /* Project */; proxyType = 1; remoteGlobalIDString = B00000000000000000000007; remoteInfo = NexaWatch; };
+    B0000000000000000000000D /* PBXTargetDependency */ = {isa = PBXTargetDependency; target = B00000000000000000000007 /* NexaWatch */; targetProxy = B0000000000000000000000E /* PBXContainerItemProxy */; };
+    B00000000000000000000007 /* NexaWatch */ = {
+      isa = PBXNativeTarget;
+      buildConfigurationList = B0000000000000000000000A /* NexaWatch configurations */;
+      buildPhases = (B00000000000000000000004 /* NexaWatch Sources */, B00000000000000000000005 /* NexaWatch Frameworks */, B00000000000000000000006 /* NexaWatch Resources */, );
+      buildRules = ();
+      dependencies = ();
+      name = NexaWatch;
+      productName = NexaWatch;
+      productReference = B00000000000000000000001 /* NexaWatch.app */;
+      productType = "com.apple.product-type.application";
+    };
+    B00000000000000000000008 /* NexaWatch Debug */ = {isa = XCBuildConfiguration; buildSettings = {
+      CODE_SIGN_STYLE = Automatic;
+      CURRENT_PROJECT_VERSION = 1;
+      ENABLE_PREVIEWS = YES;
+      GENERATE_INFOPLIST_FILE = YES;
+      INFOPLIST_KEY_CFBundleDisplayName = Nexa;
+      INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "$(NEXA_COMPANION_BUNDLE_IDENTIFIER)";
+      MARKETING_VERSION = 0.0.1;
+      PRODUCT_BUNDLE_IDENTIFIER = "$(NEXA_COMPANION_BUNDLE_IDENTIFIER).watchkitapp";
+      PRODUCT_NAME = "$(TARGET_NAME)";
+      SDKROOT = watchos;
+      SKIP_INSTALL = YES;
+      SUPPORTED_PLATFORMS = "watchos watchsimulator";
+      SWIFT_VERSION = 5.0;
+      TARGETED_DEVICE_FAMILY = 4;
+      WATCHOS_DEPLOYMENT_TARGET = 26.0;
+    }; name = Debug; };
+    B00000000000000000000009 /* NexaWatch Release */ = {isa = XCBuildConfiguration; buildSettings = {
+      CODE_SIGN_STYLE = Automatic;
+      CURRENT_PROJECT_VERSION = 1;
+      GENERATE_INFOPLIST_FILE = YES;
+      INFOPLIST_KEY_CFBundleDisplayName = Nexa;
+      INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "$(NEXA_COMPANION_BUNDLE_IDENTIFIER)";
+      MARKETING_VERSION = 0.0.1;
+      PRODUCT_BUNDLE_IDENTIFIER = "$(NEXA_COMPANION_BUNDLE_IDENTIFIER).watchkitapp";
+      PRODUCT_NAME = "$(TARGET_NAME)";
+      SDKROOT = watchos;
+      SKIP_INSTALL = YES;
+      SUPPORTED_PLATFORMS = "watchos watchsimulator";
+      SWIFT_VERSION = 5.0;
+      TARGETED_DEVICE_FAMILY = 4;
+      WATCHOS_DEPLOYMENT_TARGET = 26.0;
+    }; name = Release; };
+    B0000000000000000000000A /* NexaWatch configurations */ = {isa = XCConfigurationList; buildConfigurations = (B00000000000000000000008, B00000000000000000000009); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
     964BD5656C7A016EF0C9ADA7 /* Nexa.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nexa.app; sourceTree = BUILT_PRODUCTS_DIR; };
     EC981767C62EA833B107403F /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
     984AA73C6A3518E356174B49 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
@@ -99,7 +163,7 @@
       );
       runOnlyForDeploymentPostprocessing = 0;
     };
-    3C9D7F1ECE6B1C2C05B9A223 /* Main */ = {isa = PBXGroup; children = (CC6A140804F390EB618F6366 /* Nexa */, 8A226E0C47ACC7183C1F4F91 /* Products */); sourceTree = "<group>"; };
+    3C9D7F1ECE6B1C2C05B9A223 /* Main */ = {isa = PBXGroup; children = (CC6A140804F390EB618F6366 /* Nexa */, B0000000000000000000000F /* NexaWatch */, 8A226E0C47ACC7183C1F4F91 /* Products */); sourceTree = "<group>"; };
     CC6A140804F390EB618F6366 /* Nexa */ = {
       isa = PBXGroup;
       children = (
@@ -139,13 +203,13 @@
       path = Nexa;
       sourceTree = "<group>";
     };
-    8A226E0C47ACC7183C1F4F91 /* Products */ = {isa = PBXGroup; children = (964BD5656C7A016EF0C9ADA7 /* Nexa.app */); name = Products; sourceTree = "<group>"; };
+    8A226E0C47ACC7183C1F4F91 /* Products */ = {isa = PBXGroup; children = (964BD5656C7A016EF0C9ADA7 /* Nexa.app */, B00000000000000000000001 /* NexaWatch.app */); name = Products; sourceTree = "<group>"; };
     F762108CA727F0BCD961FC74 /* Nexa */ = {
       isa = PBXNativeTarget;
       buildConfigurationList = 281EA7C4EFE2067F920FB1D9;
-      buildPhases = (A3E0018A89AAE54963D28A13, EC981767C62EA833B107403F, 984AA73C6A3518E356174B49);
+      buildPhases = (A3E0018A89AAE54963D28A13, EC981767C62EA833B107403F, 984AA73C6A3518E356174B49, B0000000000000000000000B /* Embed Watch Content */);
       buildRules = ();
-      dependencies = ();
+      dependencies = (B0000000000000000000000D /* PBXTargetDependency */, );
       name = Nexa;
       productReference = 964BD5656C7A016EF0C9ADA7;
       productName = Nexa;
@@ -156,7 +220,7 @@
       attributes = {
         BuildIndependentTargetsInParallel = YES;
         LastUpgradeCheck = 1600;
-        TargetAttributes = {F762108CA727F0BCD961FC74 = {CreatedOnToolsVersion = 16.0; ProvisioningStyle = Automatic; }; };
+        TargetAttributes = {F762108CA727F0BCD961FC74 = {CreatedOnToolsVersion = 16.0; ProvisioningStyle = Automatic; }; B00000000000000000000007 = {CreatedOnToolsVersion = 26.0; ProvisioningStyle = Automatic; }; };
       };
       buildConfigurationList = 0B47E1D6E323FD3DE693085E;
       compatibilityVersion = "Xcode 14.0";
@@ -167,7 +231,7 @@
       productRefGroup = 8A226E0C47ACC7183C1F4F91;
       projectDirPath = "";
       projectRoot = "";
-      targets = (F762108CA727F0BCD961FC74);
+      targets = (F762108CA727F0BCD961FC74, B00000000000000000000007 /* NexaWatch */);
     };
     2CE647D298F7377539BDA550 /* Project Debug */ = {isa = XCBuildConfiguration; buildSettings = {
         ALWAYS_SEARCH_USER_PATHS = NO;
@@ -177,6 +241,7 @@
         CODE_SIGN_STYLE = Automatic;
         GCC_C_LANGUAGE_STANDARD = gnu17;
         IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+        NEXA_COMPANION_BUNDLE_IDENTIFIER = com.example.Nexa;
         SDKROOT = iphoneos;
         SWIFT_VERSION = 5.0;
         TARGETED_DEVICE_FAMILY = "1,2";
@@ -189,6 +254,7 @@
         CODE_SIGN_STYLE = Automatic;
         GCC_C_LANGUAGE_STANDARD = gnu17;
         IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+        NEXA_COMPANION_BUNDLE_IDENTIFIER = com.example.Nexa;
         SDKROOT = iphoneos;
         SWIFT_VERSION = 5.0;
         TARGETED_DEVICE_FAMILY = "1,2";
@@ -204,7 +270,7 @@
         LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks");
         MARKETING_VERSION = 0.0.1;
         OTHER_LDFLAGS = ("$(inherited)", "-lz", "-lsqlite3");
-        PRODUCT_BUNDLE_IDENTIFIER = com.example.Nexa;
+        PRODUCT_BUNDLE_IDENTIFIER = "$(NEXA_COMPANION_BUNDLE_IDENTIFIER)";
         PRODUCT_NAME = "$(TARGET_NAME)";
         SWIFT_VERSION = 5.0;
         SUPPORTS_MACCATALYST = NO;
@@ -221,7 +287,7 @@
         LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks");
         MARKETING_VERSION = 0.0.1;
         OTHER_LDFLAGS = ("$(inherited)", "-lz", "-lsqlite3");
-        PRODUCT_BUNDLE_IDENTIFIER = com.example.Nexa;
+        PRODUCT_BUNDLE_IDENTIFIER = "$(NEXA_COMPANION_BUNDLE_IDENTIFIER)";
         PRODUCT_NAME = "$(TARGET_NAME)";
         SWIFT_VERSION = 5.0;
         SUPPORTS_MACCATALYST = NO;
