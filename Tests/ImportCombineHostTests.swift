@@ -126,6 +126,28 @@ struct NexaImportCombineHostTests {
             )
         }
 
+        // A lexically intervening filename must not hide an ancestor collision:
+        // sorted paths are "alpha", "alpha-bridge", "alpha/child".
+        let prefixSource = root.appendingPathComponent("PrefixConflictSource")
+        let prefixTarget = root.appendingPathComponent("PrefixConflictTarget")
+        try fm.createDirectory(at: prefixSource, withIntermediateDirectories: true)
+        try fm.createDirectory(at: prefixTarget, withIntermediateDirectories: true)
+        try create(prefixSource.appendingPathComponent("alpha"), bytes: [1])
+        try create(prefixSource.appendingPathComponent("alpha-bridge"), bytes: [2])
+        try create(prefixTarget.appendingPathComponent("alpha/child"), bytes: [3])
+        fails("non-adjacent lexical file/directory collision") {
+            _ = try NexaImportCombine.preview(
+                source: prefixSource, target: prefixTarget, mode: .merge
+            )
+        }
+        // Replace excludes target-only paths, so it should remain valid.
+        let prefixReplace = try NexaImportCombine.preview(
+            source: prefixSource, target: prefixTarget, mode: .replace
+        )
+        assert(prefixReplace.expectedFiles.count == 2,
+               "Replace must ignore conflicting target-only paths")
+        print("PASS: ancestor conflicts rejected without blocking safe replace")
+
         // A pending receipt after a completed rename can be verified on reopen.
         let id = UUID()
         let clonedName = "NexaMerged-" + String(id.uuidString.prefix(8))

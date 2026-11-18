@@ -106,12 +106,17 @@ enum NexaImportCombine {
     private static func validateManifest(_ files: [Digest]) throws {
         guard files.count <= 100_000,
               files.allSatisfy(valid) else { throw Failure.invalidManifest }
-        let names = files.map(\.path).sorted()
-        guard Set(names).count == names.count else { throw Failure.invalidManifest }
-        // Adjacent lexical paths expose any "file" / "file/child" collision.
-        if names.count >= 2 {
-            for i in 1..<names.count where names[i].hasPrefix(names[i-1] + "/") {
-                throw Failure.conflictingTypes
+        let names = Set(files.map(\.path))
+        guard names.count == files.count else { throw Failure.invalidManifest }
+        // A path is invalid when ANY ancestor is already a regular file.
+        // Checking only adjacent sorted paths misses cases such as
+        // "alpha", "alpha-bridge", "alpha/child" (ASCII '-' precedes '/').
+        // Check each slash-delimited ancestor regardless of lexical order.
+        for path in names {
+            for slash in path.indices where path[slash] == "/" {
+                if names.contains(String(path[..<slash])) {
+                    throw Failure.conflictingTypes
+                }
             }
         }
     }
