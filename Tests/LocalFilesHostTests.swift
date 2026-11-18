@@ -105,7 +105,9 @@ struct NexaLocalFileHostTests {
         try NexaLocalFiles.permanentlyDelete(permanentlyDeleted)
         check(try NexaLocalFiles.trashItems().isEmpty, "permanent removal failed")
         check(!fm.fileExists(atPath: moved.path), "deleted payload was restored unexpectedly")
-        check(try NexaLocalFiles.list(in: nested).contains(original),
+        let listed = try NexaLocalFiles.list(in: nested)
+        check(listed.map { $0.resolvingSymlinksInPath().standardizedFileURL }
+                  .contains(original.resolvingSymlinksInPath().standardizedFileURL),
               "nested listing lost original file")
         print("PASS: trash, collision-safe recovery, permanent removal and listing")
         print("PASS: complete NexaLocalFiles sandbox-only host regression")
