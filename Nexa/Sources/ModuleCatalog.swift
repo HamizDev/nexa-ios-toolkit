@@ -70,7 +70,16 @@ struct ModuleRow: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(module.title).font(.subheadline.weight(.semibold))
                     Text(module.subtitle(language.code)).font(.caption).foregroundStyle(NexaPalette.muted)
-                    Text(module.phase.label(language)).font(.caption2.weight(.medium)).foregroundStyle(module.phase.color)
+                    HStack(spacing: 6) {
+                        Text(module.phase.label(language))
+                            .foregroundStyle(module.phase.color)
+                        if let risk = NexaSafetyCatalog.entry(for: module.id) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundStyle(risk.severity.color)
+                                .accessibilityLabel(risk.severity.label(language.code == "en"))
+                        }
+                    }
+                    .font(.caption2.weight(.medium))
                 }
                 Spacer(minLength: 0)
                 Image(systemName: "chevron.right").font(.caption).foregroundStyle(NexaPalette.muted)
@@ -135,6 +144,9 @@ struct ModuleDetailView: View {
                                     .font(.callout.weight(.medium))
                             }
                         }
+                    }
+                    if let risk = NexaSafetyCatalog.entry(for: module.id) {
+                        NexaRiskNotice(risk: risk, detailed: true)
                     }
                     moduleActions
                     if module.phase != .partial {
