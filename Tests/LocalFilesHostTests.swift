@@ -66,13 +66,18 @@ struct NexaLocalFileHostTests {
             _ = try NexaLocalFiles.move(nested, into: subset)
         }
         let destinationOptions = try NexaLocalFiles.availableMoveFolders(for: original)
-        check(destinationOptions.contains(where: {
-            $0.resolvingSymlinksInPath() == subset.resolvingSymlinksInPath()
-        }), "move picker omitted a safe nested destination")
+        let targetPath = subset.resolvingSymlinksInPath().standardizedFileURL.path
+        let availablePaths = destinationOptions.map {
+            $0.resolvingSymlinksInPath().standardizedFileURL.path
+        }
+        check(availablePaths.contains(targetPath),
+              "move picker omitted \(targetPath); returned: \(availablePaths)")
         let folderOptions = try NexaLocalFiles.availableMoveFolders(for: nested)
-        check(!folderOptions.contains(where: {
-            $0.resolvingSymlinksInPath() == subset.resolvingSymlinksInPath()
-        }), "move picker exposed a descendant of source folder")
+        let folderPaths = folderOptions.map {
+            $0.resolvingSymlinksInPath().standardizedFileURL.path
+        }
+        check(!folderPaths.contains(targetPath),
+              "move picker exposed a descendant of source folder: \(folderPaths)")
         print("PASS: move destinations exclude own folder and descendants")
         rejects("move out of import sandbox") {
             _ = try NexaLocalFiles.move(original, into: root)
