@@ -82,10 +82,13 @@ enum BackupManager {
         try fm.createDirectory(at: backupFolder, withIntermediateDirectories: true)
         return try fm.contentsOfDirectory(
             at: backupFolder,
-            includingPropertiesForKeys: [.isDirectoryKey, .isSymbolicLinkKey],
-            options: [.skipsHiddenFiles]
+            includingPropertiesForKeys: [.isDirectoryKey, .isSymbolicLinkKey]
         )
             .filter {
+                // A renamed .incoming-* directory may retain Finder's hidden
+                // metadata. Filter by the CURRENT path instead of relying on
+                // FileManager's .skipsHiddenFiles resource-flag behavior.
+                guard !$0.lastPathComponent.hasPrefix(".") else { return false }
                 guard let flags = try? $0.resourceValues(forKeys: [
                     .isDirectoryKey, .isSymbolicLinkKey
                 ]) else { return false }
