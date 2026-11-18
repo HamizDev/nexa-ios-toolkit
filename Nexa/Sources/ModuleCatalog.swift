@@ -136,15 +136,7 @@ struct ModuleDetailView: View {
                             }
                         }
                     }
-                    if module.id == "wcmigrate" {
-                        NavigationLink {
-                            NexaMigrationView()
-                        } label: {
-                            Label(language.code == "en" ? "Open local migration" : "打开本地迁移",
-                                  systemImage: "arrow.left.arrow.right.square")
-                        }
-                        .buttonStyle(.borderedProminent)
-                    }
+                    moduleActions
                     if module.phase != .partial {
                         Text(language.t("module.warning"))
                             .font(.footnote).foregroundStyle(NexaPalette.muted)
@@ -155,5 +147,62 @@ struct ModuleDetailView: View {
         }
         .navigationTitle(module.title)
         .navigationBarTitleDisplayMode(.inline)
+    }
+
+    // A genuine in-app action for every currently integrated toolkit.
+    // Watch system modification is only accessible on the paired Watch under
+    // its own build and App Group gate, not by tapping the iPhone card.
+    @ViewBuilder
+    private var moduleActions: some View {
+        let en = language.code == "en"
+        switch module.id {
+        case "wqfiles":
+            NavigationLink {
+                FilesView()
+            } label: {
+                Label(en ? "Open file workspace" : "打开文件工作台", systemImage: "folder.fill")
+            }
+            .buttonStyle(.borderedProminent)
+        case "gestaltx":
+            NavigationLink {
+                DeviceView()
+            } label: {
+                Label(en ? "Open device diagnostics" : "打开设备诊断",
+                      systemImage: "iphone.gen3")
+            }
+            .buttonStyle(.borderedProminent)
+            NavigationLink {
+                FilesView()
+            } label: {
+                Label(en ? "Inspect imported plist" : "查看已导入属性列表",
+                      systemImage: "slider.horizontal.3")
+            }
+            .buttonStyle(.bordered)
+        case "wcmigrate":
+            NavigationLink {
+                NexaMigrationView()
+            } label: {
+                Label(en ? "Open local migration" : "打开本地迁移",
+                      systemImage: "arrow.left.arrow.right.square")
+            }
+            .buttonStyle(.borderedProminent)
+            NavigationLink {
+                BackupView()
+            } label: {
+                Label(en ? "Open backup and restore" : "打开备份与恢复",
+                      systemImage: "externaldrive.fill")
+            }
+            .buttonStyle(.bordered)
+        case "hermes":
+            NavigationLink {
+                WatchView()
+            } label: {
+                Label(en ? "Watch companion diagnostics" : "手表连接与诊断",
+                      systemImage: "applewatch")
+            }
+            .buttonStyle(.borderedProminent)
+        default:
+            EmptyView()
+        }
     }
 }

@@ -2,6 +2,9 @@
 
 ## Unreleased — upstream integration branch
 
+- Added a source-backed module detail action for each partially integrated upstream tool; corrected readiness labeling so compiled helpers are not presented as fully verified. Improved card contrast and Dynamic Type headers.
+- Added optional iOS 26+ Simulator launch-and-screenshot smoke checks for all five main tabs. Screenshots are available as a short-lived CI artifact when a compatible simulator runtime is installed.
+
 - Wired the original WQFiles `wq_copy_to_local` streamed copy and `wq_file_version` change check into a consent-gated, selected-file-only Nexa import action. Added remote path validation, collision-free sanitized names and standalone host path/name tests. Real-device sandbox grant is still unverified.
 
 - Added a private, SHA-256 checked plist version history with a restore/export UI, previous-version preservation and stale-file conflict detection. Applies only to user-imported copies, not system MobileGestalt.

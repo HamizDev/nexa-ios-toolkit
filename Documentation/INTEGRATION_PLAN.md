@@ -4,7 +4,9 @@
 
 ## 0.0.1 accepted scope
 
-- [x] New high-contrast midnight SwiftUI design with reusable components
+- [x] New high-contrast midnight SwiftUI design with reusable components and reduced-transparency support
+- [x] Source-backed navigation actions in module details for partially integrated tools (no fake actions for research-only tools)
+- [ ] Confirm five-tab CI simulator screenshots on a runner with iOS 26+ runtime
 - [x] Language preference: default Simplified Chinese, switch to English, persistent across launches
 - [x] User-authorized file imports, file/folder browser and sharing
 - [x] Nexa-local create/rename/duplicate/move/search and recoverable trash, with import-symlink checks (host regression added; iOS runtime test pending)

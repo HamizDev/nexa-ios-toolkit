@@ -113,3 +113,7 @@ The unified branch incorporates the HermesEnabler candidate from the separate Wa
 ## Offline GestaltX plist editing with version history
 
 `NexaPlistHistory.swift` stores each **user-imported** plist's previous bytes under private Application Support with timestamped SHA-256 receipts. The editor checks that the loaded file has not changed since the current edit session, then saves an original snapshot before atomic replacement. The `NexaPlistHistoryView` screen lists/export/restores older versions and saves the then-current file before any restore. `Tests/PlistHistoryHostTests.swift` checks versioning, no-overwrite restore, tamper detection and rejection of links/out-of-scope files. This does **not** modify any on-device MobileGestalt cache or use the worse_query exploit.
+
+## UI smoke screenshots and module shortcuts
+
+The root SwiftUI tab selector supports debug-only `--nexa-tab=home|files|backups|explore|settings` arguments for non-fragile screenshot testing; production builds ignore these arguments. GitHub Actions attempts to boot an available iOS 26+ iPhone simulator, launch each tab and upload five PNG screenshots. If the runner lacks a compatible simulator, the smoke step logs a skip and no screenshots are produced; do not claim visual QA passed. Module detail views now link to Nexa's real WQFiles, WCMigrate, GestaltX and Watch companion entry points instead of treating upstream repository links as app functionality.

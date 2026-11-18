@@ -27,6 +27,7 @@ struct NexaBackground: View {
 }
 
 struct NexaCard<Content: View>: View {
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     private let content: Content
     init(@ViewBuilder content: () -> Content) { self.content = content() }
 
@@ -36,10 +37,10 @@ struct NexaCard<Content: View>: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 RoundedRectangle(cornerRadius: 22, style: .continuous)
-                    .fill(.white.opacity(0.055))
+                    .fill(reduceTransparency ? NexaPalette.ink2 : .white.opacity(0.075))
                     .overlay {
                         RoundedRectangle(cornerRadius: 22, style: .continuous)
-                            .stroke(.white.opacity(0.11), lineWidth: 1)
+                            .stroke(.white.opacity(0.14), lineWidth: 1)
                     }
             )
     }
@@ -50,7 +51,9 @@ struct NexaHeader: View {
     let subtitle: String
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(title).font(.system(size: 31, weight: .bold, design: .rounded))
+            Text(title)
+                .font(.largeTitle.weight(.bold))
+                .accessibilityAddTraits(.isHeader)
             Text(subtitle)
                 .font(.subheadline)
                 .foregroundStyle(NexaPalette.muted)
@@ -83,7 +86,8 @@ struct NexaActionButton: View {
                 .font(.callout.weight(.semibold))
                 .padding(.horizontal, 18)
                 .padding(.vertical, 13)
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: .infinity, minHeight: 48)
+                .foregroundStyle(.white)
                 .background(NexaPalette.accent, in: RoundedRectangle(cornerRadius: 15))
         }
         .buttonStyle(.plain)
