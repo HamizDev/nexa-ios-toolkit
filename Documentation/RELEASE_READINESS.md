@@ -5,7 +5,7 @@
 | Area | Real, currently wired to Nexa | Missing / not accepted |
 | --- | --- | --- |
 | WQFiles | Original ZIP and hex utilities; gated experimental container listing/read preview and selected-file streaming copy to Nexa Imports | Real iOS device sandbox lease and clean recovery; authenticated safe writes across containers; full original file-manager workflows |
-| WCMigrate | Pinned original progress/ETA, SQLite read-only inspector and `LoginInfo2.dat` identity parser; separate Nexa-only SHA-256 staging tool | Original `DirectMigrationService`, live WeChat app-to-app Replace/Convert/file-level Merge (upstream does not offer SQLite chat-row merge or whole-task rollback), plus real-device recovery acceptance |
+| WCMigrate | Pinned original progress/ETA, SQLite read-only inspector and `LoginInfo2.dat` identity parser; Nexa-only SHA-256 staging and independent file-level Merge/Replace output tools | Original `DirectMigrationService`, live WeChat app-to-app Replace/Convert/file-level Merge (upstream does not offer SQLite chat-row merge or whole-task rollback), plus real-device recovery acceptance |
 | GestaltX | Original typed plist parsing, offline imported-file editor, private SHA-256 history/restore; read-only MobileGestalt loaded-library summary | Live MobileGestalt cache edits and presets; supported-build capability gating, on-device verified system rollback |
 | HermesEnabler 2 | Original Watch BQCore engine, screens and MG resources compiled into embedded NexaWatch; connection diagnostics, watchOS/App Group consent gates and 82 bilingual fixed labels | Signed Watch device acceptance, face changes, physical-device backup and rollback, complete translated runtime messages |
 | Nexa UI | Five-tab Chinese-first/English SwiftUI UI, imported file workspace, ZIP tools, backup/restore, local migration, app Watch companion; simulator screenshots uploaded | Manual screenshot review, Dynamic Type/VoiceOver assessment, running on small/large device screens, end-to-end user acceptance |
@@ -35,3 +35,10 @@ The updated Debug target explicitly defines `DEBUG`, while release builds do not
 ## Disclaimer, source risk and stable-feature audit
 
 Nexa now includes `NexaSafety.swift` with bilingual first-run disclosure, a permanent Settings entry, actual per-module integration status, pinned upstream risk URLs and a Watch uninstall-before-restore caution. CI verifies that the warning views and both languages remain linked to the iPhone target. [UPSTREAM_RISKS.md](UPSTREAM_RISKS.md) inventories what the pinned upstream projects implement **versus** which workflows Nexa actually exposes. The presence of an upstream project inside `ThirdParty/` is not full functional integration. No blanket completion date is claimed while owner-provisioned signing and real-hardware test results are outstanding.
+
+### Local Merge/Replace acceptance (development branch)
+
+- [x] Nexa-native Merge/Replace on **imported copies only**, with a visible preview, unique output directory and no mutations to either original.
+- [ ] macOS fixture suite for source precedence, target-only preservation, replace exclusion, source mutation, unsafe links and journal recovery passes on the current commit.
+- [ ] Signed iPhone testing with real imported file-provider folders, storage pressure and forced app termination.
+- [ ] Full upstream `DirectMigrationService` live WeChat transfer and its device-specific authorization — **not integrated**.

@@ -36,3 +36,11 @@ This is a development feature until CI and device acceptance pass. It does not i
 ## Additional recovery hardening
 
 Migration receipt files are **not treated as file-access authority**. Each pending receipt is revalidated before it can be marked complete: the destination must be a Nexa Imports directory, the generated name must exactly match its transaction UUID, every manifest path/hash must be well formed, the destination must not be a symbolic link, and the SHA-256 inventory must match. Corrupted paths and missing folders are marked failed without opening external data or replacing source files. Symlinked `.json` journal files are ignored. Host tests cover path traversal in the destination/output, a symlinked output, a missing destination, and linked metadata.
+
+## Imported folder file-level Merge / Replace (Nexa-native)
+
+`NexaImportCombine.swift` and `NexaImportCombineView.swift` extend the Nexa-only staging workspace with two **non-destructive output** modes. For `merge`, the result uses the source file for each matching relative path and otherwise retains target files. For `replace`, the result includes source files alone and excludes target-only files. Both create an independent `NexaMerged-<UUID>` or `NexaReplaced-<UUID>` under Nexa Imports; neither mutates or removes the source or target. Empty directories are not preserved, and source/target folders must be separate and non-nested.
+
+The engine computes SHA-256 inventories before approval, rejects symlinks and special files, validates relative paths, denies file/directory conflicts, streams copies through an app-private staging directory, verifies each copied byte stream against the manifest, rechecks the originals, and moves the staged folder to an unused result path. A private journal records the exact expected hashes, and reopening confirms a pending commit only when the resulting directory exactly matches. Modified inputs cause a fail-closed refusal.
+
+This is **Nexa-native snapshot transformation**, not the original WCMigrate `DirectMigrationService`, nor a WeChat database row merge, nor a live cross-app Replace/Convert/Merge. Cross-app authorization and device acceptance remain open release gates.

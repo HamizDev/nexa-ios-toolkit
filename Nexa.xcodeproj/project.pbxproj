@@ -215,6 +215,10 @@
     F50000000000000000000003 /* NexaWQFileExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaWQFileExport.swift; sourceTree = "<group>"; };
     F60000000000000000000002 /* NexaSafety.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60000000000000000000001 /* NexaSafety.swift */; };
     F60000000000000000000001 /* NexaSafety.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaSafety.swift; sourceTree = "<group>"; };
+    F70000000000000000000002 /* NexaImportCombine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70000000000000000000001 /* NexaImportCombine.swift */; };
+    F70000000000000000000001 /* NexaImportCombine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaImportCombine.swift; sourceTree = "<group>"; };
+    F70000000000000000000004 /* NexaImportCombineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70000000000000000000003 /* NexaImportCombineView.swift */; };
+    F70000000000000000000003 /* NexaImportCombineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaImportCombineView.swift; sourceTree = "<group>"; };
     964BD5656C7A016EF0C9ADA7 /* Nexa.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nexa.app; sourceTree = BUILT_PRODUCTS_DIR; };
     EC981767C62EA833B107403F /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
     984AA73C6A3518E356174B49 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
@@ -266,6 +270,8 @@
         F50000000000000000000002 /* NexaWQImportName.swift in Sources */,
         F50000000000000000000004 /* NexaWQFileExport.swift in Sources */,
         F60000000000000000000002 /* NexaSafety.swift in Sources */,
+        F70000000000000000000002 /* NexaImportCombine.swift in Sources */,
+        F70000000000000000000004 /* NexaImportCombineView.swift in Sources */,
       );
       runOnlyForDeploymentPostprocessing = 0;
     };
@@ -322,6 +328,8 @@
         F50000000000000000000001 /* NexaWQImportName.swift */,
         F50000000000000000000003 /* NexaWQFileExport.swift */,
         F60000000000000000000001 /* NexaSafety.swift */,
+        F70000000000000000000001 /* NexaImportCombine.swift */,
+        F70000000000000000000003 /* NexaImportCombineView.swift */,
       );
       name = Nexa;
       path = Nexa;

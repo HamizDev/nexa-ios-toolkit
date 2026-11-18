@@ -72,6 +72,19 @@ jobs:
             Tests/ImportMigrationHostTests.swift \
             -o "$scratch/nexa-migration-tests"
           NEXA_TEST_ROOT="$scratch/TestRoot" "$scratch/nexa-migration-tests"
+      - name: Test imported snapshot Merge / Replace with integrity and crash fixtures
+        run: |
+          set -euo pipefail
+          scratch="$(mktemp -d)"
+          trap 'rm -rf "$scratch"' EXIT
+          swiftc -D NEXA_LOCAL_TEST \
+            Nexa/Sources/AppPaths.swift \
+            Nexa/Sources/NexaLocalFiles.swift \
+            Nexa/Sources/NexaImportMigration.swift \
+            Nexa/Sources/NexaImportCombine.swift \
+            Tests/ImportCombineHostTests.swift \
+            -o "$scratch/nexa-import-combine-tests"
+          NEXA_TEST_ROOT="$scratch/TestRoot" "$scratch/nexa-import-combine-tests"
       - name: Test original GestaltX typed plist parser
         run: |
           set -euo pipefail

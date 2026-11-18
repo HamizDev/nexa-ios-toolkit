@@ -2,6 +2,8 @@
 
 ## Unreleased — upstream integration branch
 
+- Added a visible, source-preserving Nexa-imported **file-level Merge/Replace** workflow: preview overlaps/bytes, select source-vs-target filename precedence, stage and SHA-256 verify a *new* output directory, retain originals, journal results and validate interrupted commits. Covers only imported snapshots and is not WCMigrate's live cross-app engine.
+
 - Added a bilingual, first-launch user-read disclaimer (with consent acknowledgment but no legal-rights waiver), a permanent Settings disclosure page, precise pinned-upstream risk notes in module details, WQFiles explorer caution and original Hermes Watch backup/uninstall warnings. Added CI static checks against accidentally removing risk notices.
 - Corrected upstream WCMigrate scope: the pinned README explicitly says its file-level merge is not a SQLite chat-record merge and no whole-task rollback is provided; Keychain/login state is not transferred.
 

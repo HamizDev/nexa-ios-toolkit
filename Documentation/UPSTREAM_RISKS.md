@@ -40,3 +40,7 @@ GestaltX's pinned README does not give a substantial list of detailed safety gua
 - [HermesEnabler pinned README](https://github.com/pookjw/HermesEnabler/blob/c0ae1666cba67ab7fbae6d3e481cc2731f5550a1/README.md)
 
 Remaining launch-blocking work is tracked in [RELEASE_READINESS.md](RELEASE_READINESS.md). Source integration is not a tested signed IPA, and a disclaimer does not replace permission checks, backups, transaction safety or rollback.
+
+## Nexa-only file-level Merge/Replace safeguards
+
+The imported-snapshot `NexaImportCombine` feature deliberately differs from WCMigrate's live Replace/Convert/Merge: it always creates a **new output** and retains both originals. Its warning distinguishes file-level name precedence from chat-database record merging. Do not treat the presence of this menu as completion of the original upstream live-app migration or a guarantee of system data recoverability. The source-based WCMigrate risk card remains visible on the Combine view.

@@ -41,6 +41,30 @@ struct NexaMigrationView: View {
                                 .foregroundStyle(NexaPalette.muted)
                         }
                     }
+                    NavigationLink {
+                        NexaImportCombineView()
+                    } label: {
+                        NexaCard {
+                            HStack(spacing: 12) {
+                                Image(systemName: "square.stack.3d.up")
+                                    .font(.title2)
+                                    .foregroundStyle(NexaPalette.violet)
+                                VStack(alignment: .leading, spacing: 5) {
+                                    Text(en ? "File-level Merge / Replace" : "文件级合并／替换")
+                                        .font(.headline)
+                                    Text(en
+                                        ? "Compare two imported folders and create a separate verified result"
+                                        : "对比两个已导入文件夹，生成独立校验结果")
+                                        .font(.caption)
+                                        .foregroundStyle(NexaPalette.muted)
+                                }
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundStyle(NexaPalette.muted)
+                            }
+                        }
+                    }
+                    .buttonStyle(.plain)
                     NexaCard {
                         VStack(alignment: .leading, spacing: 14) {
                             HStack {
