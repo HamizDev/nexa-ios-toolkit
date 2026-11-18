@@ -93,3 +93,7 @@ Nexa's imported-folder browser now offers an explicit, local-only LoginInfo2.dat
 ## GestaltX loaded-library read-only diagnostics
 
 The original pinned `GXMobileGestaltImage.m/h` helper from the GestaltX submodule is now compiled into Nexa. On explicit user request it reports whether a read-only snapshot of loaded MobileGestalt library sections is available, with section count and byte lengths. The helper does not access other app containers, modify MobileGestalt cache entries or change capabilities. Build and physical iPhone behavior need revalidation.
+
+## Nexa imported-file workspace operations
+
+The built-in `NexaLocalFiles.swift` now owns safe name/path validation, folder creation, rename, duplicate, move, and recoverable deletion for the user-imported `Documents/Imports` tree. The root and nested folder UIs expose create/rename/duplicate/trash; the root also links to recently deleted items, where recovery never overwrites existing paths. This is a Nexa-native complement to the upstream WQFiles archive engine, **not** cross-app access. `Tests/LocalFilesHostTests.swift` runs on an isolated host-test directory and exercises path containment, symlink rejection, collision handling and trash recovery.

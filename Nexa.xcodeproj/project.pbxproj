@@ -143,6 +143,10 @@
     F10000000000000000000002 /* GXMobileGestaltImage.m in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000001 /* GXMobileGestaltImage.m */; };
     F10000000000000000000001 /* GXMobileGestaltImage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThirdParty/GestaltX/GestaltX/GXMobileGestaltImage.m; sourceTree = SOURCE_ROOT; };
     F10000000000000000000003 /* GXMobileGestaltImage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ThirdParty/GestaltX/GestaltX/GXMobileGestaltImage.h; sourceTree = SOURCE_ROOT; };
+    F20000000000000000000002 /* NexaLocalFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000001 /* NexaLocalFiles.swift */; };
+    F20000000000000000000001 /* NexaLocalFiles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaLocalFiles.swift; sourceTree = "<group>"; };
+    F20000000000000000000004 /* NexaFileOperationsUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000003 /* NexaFileOperationsUI.swift */; };
+    F20000000000000000000003 /* NexaFileOperationsUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaFileOperationsUI.swift; sourceTree = "<group>"; };
     964BD5656C7A016EF0C9ADA7 /* Nexa.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nexa.app; sourceTree = BUILT_PRODUCTS_DIR; };
     EC981767C62EA833B107403F /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
     984AA73C6A3518E356174B49 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
@@ -185,6 +189,8 @@
         D40000000000000000000002 /* WeChatIdentityResolver.swift in Sources */,
         D40000000000000000000004 /* NexaWeChatIdentityView.swift in Sources */,
         F10000000000000000000002 /* GXMobileGestaltImage.m in Sources */,
+        F20000000000000000000002 /* NexaLocalFiles.swift in Sources */,
+        F20000000000000000000004 /* NexaFileOperationsUI.swift in Sources */,
       );
       runOnlyForDeploymentPostprocessing = 0;
     };
@@ -232,6 +238,8 @@
         D40000000000000000000003 /* NexaWeChatIdentityView.swift */,
         F10000000000000000000001 /* GXMobileGestaltImage.m */,
         F10000000000000000000003 /* GXMobileGestaltImage.h */,
+        F20000000000000000000001 /* NexaLocalFiles.swift */,
+        F20000000000000000000003 /* NexaFileOperationsUI.swift */,
       );
       name = Nexa;
       path = Nexa;

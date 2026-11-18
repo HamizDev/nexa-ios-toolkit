@@ -12,6 +12,7 @@ struct ImportedEntry: Identifiable {
 final class FilesStore: ObservableObject {
     @Published private(set) var entries: [ImportedEntry] = []
     @Published var errorMessage: String?
+    @Published private(set) var operationBusy = false
 
     static var importFolder: URL { AppPaths.importFolder }
 
@@ -49,8 +50,37 @@ final class FilesStore: ObservableObject {
         refresh()
     }
 
+    func createFolder(_ name: String) {
+        do { _ = try NexaLocalFiles.createFolder(in: Self.importFolder, name: name) }
+        catch { errorMessage = error.localizedDescription }
+        refresh()
+    }
+
+    func rename(_ entry: ImportedEntry, to name: String) {
+        do { _ = try NexaLocalFiles.rename(entry.url, to: name) }
+        catch { errorMessage = error.localizedDescription }
+        refresh()
+    }
+
+    func duplicate(_ entry: ImportedEntry) {
+        guard !operationBusy else { return }
+        operationBusy = true
+        let original = entry.url
+        Task {
+            do {
+                _ = try await Task.detached(priority: .userInitiated) {
+                    try NexaLocalFiles.duplicate(original)
+                }.value
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+            operationBusy = false
+            refresh()
+        }
+    }
+
     func remove(_ entry: ImportedEntry) {
-        do { try FileManager.default.removeItem(at: entry.url) }
+        do { _ = try NexaLocalFiles.trash(entry.url) }
         catch { errorMessage = error.localizedDescription }
         refresh()
     }

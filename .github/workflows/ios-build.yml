@@ -45,6 +45,17 @@ jobs:
             Tests/WeChatIdentityHostTests.swift \
             -o "$scratch/identity-tests"
           NEXA_TEST_ROOT="$scratch/Fixture" "$scratch/identity-tests"
+      - name: Test Nexa imported-file operations and safe trash
+        run: |
+          set -euo pipefail
+          scratch="$(mktemp -d)"
+          trap 'rm -rf "$scratch"' EXIT
+          swiftc -D NEXA_LOCAL_TEST \
+            Nexa/Sources/AppPaths.swift \
+            Nexa/Sources/NexaLocalFiles.swift \
+            Tests/LocalFilesHostTests.swift \
+            -o "$scratch/nexa-local-files-tests"
+          NEXA_TEST_ROOT="$scratch/TestRoot" "$scratch/nexa-local-files-tests"
       - name: Test original GestaltX typed plist parser
         run: |
           set -euo pipefail
