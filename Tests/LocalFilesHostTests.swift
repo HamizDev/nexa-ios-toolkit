@@ -143,6 +143,40 @@ struct NexaLocalFileHostTests {
         check((try fm.contentsOfDirectory(atPath: stagingRoot.path)).isEmpty,
               "failed import left staged partial data")
         print("PASS: staged imported files and folders preserve sources and clean up")
+
+        check(try NexaLocalFiles.validatedArchiveFolder(nested)
+              == nested.resolvingSymlinksInPath().standardizedFileURL,
+              "safe imported folder must pass archive selection")
+        rejects("archive folder outside Nexa Imports") {
+            _ = try NexaLocalFiles.validatedArchiveFolder(providerFolder)
+        }
+        rejects("archive a regular file as a folder") {
+            _ = try NexaLocalFiles.validatedArchiveFolder(importedCopy)
+        }
+        let linkedFolder = importRoot.appendingPathComponent("LinkedImportedFolder")
+        try fm.createSymbolicLink(at: linkedFolder, withDestinationURL: nested)
+        rejects("archive a symlinked imported directory") {
+            _ = try NexaLocalFiles.validatedArchiveFolder(linkedFolder)
+        }
+        try fm.removeItem(at: linkedFolder)
+
+        let orphan = stagingRoot.appendingPathComponent(UUID().uuidString)
+        try put([91], at: orphan.appendingPathComponent("Payload"))
+        let keep = stagingRoot.appendingPathComponent("keep-note.txt")
+        try put([37], at: keep)
+        let outsideAlias = stagingRoot.appendingPathComponent(UUID().uuidString)
+        try fm.createSymbolicLink(at: outsideAlias, withDestinationURL: providerFolder)
+        check(try NexaLocalFiles.discardInterruptedImports() == 1,
+              "should remove exactly one abandoned import work directory")
+        check(!fm.fileExists(atPath: orphan.path),
+              "abandoned partial import was not discarded")
+        check(try Data(contentsOf: keep) == Data([37]),
+              "staging cleanup removed unrelated files")
+        check(try Data(contentsOf: providerFolder.appendingPathComponent("Nested/notes.bin"))
+              == Data([17, 18]), "cleanup followed a symlink outside staging")
+        try fm.removeItem(at: outsideAlias)
+        try fm.removeItem(at: keep)
+        print("PASS: folder ZIP validation and interrupted-import cleanup")
         let externalLink = nested.appendingPathComponent("outside-link")
         try fm.createSymbolicLink(at: externalLink, withDestinationURL: outside)
         rejects("duplicate directory containing external symlink") {

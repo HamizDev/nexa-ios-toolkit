@@ -12,6 +12,7 @@ struct LocalFolderView: View {
     @State private var pendingTrash: URL?
     @State private var moveRequest: NexaMoveRequest?
     @State private var notice: String?
+    @State private var archiveURL: URL?
     @State private var busy = false
 
     private var en: Bool { language.code == "en" }
@@ -47,6 +48,21 @@ struct LocalFolderView: View {
                         Text(en ? "\(visible.count) items" : "\(visible.count) 项")
                             .font(.caption)
                             .foregroundStyle(NexaPalette.muted)
+                    }
+                    HStack(spacing: 10) {
+                        Button { archiveCurrentFolder() } label: {
+                            Label(en ? "Archive this folder" : "压缩当前文件夹",
+                                  systemImage: "archivebox")
+                        }
+                        .buttonStyle(.bordered)
+                        .disabled(busy)
+                        if let archiveURL {
+                            ShareLink(item: archiveURL) {
+                                Label(en ? "Share ZIP" : "分享 ZIP",
+                                      systemImage: "square.and.arrow.up")
+                            }
+                            .buttonStyle(.bordered)
+                        }
                     }
                     if busy {
                         ProgressView().tint(NexaPalette.mint)
@@ -184,6 +200,25 @@ struct LocalFolderView: View {
     private func reload() {
         do { children = try NexaLocalFiles.list(in: folder) }
         catch { notice = error.localizedDescription }
+    }
+
+    private func archiveCurrentFolder() {
+        guard !busy else { return }
+        busy = true
+        archiveURL = nil
+        Task {
+            do {
+                let selected = folder
+                let result = try await Task.detached(priority: .userInitiated) {
+                    try NexaZipManager.createImportedFolderArchive(selected)
+                }.value
+                archiveURL = result.file
+                notice = en
+                    ? "Folder ZIP ready. Skipped entries: \(result.skipped)."
+                    : "文件夹 ZIP 已生成，跳过条目：\(result.skipped)。"
+            } catch { notice = error.localizedDescription }
+            busy = false
+        }
     }
 
     private func duplicate(_ file: URL) {

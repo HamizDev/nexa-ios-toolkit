@@ -16,7 +16,14 @@ final class FilesStore: ObservableObject {
 
     static var importFolder: URL { AppPaths.importFolder }
 
-    init() { refresh() }
+    init() {
+        refresh()
+        // Best-effort cleanup on entry; the importer uses the same lock, so
+        // this cannot remove a live staged copy in this app process.
+        Task.detached(priority: .utility) {
+            _ = try? NexaLocalFiles.discardInterruptedImports()
+        }
+    }
 
     func refresh() {
         do {

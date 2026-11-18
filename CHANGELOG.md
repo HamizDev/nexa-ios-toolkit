@@ -2,6 +2,9 @@
 
 ## Unreleased — upstream integration branch
 
+- Added user-selected imported-folder ZIP creation using the original WQFiles archive writer, with recursive symlink checks and one-tap ZIP sharing from the nested folder UI.
+- Added a lock-safe, best-effort cleanup of abandoned import staging directories on Files entry. It only removes UUID-shaped work folders, skips linked directories, and preserves the original selected data; host regression fixtures cover orphan and alias handling.
+
 - Staged user-selected file/folder imports off the main thread with an atomic commit into Nexa Imports, randomized collision-resistant names, source preservation, progress feedback, and symlink rejection. Added host fixtures for successful, repeated, nested and unsafe imports.
 - Routed WQFiles ZIP extraction through the same imported-file path/symlink policy and added a direct navigation action to the extracted folder; unified nested-folder search styling with the rest of Nexa.
 

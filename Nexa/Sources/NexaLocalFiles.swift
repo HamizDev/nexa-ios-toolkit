@@ -249,6 +249,50 @@ enum NexaLocalFiles {
         }
     }
 
+    /// Validate a single selected imported directory before archiving it
+    /// with the original WQFiles ZIP writer. Reject nested symbolic links.
+    static func validatedArchiveFolder(_ url: URL) throws -> URL {
+        lock.lock()
+        defer { lock.unlock() }
+        let folder = try directory(url)
+        let imports = AppPaths.importFolder.resolvingSymlinksInPath().standardizedFileURL
+        guard folder != imports else { throw FileError.outsideImports }
+        try rejectNestedLinks(folder)
+        return folder
+    }
+
+    /// Remove only orphaned UUID-named staging work directories after a prior
+    /// process interruption. The same recursive lock protects active imports,
+    /// so a second Files screen never deletes an in-progress local copy.
+    @discardableResult
+    static func discardInterruptedImports() throws -> Int {
+        lock.lock()
+        defer { lock.unlock() }
+        let root = AppPaths.documents
+            .appendingPathComponent("ImportStaging", isDirectory: true)
+        guard fm.fileExists(atPath: root.path) else { return 0 }
+        let flags = try root.resourceValues(forKeys: [
+            .isDirectoryKey, .isSymbolicLinkKey
+        ])
+        guard flags.isDirectory == true,
+              flags.isSymbolicLink != true else { throw FileError.invalidImportStage }
+        var removed = 0
+        for item in try fm.contentsOfDirectory(
+            at: root, includingPropertiesForKeys: [.isDirectoryKey, .isSymbolicLinkKey]
+        ) {
+            guard UUID(uuidString: item.lastPathComponent) != nil else { continue }
+            let type = try item.resourceValues(forKeys: [
+                .isDirectoryKey, .isSymbolicLinkKey
+            ])
+            guard type.isDirectory == true, type.isSymbolicLink != true else {
+                continue
+            }
+            try fm.removeItem(at: item)
+            removed += 1
+        }
+        return removed
+    }
+
     static func createFolder(in folder: URL, name: String) throws -> URL {
         lock.lock()
         defer { lock.unlock() }

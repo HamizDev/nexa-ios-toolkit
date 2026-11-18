@@ -36,8 +36,7 @@ enum NexaZipManager {
         }
     }
 
-    static func createImportedArchive() throws -> Result {
-        let items = try regularImportedItems()
+    private static func writeImportedArchive(_ items: [URL]) throws -> Result {
         guard !items.isEmpty else { throw ZipError.nothingToArchive }
         let fm = FileManager.default
         let folder = AppPaths.documents.appendingPathComponent("Archives", isDirectory: true)
@@ -55,9 +54,21 @@ enum NexaZipManager {
             &failure
         )
         guard success else {
+            try? fm.removeItem(at: zipURL)
             throw ZipError.failed(failure as String? ?? "WQFiles archive writer failed.")
         }
         return Result(file: zipURL, skipped: skipped)
+    }
+
+    static func createImportedArchive() throws -> Result {
+        try writeImportedArchive(regularImportedItems())
+    }
+
+    /// Archive a selected user-imported folder, not the whole Nexa workspace.
+    /// The original WQFiles writer handles actual ZIP serialization.
+    static func createImportedFolderArchive(_ folder: URL) throws -> Result {
+        let verified = try NexaLocalFiles.validatedArchiveFolder(folder)
+        return try writeImportedArchive([verified])
     }
 
     static func extractImportedArchive(_ archive: URL) throws -> Result {
