@@ -394,6 +394,7 @@
         OTHER_LDFLAGS = ("$(inherited)", "-lz", "-lsqlite3");
         PRODUCT_BUNDLE_IDENTIFIER = "$(NEXA_COMPANION_BUNDLE_IDENTIFIER)";
         PRODUCT_NAME = "$(TARGET_NAME)";
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
         SWIFT_VERSION = 5.0;
         SUPPORTS_MACCATALYST = NO;
         TARGETED_DEVICE_FAMILY = "1,2";

@@ -25,3 +25,9 @@
 Run `python3 Scripts/check_integration.py` after recursively checking out Git submodules. GitHub Actions runs disposable host tests for backups/restores, WCMigrate identity fixtures, local migration (including malformed recovery journals), GestaltX plist history, WQFiles path validation and upstream C modules. CI also attempts to boot an iOS 26+ Simulator and take five tab screenshots; **a screenshot artifact is not evidence that every UI state has been inspected**.
 
 Local, owner-provisioned device signing is documented in [SIGNING.md](SIGNING.md). Do not commit private signing credentials or falsely advertise an unsigned Simulator ZIP as an installable IPA.
+
+## Screenshot smoke regression found 2026-11-18
+
+An actual review of the screenshots from workflow `44232278062` found that `home.png`, `files.png`, `backups.png`, `explore.png` and `settings.png` all showed the Home screen, despite all five screenshot commands returning success. **This invalidates the old five-tab coverage claim.** The project’s custom iOS Debug build settings omitted the `DEBUG` Swift condition used to enable `--nexa-tab=...`.
+
+The updated Debug target explicitly defines `DEBUG`, while release builds do not. When a test launch argument is present, Nexa writes a `.nexa-ui-smoke-current-tab` file in its own Documents directory. The screenshot workflow reads the selected tab after every launch and fails if the value is not the requested tab. Do not call UI screenshot acceptance complete until this corrected CI run actually passes and the resulting five screenshots are visually reviewed.

@@ -145,3 +145,7 @@ Nexa 0.0.1 的基础深色 SwiftUI 设计已继续优化：卡片描边与透明
 ## Release status
 
 当前仍处于 **0.0.1 开发预览**：五个主页面可在模拟器中启动，已有备份、文件管理、本地迁移和离线 plist 历史等可操作功能；但四个上游 App 的私有系统能力**尚未全部实现或完成真机验证**。详细缺口、验收条件和当前交付范围见 [0.0.1 发布准备清单](Documentation/RELEASE_READINESS.md)。
+
+### UI 截图校验修复
+
+2026-11-18 对旧 CI 工件的实际截图审查发现：此前生成的 `home/files/backups/explore/settings` 五张 PNG **全部停留在首页**，不能作为五页视觉验收。原因是自定义 Xcode Target 的 Debug 构建未设置 `SWIFT_ACTIVE_COMPILATION_CONDITIONS=DEBUG`，导致用于测试的 `--nexa-tab` 参数处理被编译排除。新 CI 已为 Debug 配置显式定义 `DEBUG`，且应用会向测试沙盒写入当前选中页面的标记；截屏前必须读取该标记并与目标页面一致，否则该检查失败。**新截图通过前，不应宣称五页 UI 已经全部验收。**

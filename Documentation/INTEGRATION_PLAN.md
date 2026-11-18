@@ -80,3 +80,7 @@ Source details: [UPSTREAM_SOURCES.md](UPSTREAM_SOURCES.md).
 3. Review all five already captured iOS Simulator screenshots manually, including text truncation, touch targets, long translations and dynamic accessibility type. CI screenshot creation alone is not a full visual review.
 4. Validate signed iOS 26+ and watchOS 27 real-device App Groups, install, backup/rollback and per-build feature gates.
 5. Finish and verify the actual upstream privileged operations still marked incomplete before calling the suite 'all four apps fully integrated'.
+
+## UI screenshot regression and corrected acceptance
+
+The five PNG artifacts from workflow `44232278062` were found to all display the Home tab. Earlier claims that this run visually covered five distinct tabs were therefore overstated. The fixed CI config adds `DEBUG` explicitly to the iOS target and asserts the running app's own selected-tab acknowledgment for each requested screenshot. This is now a required UI smoke check when an iOS 26+ Simulator runtime is available. Manual review, Dynamic Type, VoiceOver and physical-device acceptance remain outstanding.

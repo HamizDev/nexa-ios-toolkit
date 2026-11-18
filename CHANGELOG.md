@@ -2,6 +2,8 @@
 
 ## Unreleased — upstream integration branch
 
+- Audited the previous five-tab iOS Simulator screenshots and found all five actually displayed the Home tab. Fixed missing DEBUG compilation condition in the iOS target and added a DEBUG-only on-device tab-selection acknowledgement. Screenshot CI now verifies the actual selected tab and fails when the test silently captures Home repeatedly.
+
 - Fixed Swift 6 migration-path warnings from the WQFiles browser by converting Objective-C errors and results to immutable Swift values before main-actor callbacks; removed redundant GestaltX downcast.
 - Hardened the local-migration crash recovery ledger: validate exact generated destination names, journal path components and file SHA-256 metadata; ignore symlinked journal files, reject symlinked outputs, and mark missing/tampered records failed rather than aborting startup. Added disposable host attack/regression fixtures.
 

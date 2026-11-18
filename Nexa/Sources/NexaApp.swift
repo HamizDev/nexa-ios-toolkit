@@ -52,5 +52,25 @@ struct NexaRootView: View {
         }
         .toolbarBackground(.visible, for: .tabBar)
         .toolbarBackground(NexaPalette.ink2, for: .tabBar)
+        #if DEBUG
+        .onAppear(perform: recordUITestTab)
+        .onChange(of: selectedTab) { _, _ in recordUITestTab() }
+        #endif
     }
+
+    #if DEBUG
+    private func recordUITestTab() {
+        // A DEBUG-only handshake makes CI verify the selected tab, rather
+        // than accepting five PNGs that all show the Home screen.
+        guard ProcessInfo.processInfo.arguments.contains(where: {
+            $0.hasPrefix("--nexa-tab=")
+        }) else { return }
+        let location = AppPaths.documents
+            .appendingPathComponent(".nexa-ui-smoke-current-tab")
+        try? FileManager.default.createDirectory(
+            at: AppPaths.documents, withIntermediateDirectories: true
+        )
+        try? selectedTab.write(to: location, atomically: true, encoding: .utf8)
+    }
+    #endif
 }
