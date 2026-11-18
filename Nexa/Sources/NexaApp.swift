@@ -16,6 +16,8 @@ struct NexaApp: App {
 
 struct NexaRootView: View {
     @EnvironmentObject private var language: NexaLanguage
+    @AppStorage("nexa.safety.disclaimer.read.0.0.1") private var hasReadSafety = false
+    @State private var showFirstLaunchSafety = false
     @State private var selectedTab: String = {
         #if DEBUG
         // UI screenshot smoke tests can open a specific tab without fragile
@@ -52,6 +54,27 @@ struct NexaRootView: View {
         }
         .toolbarBackground(.visible, for: .tabBar)
         .toolbarBackground(NexaPalette.ink2, for: .tabBar)
+        .onAppear {
+            if !hasReadSafety {
+                #if DEBUG
+                // UI screenshot harness opens individual tabs without covering
+                // them with the first-run disclosure. Normal Debug launches
+                // and every Release launch still present the disclosure.
+                let isScreenshotHarness = ProcessInfo.processInfo.arguments.contains {
+                    $0.hasPrefix("--nexa-tab=")
+                }
+                if !isScreenshotHarness { showFirstLaunchSafety = true }
+                #else
+                showFirstLaunchSafety = true
+                #endif
+            }
+        }
+        .sheet(isPresented: $showFirstLaunchSafety) {
+            NavigationStack {
+                NexaDisclaimerView(requiresAcknowledgment: true)
+            }
+            .environmentObject(language)
+        }
         #if DEBUG
         .onAppear(perform: recordUITestTab)
         .onChange(of: selectedTab) { _, _ in recordUITestTab() }

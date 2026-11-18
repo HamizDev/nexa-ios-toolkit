@@ -22,6 +22,8 @@ jobs:
           persist-credentials: false
       - name: Audit project membership, licenses and upstream source pins
         run: python3 Scripts/check_integration.py
+      - name: Audit first-launch disclaimer and upstream risk notices
+        run: python3 Scripts/check_safety.py
       - name: Validate signed archive script syntax (without signing credentials)
         run: bash -n Scripts/archive_signed_ipa.sh
       - name: Compile and test Nexa journaled backup/restore on a disposable host root

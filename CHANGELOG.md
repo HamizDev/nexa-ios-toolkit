@@ -2,6 +2,9 @@
 
 ## Unreleased — upstream integration branch
 
+- Added a bilingual, first-launch user-read disclaimer (with consent acknowledgment but no legal-rights waiver), a permanent Settings disclosure page, precise pinned-upstream risk notes in module details, WQFiles explorer caution and original Hermes Watch backup/uninstall warnings. Added CI static checks against accidentally removing risk notices.
+- Corrected upstream WCMigrate scope: the pinned README explicitly says its file-level merge is not a SQLite chat-record merge and no whole-task rollback is provided; Keychain/login state is not transferred.
+
 - Audited the previous five-tab iOS Simulator screenshots and found all five actually displayed the Home tab. Fixed missing DEBUG compilation condition in the iOS target and added a DEBUG-only on-device tab-selection acknowledgement. Screenshot CI now verifies the actual selected tab and fails when the test silently captures Home repeatedly.
 
 - Fixed Swift 6 migration-path warnings from the WQFiles browser by converting Objective-C errors and results to immutable Swift values before main-actor callbacks; removed redundant GestaltX downcast.

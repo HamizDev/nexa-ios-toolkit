@@ -126,7 +126,7 @@ final class NexaLanguage: ObservableObject {
         "settings.upstream": "第三方许可与接入情况",
         "settings.about": "关于 Nexa",
         "settings.build": "0.0.1 · 开发预览版",
-        "settings.disclaimer": "本版本尚未经过 Xcode 真机测试，不提供越狱、系统提权或已完成的微信迁移能力。"
+        "settings.disclaimer": "开发预览版：系统修改和跨 App 迁移尚未通过真机验收。详细风险与免责声明请查看上方入口。"
     ]
 
     static let en: [String: String] = [
@@ -239,6 +239,6 @@ final class NexaLanguage: ObservableObject {
         "settings.upstream": "Third-party licenses & integration",
         "settings.about": "About Nexa",
         "settings.build": "0.0.1 · Development preview",
-        "settings.disclaimer": "This version is not Xcode-verified and does not implement jailbreaks, privilege escalation or full WeChat migration."
+        "settings.disclaimer": "Development preview: system changes and cross-app migration are not validated on real hardware. See the disclaimer and per-module risk notes above."
     ]
 }

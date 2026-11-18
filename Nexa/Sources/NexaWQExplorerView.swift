@@ -95,6 +95,9 @@ struct NexaWQExplorerView: View {
                                 .textSelection(.enabled)
                         }
                     }
+                    if let risk = NexaSafetyCatalog.entry(for: "wqfiles") {
+                        NexaRiskNotice(risk: risk)
+                    }
                     Toggle(
                         en ? "I own or am authorized to access the selected data; enable read-only exploration" :
                              "我拥有或获授权访问所选数据，同意开启只读浏览",

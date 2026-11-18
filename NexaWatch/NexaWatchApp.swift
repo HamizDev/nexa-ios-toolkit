@@ -55,6 +55,17 @@ struct NexaWatchDashboard: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text(en ? "HermesEnabler 2" : "HermesEnabler 2 · 实验功能")
                         .font(.headline)
+                    VStack(alignment: .leading, spacing: 6) {
+                        Label(en ? "Backup / uninstall warning" : "备份及卸载警告",
+                              systemImage: "exclamationmark.triangle.fill")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(.orange)
+                        Text(en
+                            ? "Upstream: restore the original MobileGestalt backup BEFORE uninstalling. Keep the same Bundle ID and Apple ID when updating. System changes may cause data loss. Nexa has not tested device rollback."
+                            : "上游警告：卸载前务必先恢复原始 MobileGestalt 备份；更新须保持相同 Bundle ID 和 Apple ID。系统改动可能导致数据丢失；Nexa 尚未通过真机回滚测试。")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
                     if NexaHermesGate.ready {
                         Toggle(
                             en ? "I understand that system changes can cause data loss" :

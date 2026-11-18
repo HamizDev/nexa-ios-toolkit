@@ -84,3 +84,11 @@ Source details: [UPSTREAM_SOURCES.md](UPSTREAM_SOURCES.md).
 ## UI screenshot regression and corrected acceptance
 
 The five PNG artifacts from workflow `44232278062` were found to all display the Home tab. Earlier claims that this run visually covered five distinct tabs were therefore overstated. The fixed CI config adds `DEBUG` explicitly to the iOS target and asserts the running app's own selected-tab acknowledgment for each requested screenshot. This is now a required UI smoke check when an iOS 26+ Simulator runtime is available. Manual review, Dynamic Type, VoiceOver and physical-device acceptance remain outstanding.
+
+## Upstream risk and disclaimer release gate
+
+- [x] Pinned WQFiles/WCMigrate/Hermes risk statements recorded with source links; GestaltX system-write warnings explicitly identified as Nexa assessment, not attributed to an undocumented upstream guarantee.
+- [x] First-launch bilingual disclaimer with acknowledgment and revisitable Settings page.
+- [x] Per-module risk and integration status shown near real actions; direct WQFiles explorer and Watch warnings.
+- [ ] Validate first-run disclaimer and long bilingual warnings on iPhone sizes, VoiceOver and real devices.
+- [ ] Do not mark upstream unsupported/unintegrated privileged operations as stable; do not infer cross-App writes from submodule inclusion.

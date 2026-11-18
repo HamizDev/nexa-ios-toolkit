@@ -33,6 +33,31 @@ struct SettingsView: View {
                                 .font(.caption).foregroundStyle(NexaPalette.mint)
                         }
                     }
+                    NavigationLink {
+                        NexaDisclaimerView()
+                    } label: {
+                        NexaCard {
+                            HStack(spacing: 12) {
+                                Image(systemName: "exclamationmark.shield.fill")
+                                    .font(.title2)
+                                    .foregroundStyle(.orange)
+                                VStack(alignment: .leading, spacing: 6) {
+                                    Text(language.code == "en" ? "Disclaimer & upstream risks" : "免责声明与上游风险")
+                                        .font(.headline)
+                                        .foregroundStyle(.primary)
+                                    Text(language.code == "en"
+                                        ? "Read every module's known risks and actual Nexa status"
+                                        : "查看各模块的上游警告、已接入功能与未验证项目")
+                                        .font(.footnote)
+                                        .foregroundStyle(NexaPalette.muted)
+                                }
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundStyle(NexaPalette.muted)
+                            }
+                        }
+                    }
+                    .buttonStyle(.plain)
                     NexaCard {
                         VStack(alignment: .leading, spacing: 14) {
                             Label(language.t("settings.about"), systemImage: "info.circle")
