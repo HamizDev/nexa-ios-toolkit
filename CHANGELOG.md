@@ -2,6 +2,8 @@
 
 ## Unreleased — upstream integration branch
 
+- Wired the original WQFiles `wq_copy_to_local` streamed copy and `wq_file_version` change check into a consent-gated, selected-file-only Nexa import action. Added remote path validation, collision-free sanitized names and standalone host path/name tests. Real-device sandbox grant is still unverified.
+
 - Added a private, SHA-256 checked plist version history with a restore/export UI, previous-version preservation and stale-file conflict detection. Applies only to user-imported copies, not system MobileGestalt.
 
 - Added a source-preserving **imported-folder data migration workspace**, including preview, folder enumeration, SHA-256 inventories, staging, no-overwrite destination commit, durable receipts and interrupted-commit recovery. Uses local imported files only; full upstream WeChat container migration remains blocked by real-device authorization and recovery testing.

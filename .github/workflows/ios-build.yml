@@ -89,6 +89,16 @@ jobs:
             Tests/PlistHistoryHostTests.swift \
             -o "$scratch/nexa-plist-history-tests"
           NEXA_TEST_ROOT="$scratch/TestRoot" "$scratch/nexa-plist-history-tests"
+      - name: Test safe WQFiles user-selected import naming and paths
+        run: |
+          set -euo pipefail
+          scratch="$(mktemp -d)"
+          trap 'rm -rf "$scratch"' EXIT
+          swiftc \
+            Nexa/Sources/NexaWQImportName.swift \
+            Tests/WQImportNameHostTests.swift \
+            -o "$scratch/wq-local-import-tests"
+          "$scratch/wq-local-import-tests"
       - name: Targeted upstream WQFiles core, archive and access safety regressions
         timeout-minutes: 12
         run: bash Scripts/test_wqfiles_integrated.sh

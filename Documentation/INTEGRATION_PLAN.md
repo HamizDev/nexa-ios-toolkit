@@ -8,6 +8,7 @@
 - [x] Language preference: default Simplified Chinese, switch to English, persistent across launches
 - [x] User-authorized file imports, file/folder browser and sharing
 - [x] Nexa-local create/rename/duplicate/move/search and recoverable trash, with import-symlink checks (host regression added; iOS runtime test pending)
+- [x] WQFiles original source-to-local streaming copy for an explicitly selected, authorized file, with optimistic change checks and safe local names (experimental; device capability unverified)
 - [x] Text and hex file preview, with WQFiles' upstream `WQCore.m/h` hex validation compiled in
 - [x] GestaltX typed offline plist editor with SHA-256 checked snapshot history, restore and stale-write rejection (host regression added; CI pending)
 - [x] Local backup manifests with SHA-256 verification

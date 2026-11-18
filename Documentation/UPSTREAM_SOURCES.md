@@ -51,3 +51,7 @@ The unmodified `ThirdParty/GestaltX/GestaltX/GXMobileGestaltImage.m/h` files fro
 ## HermesEnabler 2 direct watch integration in unified build
 
 The embedded NexaWatch target directly compiles the pinned original `ThirdParty/HermesEnabler/HermesEnabler2/BQCore.m`, `BQRecoveryValidation.h`, feature SwiftUI views and original WatchConnectivity manager. Both MGDefaults and MGOffsets resources are included; original upstream `@main` is intentionally excluded. NexaWatch's entry requires a provisioned Watch App Group, an explicit warning acknowledgement and watchOS 27.0–27.2 on real hardware. 82 matching Chinese/English Watch translation keys are bundled. License MIT; original source remains unchanged. No real-watch write or rollback verification has been completed.
+
+## WQFiles selected-file read-only export
+
+`NexaWQFileExport.swift` invokes pinned upstream `wq_copy_to_local` and `wq_file_version` directly from the unchanged WQAccess Objective-C implementation. It streams a single user-selected, readable regular file into a uniquely named Nexa Imports copy, then verifies the remote file's version did not change. The UI requires explicit user authorization, signed App Group, supported OS/build gate and an individual preview/selection. It never overwrites, deletes, renames or modifies the remote file. `NexaWQImportName.swift` and its host tests reject traversal and unsafe local naming. **True availability remains device and entitlement dependent.** License GPL-3.0-or-later.

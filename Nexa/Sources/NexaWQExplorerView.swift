@@ -59,6 +59,9 @@ struct NexaWQExplorerView: View {
     @State private var busy = false
     @State private var message: String?
     @State private var preview: String?
+    @State private var selectedRemote: String?
+    @State private var importedCopy: URL?
+    @State private var exportBusy = false
 
     private var en: Bool { language.code == "en" }
 
@@ -158,6 +161,40 @@ struct NexaWQExplorerView: View {
                                 .textSelection(.enabled)
                         }
                     }
+                    if let selectedRemote {
+                        NexaCard {
+                            VStack(alignment: .leading, spacing: 10) {
+                                Label(en ? "Selected file" : "已选择文件", systemImage: "doc.badge.arrow.down")
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(NexaPalette.mint)
+                                Text((selectedRemote as NSString).lastPathComponent)
+                                    .font(.system(.caption, design: .monospaced))
+                                    .textSelection(.enabled)
+                                Text(en
+                                     ? "The original WQFiles engine streams the selected file into a new Nexa copy. It never changes the remote file and rejects source changes during copying."
+                                     : "原版 WQFiles 引擎会将此文件流式复制到新的 Nexa 副本，不修改源文件；复制期间来源发生变化则拒绝保留副本。")
+                                    .font(.footnote)
+                                    .foregroundStyle(NexaPalette.muted)
+                                Button {
+                                    exportRemote(selectedRemote)
+                                } label: {
+                                    Label(en ? "Copy into Nexa" : "复制到 Nexa 文件区",
+                                          systemImage: "square.and.arrow.down")
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .tint(NexaPalette.violet)
+                                .disabled(!agreed || !NexaContainerAccess.ready || exportBusy || busy)
+                                if exportBusy { ProgressView().tint(NexaPalette.mint) }
+                                if let importedCopy {
+                                    ShareLink(item: importedCopy) {
+                                        Label(en ? "Share imported copy" : "分享已导入副本",
+                                              systemImage: "square.and.arrow.up")
+                                    }
+                                    .buttonStyle(.bordered)
+                                }
+                            }
+                        }
+                    }
                     Text(en ?
                          "Not an App Store feature. This implementation has not passed real-device acceptance tests." :
                          "非 App Store 常规权限功能；尚未通过真机验收。")
@@ -169,6 +206,10 @@ struct NexaWQExplorerView: View {
         }
         .navigationTitle(en ? "Container explorer" : "容器浏览")
         .navigationBarTitleDisplayMode(.inline)
+        .onChange(of: currentPath) { _, _ in
+            selectedRemote = nil
+            importedCopy = nil
+        }
     }
 
     private func openCurrentFolder() {
@@ -176,6 +217,8 @@ struct NexaWQExplorerView: View {
         busy = true
         message = nil
         preview = nil
+        selectedRemote = nil
+        importedCopy = nil
         let path = currentPath
         Task.detached(priority: .userInitiated) {
             var error: NSString?
@@ -194,6 +237,8 @@ struct NexaWQExplorerView: View {
         guard NexaContainerAccess.valid(path) else { return }
         busy = true
         preview = nil
+        selectedRemote = nil
+        importedCopy = nil
         Task.detached(priority: .userInitiated) {
             var error: NSString?
             if let contents = wq_list(path, &error) {
@@ -209,9 +254,32 @@ struct NexaWQExplorerView: View {
                 let text = bytes.map { String(data: $0 as Data, encoding: .utf8) ?? ($0 as Data).map { String(format: "%02X", $0) }.joined(separator: " ") }
                 await MainActor.run {
                     preview = text ?? (error as String? ?? (en ? "Unreadable file" : "无法读取文件"))
+                    selectedRemote = bytes != nil ? path : nil
                     busy = false
                 }
             }
+        }
+    }
+
+    private func exportRemote(_ remote: String) {
+        guard agreed, !busy, !exportBusy, NexaContainerAccess.ready,
+              NexaContainerAccess.valid(remote), selectedRemote == remote else { return }
+        exportBusy = true
+        importedCopy = nil
+        message = nil
+        Task {
+            do {
+                let saved = try await Task.detached(priority: .userInitiated) {
+                    try NexaWQFileExport.copySelectedRemoteFile(remote)
+                }.value
+                importedCopy = saved
+                message = en
+                    ? "Verified file copied into Nexa Imports: \(saved.lastPathComponent)"
+                    : "已校验复制到 Nexa 导入区：\(saved.lastPathComponent)"
+            } catch {
+                message = error.localizedDescription
+            }
+            exportBusy = false
         }
     }
 }

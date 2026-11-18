@@ -14,6 +14,8 @@ required_sources = [
     "NexaMigrationView.swift",
     "NexaPlistHistory.swift",
     "NexaPlistHistoryView.swift",
+    "NexaWQImportName.swift",
+    "NexaWQFileExport.swift",
     "BQCore.m",
     "NexaHermesGate.swift",
     "NexaFileOperationsUI.swift",

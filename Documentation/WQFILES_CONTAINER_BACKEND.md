@@ -19,3 +19,7 @@ Upstream: https://github.com/kolbicz/WQFiles — GPL-3.0-or-later, pinned source
 ### Side effects and recovery
 
 Even though the Nexa UI exposes only read-only listing and preview, the original worse_query sandbox-lease mechanism **may alter Nexa's own App Group cache** while requesting a token. Do not mistake "read-only user data" for "no filesystem changes whatsoever". Preserve the upstream repair/release semantics and validate recovery after interruption before device release. Avoid accessing another person's private app data without their authorization.
+
+## Selected-file import into Nexa
+
+The experimental browser now offers a separate, explicit import action **only after** a remote regular file has been individually previewed. It calls WQFiles' original `wq_copy_to_local(remotePath, freshAppLocalPath, &error)` and compares upstream `wq_file_version` snapshots before and after copying; changing sources are rejected and the local copy is discarded. Output filenames are unique and sanitized; no remote file is modified or removed. Host tests cover the path allowlist, traversal and filename generation. This feature has not been proven to grant access on an actual iPhone; the simulator gate keeps it unavailable without the genuine exploit and signed entitlement.
