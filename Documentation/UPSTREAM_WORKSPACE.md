@@ -69,3 +69,35 @@ Nexa can now open a **user-imported** .plist via its file inspector. A typed edi
 ## WQFiles original ZIP engine integrated
 
 The original `WQArchive.h/m` and `WQLocalization.h/m` from the pinned upstream commit are compiled directly into the Nexa main target and linked against system zlib. Nexa uses the upstream ZIP writer to archive app-imported files into `Documents/Archives`, and the upstream ZIP extractor for explicitly imported ZIP archives with an extraction size cap and a fresh, app-local destination directory. The underlying engine rejects unsafe paths and special archive entries. ZIP operations do **not** access other app sandboxes. As always, Xcode compilation and runtime regression tests must pass before release.
+
+## WCMigrate database validation integrated
+
+The original read-only WCMigrate `DatabaseInspector.swift` was adapted to the Nexa backup manifest and its PascalCase `Payload` directory. It verifies each backup before reading, then copies databases and SQLite sidecars to a temporary isolated location and performs a bounded `quick_check(1)`. Its `DatabaseReport` model is extracted from WCMigrate's `Core/Models.swift`. This is a **file integrity and schema diagnostic**, not WeChat record restoration or a semantic database merge.
+
+## NexaWatch companion target
+
+Nexa now defines **two linked native targets in a single Xcode project**: `Nexa` for iOS and `NexaWatch` for watchOS. The iOS target embeds `NexaWatch.app` into its Watch bundle and depends on the watch target; both derive their IDs from `NEXA_COMPANION_BUNDLE_IDENTIFIER` in Xcode Build Settings. The included watch app implements bilingual SwiftUI and a two-way WatchConnectivity ping. It **does not** embed HermesEnabler's watch-face modification engine; the full original source remains pinned in `ThirdParty/HermesEnabler` for licensed integration. Real Watch pairing, provisioning, signing and device execution remain acceptance requirements.
+
+## WQFiles container access (experimental)
+
+The original `WQAccess.m`, `WQLaunchServices.m`, and `WQScanTask.m` are now added directly to Nexa's Xcode target by reference to the pinned submodule. The SwiftUI explorer allows only user-initiated, read-only listing and a bounded preview, checks an OS/build allowlist and verifies a signed App Group. No broad scan, privileged write or silent access is enabled. See [WQFILES_CONTAINER_BACKEND.md](WQFILES_CONTAINER_BACKEND.md) for build and provisioning details. This is **not yet a verified working sandbox-escape integration on device**.
+
+## Nexa-local transactional restore (new)
+
+`NexaBackupRestore.swift` completes Nexa's own backup/restore workflow: verify a known backup, stage a separate payload, verify again, retain the previous `Imports` tree in private Application Support, replace the directory, and record a small JSON journal to recover interrupted commits. A confirmation dialog is required. It deliberately does not copy from or write to any other application's private container. See [RESTORE_SAFETY.md](RESTORE_SAFETY.md) for crash-state scenarios and remaining acceptance requirements.
+
+## WCMigrate local account identity inspection
+
+Nexa's imported-folder browser now offers an explicit, local-only LoginInfo2.dat inspection action. The unchanged upstream WCMigrate protobuf/account parser is compiled under `Vendor/WCMigrate/`; a Nexa wrapper limits inputs to imported paths, rejects symlinks and bounds file sizes and directory counts. It displays an identity only on the current device, with no network transmission. This is a **migration-preparation diagnostic**, not cross-app WeChat transfer.
+
+## GestaltX loaded-library read-only diagnostics
+
+The original pinned `GXMobileGestaltImage.m/h` helper from the GestaltX submodule is now compiled into Nexa. On explicit user request it reports whether a read-only snapshot of loaded MobileGestalt library sections is available, with section count and byte lengths. The helper does not access other app containers, modify MobileGestalt cache entries or change capabilities. Build and physical iPhone behavior need revalidation.
+
+## Nexa imported-file workspace operations
+
+The built-in `NexaLocalFiles.swift` now owns safe name/path validation, folder creation, rename, duplicate, move, and recoverable deletion for the user-imported `Documents/Imports` tree. The root and nested folder UIs expose create/rename/duplicate/trash; the root also links to recently deleted items, where recovery never overwrites existing paths. This is a Nexa-native complement to the upstream WQFiles archive engine, **not** cross-app access. `Tests/LocalFilesHostTests.swift` runs on an isolated host-test directory and exercises path containment, symlink rejection, collision handling and trash recovery.
+
+## CI simulator test artifact
+
+When GitHub Actions completes a successful unsigned iOS Simulator build, it checks that `Nexa.app` actually contains `Watch/NexaWatch.app/NexaWatch` and uploads an archived copy of `Nexa.app` as a seven-day artifact. It is for Xcode Simulator testing only, not an IPA or physical-device installation. The official 0.0.1 tag/release remains gated on a correctly provisioned App Group and physical iPhone/Watch installation, backup/rollback and functional acceptance tests.

@@ -2,6 +2,24 @@
 
 ## Unreleased — upstream integration branch
 
+- CI now verifies the real `Nexa.app/Watch/NexaWatch.app` embedding and uploads a seven-day **unsigned iOS Simulator preview ZIP** for UI acceptance testing. This is not a device IPA.
+
+- Added a bounded destination-folder picker for moving files within Nexa Imports, plus a recursive symlink check before accepting security-scoped file provider imports. Included positive and negative fixture tests.
+
+- Added usable Nexa-imported file operations: create folder, search, rename, duplicate, and recoverable trash with an optional permanent-delete confirmation. Rejects name collisions, symlink trees, unsafe names, and moves into descendant directories; includes disposable host regression tests.
+
+- Compiled original GestaltX `GXMobileGestaltImage.m/h` read-only loaded-library inspector into Nexa's device information page. Displays only section counts/sizes, with no MobileGestalt cache writes.
+
+- Compiled WCMigrate's original `WeChatIdentityResolver.swift` and added an on-demand identity inspector to the imported-folder UI. Bounds checking, local-only operation and synthetic parser tests protect the flow; this is **not** full WeChat data migration.
+
+- Added a recoverable, verified **Nexa-local restore workflow**: backup SHA-256 preflight, independent staged verification, retained previous-import snapshot, confirmation UI, and disk journal for interrupted swaps. This does not read/write other apps' data.
+
+- Linked the unmodified WQFiles WQAccess/WQLaunchServices/WQScanTask backend from the pinned submodule into Nexa, with an entitlement placeholder and consent-gated, read-only container browser. **Real-device capability is not verified**, and cross-app writes remain disabled.
+
+- Added a true embedded `NexaWatch` watchOS app target with SwiftUI bilingual UI and two-way WatchConnectivity ping diagnostics; not the upstream Hermes face engine.
+
+- Adapted WCMigrate's original read-only SQLite database inspector for Nexa's SHA-256 verified local backup manifests. The scanner checks disposable database copies and does not imply chat recovery.
+
 - Compiled the original WQFiles ZIP archive engine and its localization helpers with zlib; added archive creation and safe extraction for imported files.
 
 - Added offline user-imported plist inspection and editing using GestaltX's original value parser; each local edit creates an app-private backup of the imported copy.

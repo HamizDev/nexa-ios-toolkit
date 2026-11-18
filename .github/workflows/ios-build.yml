@@ -4,7 +4,72 @@ on:
   pull_request:
   workflow_dispatch:
 
+concurrency:
+  group: nexa-build-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  provenance:
+    runs-on: macos-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout pinned upstream sources
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - name: Audit project membership, licenses and upstream source pins
+        run: python3 Scripts/check_integration.py
+      - name: Compile and test Nexa journaled backup/restore on a disposable host root
+        run: |
+          set -euo pipefail
+          scratch="$(mktemp -d)"
+          trap 'rm -rf "$scratch"' EXIT
+          swiftc -D NEXA_LOCAL_TEST \
+            Nexa/Sources/AppPaths.swift \
+            Vendor/WCMigrate/BackupProgress.swift \
+            Nexa/Sources/BackupManager.swift \
+            Nexa/Sources/NexaBackupRestore.swift \
+            Tests/BackupRestoreHostTests.swift \
+            -o "$scratch/nexa-restore-tests"
+          NEXA_TEST_ROOT="$scratch/TestRoot" "$scratch/nexa-restore-tests"
+      - name: Test upstream WCMigrate LoginInfo2 parser with synthetic fixtures
+        run: |
+          set -euo pipefail
+          scratch="$(mktemp -d)"
+          trap 'rm -rf "$scratch"' EXIT
+          swiftc \
+            Vendor/WCMigrate/WeChatIdentityResolver.swift \
+            Tests/WeChatIdentityHostTests.swift \
+            -o "$scratch/identity-tests"
+          NEXA_TEST_ROOT="$scratch/Fixture" "$scratch/identity-tests"
+      - name: Test Nexa imported-file operations and safe trash
+        run: |
+          set -euo pipefail
+          scratch="$(mktemp -d)"
+          trap 'rm -rf "$scratch"' EXIT
+          swiftc -D NEXA_LOCAL_TEST \
+            Nexa/Sources/AppPaths.swift \
+            Nexa/Sources/NexaLocalFiles.swift \
+            Tests/LocalFilesHostTests.swift \
+            -o "$scratch/nexa-local-files-tests"
+          NEXA_TEST_ROOT="$scratch/TestRoot" "$scratch/nexa-local-files-tests"
+      - name: Test original GestaltX typed plist parser
+        run: |
+          set -euo pipefail
+          scratch="$(mktemp -d)"
+          trap 'rm -rf "$scratch"' EXIT
+          swiftc \
+            Vendor/GestaltX/PlistValueKind.swift \
+            Tests/GestaltPlistHostTests.swift \
+            -o "$scratch/gestalt-parser-tests"
+          "$scratch/gestalt-parser-tests"
+      - name: Targeted upstream WQFiles core, archive and access safety regressions
+        timeout-minutes: 12
+        run: bash Scripts/test_wqfiles_integrated.sh
+
   build:
     runs-on: macos-latest
     permissions:
@@ -28,5 +93,47 @@ jobs:
             -configuration Debug \
             -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath "$RUNNER_TEMP/NexaDerived" \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+      - name: Verify bundled Watch app and package unsigned simulator preview
+        run: |
+          set -euo pipefail
+          app="$RUNNER_TEMP/NexaDerived/Build/Products/Debug-iphonesimulator/Nexa.app"
+          test -f "$app/Nexa"
+          test -f "$app/Watch/NexaWatch.app/NexaWatch"
+          /usr/libexec/PlistBuddy -c "Print CFBundleIdentifier" "$app/Info.plist"
+          /usr/libexec/PlistBuddy -c "Print CFBundleIdentifier" "$app/Watch/NexaWatch.app/Info.plist"
+          ditto -c -k --sequesterRsrc --keepParent \
+            "$app" "$RUNNER_TEMP/Nexa-simulator-0.0.1.zip"
+      - name: Upload simulator preview (not a signed IPA)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Nexa-0.0.1-simulator-${{ github.run_id }}
+          path: ${{ runner.temp }}/Nexa-simulator-0.0.1.zip
+          retention-days: 7
+
+  watch-build:
+    runs-on: macos-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - name: Check watchOS SDK
+        run: |
+          xcodebuild -version
+          xcrun --sdk watchsimulator --show-sdk-version
+      - name: Build NexaWatch simulator app without signing
+        run: |
+          xcodebuild \
+            -project Nexa.xcodeproj \
+            -target NexaWatch \
+            -configuration Debug \
+            -sdk watchsimulator \
+            -destination 'generic/platform=watchOS Simulator' \
             CODE_SIGNING_ALLOWED=NO \
             build

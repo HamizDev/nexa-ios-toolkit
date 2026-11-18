@@ -7,12 +7,18 @@
 - [x] New high-contrast midnight SwiftUI design with reusable components
 - [x] Language preference: default Simplified Chinese, switch to English, persistent across launches
 - [x] User-authorized file imports, file/folder browser and sharing
+- [x] Nexa-local create/rename/duplicate/move/search and recoverable trash, with import-symlink checks (host regression added; iOS runtime test pending)
 - [x] Text and hex file preview, with WQFiles' upstream `WQCore.m/h` hex validation compiled in
 - [x] Local backup manifests with SHA-256 verification
+- [x] Nexa-local backup restoration with validated staging, retained safety snapshots and interrupted-restore journal (source integration; CI/device tests pending)
 - [x] Read-only device summary, build number / capacity and conservative upstream compatibility notice
 - [x] Source credits and accurate module readiness states
+- [x] WCMigrate account identity parsing on user-imported data (on demand, no cross-app access)
 - [ ] Xcode and device compilation acceptance
 - [ ] Signed IPA and release artifacts
+- [x] CI simulator bundle verification and downloadable, unsigned iOS Simulator artifact (not a signed device IPA)
+- [x] Embedded NexaWatch target and bidirectional WatchConnectivity diagnostic source added (Xcode/watchOS CI pending)
+- [ ] Actual HermesEnabler face engine, entitlement review and watchOS 27+ runtime validation
 
 ## Modules not yet integrated
 
@@ -20,7 +26,7 @@
 - GestaltX, Erosion, Regitela, WorstGestalt MobileGestalt write and rollback engines
 - WCMigrate cross-app transfer, account resolution, staging and transfer journals
 - WQToolkit advanced own-container maintenance features (license to review)
-- HermesEnabler independent watchOS target and companion communication
+- HermesEnabler's watch-face modification routines (the NexaWatch companion target and ping are now present, not yet validated)
 - worse_query sandbox extension engine and its matching App Group signing configuration
 
 No unverified module should be represented as available to end users. Prefer read-only diagnostics and source-backed validation before writing system files.

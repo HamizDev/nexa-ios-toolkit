@@ -1,47 +1,201 @@
 import SwiftUI
 import Foundation
 
+/// Browse and manage only the copies inside Nexa's Documents/Imports tree.
+/// Unsafe paths and symbolic links are rejected by NexaLocalFiles.
 struct LocalFolderView: View {
     @EnvironmentObject private var language: NexaLanguage
     let folder: URL
     @State private var children: [URL] = []
+    @State private var searchText = ""
+    @State private var prompt: NexaFileNamePrompt?
+    @State private var pendingTrash: URL?
+    @State private var moveRequest: NexaMoveRequest?
+    @State private var notice: String?
+    @State private var busy = false
+
+    private var en: Bool { language.code == "en" }
+
+    private var visible: [URL] {
+        guard !searchText.isEmpty else { return children }
+        return children.filter {
+            $0.lastPathComponent.localizedCaseInsensitiveContains(searchText)
+        }
+    }
 
     var body: some View {
         ZStack {
             NexaBackground()
             ScrollView {
-                VStack(spacing: 10) {
-                    ForEach(children, id: \.path) { url in
-                        NavigationLink(destination: isFolder(url) ? AnyView(LocalFolderView(folder: url)) : AnyView(FileInspectorView(file: url))) {
-                            NexaCard {
-                                HStack {
-                                    Image(systemName: isFolder(url) ? "folder.fill" : "doc.fill")
+                VStack(alignment: .leading, spacing: 12) {
+                    TextField(en ? "Search this folder" : "搜索当前文件夹", text: $searchText)
+                        .textFieldStyle(.roundedBorder)
+                    HStack(spacing: 10) {
+                        Button {
+                            prompt = NexaFileNamePrompt(titleZh: "新建文件夹",
+                                                        titleEn: "New folder",
+                                                        initialValue: "", target: nil)
+                        } label: {
+                            Label(en ? "New folder" : "新建文件夹", systemImage: "folder.badge.plus")
+                        }
+                        .buttonStyle(.bordered)
+                        .disabled(busy)
+                        Spacer()
+                        Text(en ? "\(visible.count) items" : "\(visible.count) 项")
+                            .font(.caption)
+                            .foregroundStyle(NexaPalette.muted)
+                    }
+                    if busy {
+                        ProgressView().tint(NexaPalette.mint)
+                    }
+                    if visible.isEmpty {
+                        NexaCard {
+                            Text(en ? "No files found." : "当前文件夹暂无文件。")
+                                .foregroundStyle(NexaPalette.muted)
+                        }
+                    }
+                    ForEach(visible, id: \.path) { url in
+                        NexaCard {
+                            HStack(spacing: 12) {
+                                NavigationLink(destination:
+                                    isFolder(url) ?
+                                        AnyView(LocalFolderView(folder: url)) :
+                                        AnyView(FileInspectorView(file: url))
+                                ) {
+                                    HStack(spacing: 10) {
+                                        Image(systemName: isFolder(url) ? "folder.fill" : "doc.fill")
+                                            .foregroundStyle(NexaPalette.blue)
+                                        Text(url.lastPathComponent)
+                                            .font(.subheadline)
+                                            .lineLimit(2)
+                                        Spacer()
+                                        Image(systemName: "chevron.right")
+                                            .foregroundStyle(NexaPalette.muted)
+                                    }
+                                }
+                                .buttonStyle(.plain)
+                                ShareLink(item: url) {
+                                    Image(systemName: "square.and.arrow.up")
                                         .foregroundStyle(NexaPalette.blue)
-                                    Text(url.lastPathComponent)
-                                        .font(.subheadline)
-                                        .lineLimit(2)
-                                    Spacer()
-                                    Image(systemName: "chevron.right")
-                                        .foregroundStyle(NexaPalette.muted)
+                                }
+                            }
+                            .contextMenu {
+                                Button {
+                                    prompt = NexaFileNamePrompt(
+                                        titleZh: "重命名", titleEn: "Rename",
+                                        initialValue: url.lastPathComponent, target: url
+                                    )
+                                } label: {
+                                    Label(en ? "Rename" : "重命名", systemImage: "pencil")
+                                }
+                                Button { duplicate(url) } label: {
+                                    Label(en ? "Duplicate" : "复制副本", systemImage: "doc.on.doc")
+                                }
+                                Button { moveRequest = NexaMoveRequest(source: url) } label: {
+                                    Label(en ? "Move" : "移动到文件夹",
+                                          systemImage: "folder.badge.arrow.down")
+                                }
+                                Button(role: .destructive) { pendingTrash = url } label: {
+                                    Label(en ? "Move to trash" : "移至回收站", systemImage: "trash")
                                 }
                             }
                         }
-                        .buttonStyle(.plain)
                     }
                 }
                 .padding(20)
             }
         }
         .navigationTitle(folder.lastPathComponent)
-        .onAppear {
-            children = ((try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: [.isSymbolicLinkKey])) ?? [])
-                .filter { (try? $0.resourceValues(forKeys: [.isSymbolicLinkKey]).isSymbolicLink) != true }
-                .sorted { $0.lastPathComponent.localizedStandardCompare($1.lastPathComponent) == .orderedAscending }
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                NavigationLink {
+                    NexaWeChatIdentityView(folder: folder)
+                } label: {
+                    Image(systemName: "person.text.rectangle")
+                }
+                .accessibilityLabel(
+                    en ? "Inspect imported WeChat identity" : "检查已导入的微信账号身份"
+                )
+            }
         }
+        .onAppear(perform: reload)
+        .refreshable { reload() }
+        .sheet(item: $moveRequest) { request in
+            NexaMoveSheet(request: request) { target in
+                do {
+                    _ = try NexaLocalFiles.move(request.source, into: target)
+                    reload()
+                } catch {
+                    notice = error.localizedDescription
+                }
+            }
+            .environmentObject(language)
+        }
+        .sheet(item: $prompt) { request in
+            NexaFileNameSheet(request: request) { name in
+                do {
+                    if let target = request.target {
+                        _ = try NexaLocalFiles.rename(target, to: name)
+                    } else {
+                        _ = try NexaLocalFiles.createFolder(in: folder, name: name)
+                    }
+                    reload()
+                } catch { notice = error.localizedDescription }
+            }
+            .environmentObject(language)
+        }
+        .confirmationDialog(
+            en ? "Move this file to Recently Deleted?" : "将此文件移至回收站？",
+            isPresented: Binding(
+                get: { pendingTrash != nil },
+                set: { if !$0 { pendingTrash = nil } }
+            ),
+            titleVisibility: .visible
+        ) {
+            Button(en ? "Move to trash" : "移至回收站", role: .destructive) {
+                if let selected = pendingTrash {
+                    do {
+                        _ = try NexaLocalFiles.trash(selected)
+                        reload()
+                    } catch { notice = error.localizedDescription }
+                }
+                pendingTrash = nil
+            }
+            Button(language.t("common.cancel"), role: .cancel) { pendingTrash = nil }
+        } message: {
+            Text(en ? "You can recover it from the Files tab." : "以后可以从文件页的“最近删除”恢复。")
+        }
+        .alert(en ? "File operations" : "文件操作", isPresented: Binding(
+            get: { notice != nil },
+            set: { if !$0 { notice = nil } }
+        )) {
+            Button(language.t("common.confirm"), role: .cancel) { notice = nil }
+        } message: { Text(notice ?? "") }
     }
 
     private func isFolder(_ url: URL) -> Bool {
         (try? url.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) ?? false
+    }
+
+    private func reload() {
+        do { children = try NexaLocalFiles.list(in: folder) }
+        catch { notice = error.localizedDescription }
+    }
+
+    private func duplicate(_ file: URL) {
+        guard !busy else { return }
+        busy = true
+        Task {
+            do {
+                let selected = file
+                _ = try await Task.detached(priority: .userInitiated) {
+                    try NexaLocalFiles.duplicate(selected)
+                }.value
+                reload()
+            } catch { notice = error.localizedDescription }
+            busy = false
+        }
     }
 }
 

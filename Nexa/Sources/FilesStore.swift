@@ -12,6 +12,7 @@ struct ImportedEntry: Identifiable {
 final class FilesStore: ObservableObject {
     @Published private(set) var entries: [ImportedEntry] = []
     @Published var errorMessage: String?
+    @Published private(set) var operationBusy = false
 
     static var importFolder: URL { AppPaths.importFolder }
 
@@ -19,6 +20,7 @@ final class FilesStore: ObservableObject {
 
     func refresh() {
         do {
+            try NexaBackupRestore.recoverIfNeeded()
             try FileManager.default.createDirectory(at: Self.importFolder, withIntermediateDirectories: true)
             let urls = try FileManager.default.contentsOfDirectory(
                 at: Self.importFolder,
@@ -40,6 +42,7 @@ final class FilesStore: ObservableObject {
             let access = url.startAccessingSecurityScopedResource()
             defer { if access { url.stopAccessingSecurityScopedResource() } }
             do {
+                try NexaLocalFiles.validateUserImport(url)
                 let destination = Self.importFolder
                     .appendingPathComponent(String(UUID().uuidString.prefix(8)) + "_" + url.lastPathComponent)
                 try FileManager.default.copyItem(at: url, to: destination)
@@ -48,8 +51,43 @@ final class FilesStore: ObservableObject {
         refresh()
     }
 
+    func createFolder(_ name: String) {
+        do { _ = try NexaLocalFiles.createFolder(in: Self.importFolder, name: name) }
+        catch { errorMessage = error.localizedDescription }
+        refresh()
+    }
+
+    func rename(_ entry: ImportedEntry, to name: String) {
+        do { _ = try NexaLocalFiles.rename(entry.url, to: name) }
+        catch { errorMessage = error.localizedDescription }
+        refresh()
+    }
+
+    func move(_ entry: ImportedEntry, into folder: URL) {
+        do { _ = try NexaLocalFiles.move(entry.url, into: folder) }
+        catch { errorMessage = error.localizedDescription }
+        refresh()
+    }
+
+    func duplicate(_ entry: ImportedEntry) {
+        guard !operationBusy else { return }
+        operationBusy = true
+        let original = entry.url
+        Task {
+            do {
+                _ = try await Task.detached(priority: .userInitiated) {
+                    try NexaLocalFiles.duplicate(original)
+                }.value
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+            operationBusy = false
+            refresh()
+        }
+    }
+
     func remove(_ entry: ImportedEntry) {
-        do { try FileManager.default.removeItem(at: entry.url) }
+        do { _ = try NexaLocalFiles.trash(entry.url) }
         catch { errorMessage = error.localizedDescription }
         refresh()
     }
