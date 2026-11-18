@@ -222,10 +222,14 @@ struct NexaWQExplorerView: View {
         let path = currentPath
         Task.detached(priority: .userInitiated) {
             var error: NSString?
+            // Convert the Objective-C error into immutable, Sendable Swift
+            // values before crossing from the worker into the main actor.
             let found = wq_list(path, &error)
+            let names = found?.sorted()
+            let failure = error.map { String($0) }
             await MainActor.run {
-                items = found?.sorted() ?? []
-                if found == nil { message = error as String? ?? (en ? "Access refused" : "访问被拒绝") }
+                items = names ?? []
+                if names == nil { message = failure ?? (en ? "Access refused" : "访问被拒绝") }
                 busy = false
             }
         }
@@ -242,19 +246,26 @@ struct NexaWQExplorerView: View {
         Task.detached(priority: .userInitiated) {
             var error: NSString?
             if let contents = wq_list(path, &error) {
+                let sorted = contents.sorted()
                 await MainActor.run {
                     currentPath = path
-                    items = contents.sorted()
+                    items = sorted
                     busy = false
                 }
             } else {
                 // Never read more than 4 KB of an explicitly selected file.
                 error = nil
                 let bytes = wq_read(path, 4096, &error)
-                let text = bytes.map { String(data: $0 as Data, encoding: .utf8) ?? ($0 as Data).map { String(format: "%02X", $0) }.joined(separator: " ") }
+                let text = bytes.map {
+                    let data = $0 as Data
+                    return String(data: data, encoding: .utf8)
+                        ?? data.map { String(format: "%02X", $0) }.joined(separator: " ")
+                }
+                let failure = error.map { String($0) }
+                let wasRead = bytes != nil
                 await MainActor.run {
-                    preview = text ?? (error as String? ?? (en ? "Unreadable file" : "无法读取文件"))
-                    selectedRemote = bytes != nil ? path : nil
+                    preview = text ?? failure ?? (en ? "Unreadable file" : "无法读取文件")
+                    selectedRemote = wasRead ? path : nil
                     busy = false
                 }
             }
@@ -274,8 +285,8 @@ struct NexaWQExplorerView: View {
                 }.value
                 importedCopy = saved
                 message = en
-                    ? "Verified file copied into Nexa Imports: \(saved.lastPathComponent)"
-                    : "已校验复制到 Nexa 导入区：\(saved.lastPathComponent)"
+                    ? "Copied with unchanged source version: \(saved.lastPathComponent)"
+                    : "来源版本未变化，已复制到 Nexa：\(saved.lastPathComponent)"
             } catch {
                 message = error.localizedDescription
             }

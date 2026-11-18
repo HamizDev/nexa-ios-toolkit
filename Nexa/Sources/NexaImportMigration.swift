@@ -202,6 +202,8 @@ enum NexaImportMigration {
         )
         return paths.compactMap { path in
             guard path.pathExtension == "json",
+                  (try? path.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey]).isSymbolicLink) == false,
+                  (try? path.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile) == true,
                   UUID(uuidString: path.deletingPathExtension().lastPathComponent) != nil,
                   let raw = try? Data(contentsOf: path),
                   let record = try? JSONDecoder().decode(Receipt.self, from: raw),
@@ -210,19 +212,63 @@ enum NexaImportMigration {
         }.sorted { $0.created > $1.created }
     }
 
-    /// Crash recovery is deliberately conservative. A verified destination can
-    /// finish an interrupted commit; a stale/staging-only record is marked
-    /// failed and source remains untouched. No automatic conflicting overwrite.
+    /// A journal is bookkeeping, not authority to open arbitrary paths.
+    /// Validate the recorded directory components and exact generated output
+    /// name before doing a single read. Invalid journals remain visible as
+    /// failed records, but never leave the Nexa Imports boundary.
+    private static func safeRecoveryOutput(for record: Receipt) -> URL? {
+        let expectedName = "NexaMigration-" + String(record.id.uuidString.prefix(8))
+        guard record.finalFolderName == expectedName else { return nil }
+
+        let segments: [String]
+        if record.destination.isEmpty {
+            segments = []
+        } else {
+            segments = record.destination.split(
+                separator: "/", omittingEmptySubsequences: false
+            ).map(String.init)
+        }
+        guard segments.allSatisfy({
+            !$0.isEmpty && $0 != "." && $0 != ".." &&
+            !$0.contains("\\") && !$0.contains("\0")
+        }) else { return nil }
+
+        // Refuse tampered digest paths, duplicate paths, and malformed hashes.
+        guard record.files.count <= fileLimit,
+              Set(record.files.map(\.path)).count == record.files.count,
+              record.files.allSatisfy({ entry in
+                  let components = entry.path.split(
+                      separator: "/", omittingEmptySubsequences: false
+                  )
+                  return entry.bytes >= 0 && entry.sha256.count == 64 &&
+                      entry.sha256.utf8.allSatisfy({
+                          ($0 >= 48 && $0 <= 57) || ($0 >= 97 && $0 <= 102)
+                      }) &&
+                      components.allSatisfy({
+                          !$0.isEmpty && $0 != "." && $0 != ".." &&
+                          !$0.contains("\\")
+                      })
+              }) else { return nil }
+
+        var chosen = AppPaths.importFolder
+        for segment in segments { chosen.appendPathComponent(segment, isDirectory: true) }
+        guard let destination = try? folder(chosen, canBeRoot: true) else { return nil }
+        let output = destination.appendingPathComponent(expectedName, isDirectory: true)
+        guard let flags = try? output.resourceValues(
+            forKeys: [.isSymbolicLinkKey, .isDirectoryKey]
+        ), flags.isSymbolicLink == false, flags.isDirectory == true else {
+            return nil
+        }
+        return output
+    }
+
+    /// Crash recovery is deliberately conservative. Missing, malformed or
+    /// tampered destinations become failures without touching other files.
     static func recoverIfNeeded() throws {
         lock.lock()
         defer { lock.unlock() }
         for var record in try receipts() where record.state == .staging {
-            let destination = try folder(
-                AppPaths.importFolder.appendingPathComponent(record.destination),
-                canBeRoot: true
-            )
-            let output = destination.appendingPathComponent(record.finalFolderName)
-            if manager.fileExists(atPath: output.path),
+            if let output = safeRecoveryOutput(for: record),
                (try? inventory(output)) == record.files {
                 record.state = .complete
             } else {

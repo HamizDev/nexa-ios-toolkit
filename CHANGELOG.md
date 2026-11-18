@@ -2,6 +2,9 @@
 
 ## Unreleased — upstream integration branch
 
+- Fixed Swift 6 migration-path warnings from the WQFiles browser by converting Objective-C errors and results to immutable Swift values before main-actor callbacks; removed redundant GestaltX downcast.
+- Hardened the local-migration crash recovery ledger: validate exact generated destination names, journal path components and file SHA-256 metadata; ignore symlinked journal files, reject symlinked outputs, and mark missing/tampered records failed rather than aborting startup. Added disposable host attack/regression fixtures.
+
 - Added an owner-run macOS Xcode archive and debugging IPA export script that validates a signed iPhone + embedded Watch bundle. All identifiers must be explicitly provisioned; no signing certificates or secrets are stored in the repo.
 
 - Added a source-backed module detail action for each partially integrated upstream tool; corrected readiness labeling so compiled helpers are not presented as fully verified. Improved card contrast and Dynamic Type headers.

@@ -32,3 +32,7 @@ On reopening the migration page, each `staging` receipt is evaluated. If the des
 - [ ] On-device large-tree, storage-full, app termination and file-protection tests
 
 This is a development feature until CI and device acceptance pass. It does not implement WCMigrate's live-app transaction, database merging, background service or bidirectional exchange.
+
+## Additional recovery hardening
+
+Migration receipt files are **not treated as file-access authority**. Each pending receipt is revalidated before it can be marked complete: the destination must be a Nexa Imports directory, the generated name must exactly match its transaction UUID, every manifest path/hash must be well formed, the destination must not be a symbolic link, and the SHA-256 inventory must match. Corrupted paths and missing folders are marked failed without opening external data or replacing source files. Symlinked `.json` journal files are ignored. Host tests cover path traversal in the destination/output, a symlinked output, a missing destination, and linked metadata.

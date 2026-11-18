@@ -141,3 +141,7 @@ Nexa 0.0.1 的基础深色 SwiftUI 设计已继续优化：卡片描边与透明
 仓库新增 `Scripts/archive_signed_ipa.sh`，可以在你自己已配置 Apple Developer 签名的 Mac 上，使用实际 Team ID、iPhone/Watch Bundle ID 和 App Group 编译 Nexa + NexaWatch，并通过 Xcode 导出 **调试分发方式的签名 IPA**。脚本会检查两个 App 是否被签名、Watch App 是否嵌入和 IPA 是否真正生成；不会上传证书、私钥或自动发布 Release。
 
 具体参数及真机验收清单见 [Documentation/SIGNING.md](Documentation/SIGNING.md)。**目前还没有用你的证书执行过签名，更没有经过真机功能验收**；仅添加归档脚本不代表 IPA 已经制作成功。
+
+## Release status
+
+当前仍处于 **0.0.1 开发预览**：五个主页面可在模拟器中启动，已有备份、文件管理、本地迁移和离线 plist 历史等可操作功能；但四个上游 App 的私有系统能力**尚未全部实现或完成真机验证**。详细缺口、验收条件和当前交付范围见 [0.0.1 发布准备清单](Documentation/RELEASE_READINESS.md)。

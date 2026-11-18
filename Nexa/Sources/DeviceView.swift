@@ -102,7 +102,7 @@ struct DeviceView: View {
     private func inspectMobileGestaltLibrary() {
         // Original read-only GestaltX helper. No property mutations or
         // sandbox permission requests are performed here.
-        guard let image = GXCopyMobileGestaltImage() as? [String: Any],
+        guard let image = GXCopyMobileGestaltImage(),
               let strings = image["strings"] as? Data,
               let constants = image["constants"] as? [Data] else {
             gestaltImageSummary = language.code == "en"

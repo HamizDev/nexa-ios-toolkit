@@ -135,6 +135,91 @@ struct NexaImportMigrationHostTests {
         ensure(try NexaImportMigration.receipts().first(where: { $0.id == failedID })?.state == .failed,
                "missing interrupted commit marked failed")
         print("PASS: recovery distinguishes complete and missing transactions")
+
+        // Corrupt or malicious journal paths must never be interpreted as
+        // filesystem capabilities; mark them failed without traversing outside.
+        let tamperedID = UUID()
+        let malicious = NexaImportMigration.Receipt(
+            id: tamperedID, created: Date(), source: "ExportedWeChatData",
+            destination: "LocalDestination",
+            finalFolderName: "../../private",
+            files: valid.files, state: .staging
+        )
+        try JSONEncoder().encode(malicious).write(
+            to: records.appendingPathComponent(tamperedID.uuidString + ".json"),
+            options: .atomic
+        )
+        let escapeID = UUID()
+        let escape = NexaImportMigration.Receipt(
+            id: escapeID, created: Date(), source: "ExportedWeChatData",
+            destination: "../../outside",
+            finalFolderName: "NexaMigration-" + String(escapeID.uuidString.prefix(8)),
+            files: valid.files, state: .staging
+        )
+        try JSONEncoder().encode(escape).write(
+            to: records.appendingPathComponent(escapeID.uuidString + ".json"),
+            options: .atomic
+        )
+        let symlinkID = UUID()
+        let linkName = "NexaMigration-" + String(symlinkID.uuidString.prefix(8))
+        try fm.createSymbolicLink(
+            at: destination.appendingPathComponent(linkName),
+            withDestinationURL: source
+        )
+        let linkReceipt = NexaImportMigration.Receipt(
+            id: symlinkID, created: Date(), source: "ExportedWeChatData",
+            destination: "LocalDestination", finalFolderName: linkName,
+            files: valid.files, state: .staging
+        )
+        try JSONEncoder().encode(linkReceipt).write(
+            to: records.appendingPathComponent(symlinkID.uuidString + ".json"),
+            options: .atomic
+        )
+        try NexaImportMigration.recoverIfNeeded()
+        let safety = try NexaImportMigration.receipts()
+        for id in [tamperedID, escapeID, symlinkID] {
+            ensure(safety.first(where: { $0.id == id })?.state == .failed,
+                   "unsafe transaction must be marked failed")
+        }
+        ensure(try Data(contentsOf: source.appendingPathComponent("Documents/notes.db")) ==
+               Data([0, 0, 1, 2, 254, 255]),
+               "an unsafe journal changed source files")
+        print("PASS: tampered paths and symlinked recovery targets rejected")
+
+        // A missing destination folder must not abort all journal recovery.
+        let missingID = UUID()
+        let missingDirectory = NexaImportMigration.Receipt(
+            id: missingID, created: Date(), source: "ExportedWeChatData",
+            destination: "MissingDestination",
+            finalFolderName: "NexaMigration-" + String(missingID.uuidString.prefix(8)),
+            files: valid.files, state: .staging
+        )
+        try JSONEncoder().encode(missingDirectory).write(
+            to: records.appendingPathComponent(missingID.uuidString + ".json"),
+            options: .atomic
+        )
+
+        // Never read through a .json symlink in the private transaction ledger.
+        let linkedID = UUID()
+        let externalReceipt = root.appendingPathComponent("external-receipt.json")
+        let fake = NexaImportMigration.Receipt(
+            id: linkedID, created: Date(), source: "ExportedWeChatData",
+            destination: "LocalDestination",
+            finalFolderName: "NexaMigration-" + String(linkedID.uuidString.prefix(8)),
+            files: valid.files, state: .staging
+        )
+        try JSONEncoder().encode(fake).write(to: externalReceipt, options: .atomic)
+        try fm.createSymbolicLink(
+            at: records.appendingPathComponent(linkedID.uuidString + ".json"),
+            withDestinationURL: externalReceipt
+        )
+        try NexaImportMigration.recoverIfNeeded()
+        let finalRecords = try NexaImportMigration.receipts()
+        ensure(finalRecords.first(where: { $0.id == missingID })?.state == .failed,
+               "missing destination must be recorded as failed, not throw")
+        ensure(finalRecords.first(where: { $0.id == linkedID }) == nil,
+               "symlinked journal must be ignored")
+        print("PASS: missing destination and symlinked journal metadata rejected")
         print("PASS: import migration host regression suite")
     }
 }

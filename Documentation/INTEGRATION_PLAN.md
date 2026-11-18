@@ -72,3 +72,11 @@ Source details: [UPSTREAM_SOURCES.md](UPSTREAM_SOURCES.md).
 ## Owner signing and IPA handoff
 
 `Scripts/archive_signed_ipa.sh` is a noninteractive local macOS script for the repository owner to archive Nexa + embedded NexaWatch with their Apple Developer Team, provisioned App Groups and unique Bundle ID, then export a debugging signed IPA. CI only checks Bash syntax and does **not** run this script with personal credentials. See [SIGNING.md](SIGNING.md) for the run commands, safe secrets handling and real-device acceptance requirements. A signed device IPA has **not** been produced or validated by this project yet.
+
+## Next verification priorities
+
+1. Clear remaining **first-party** Swift 6 actor/Sendable warnings in iOS and Watch builds; preserve unmodified upstream implementation where practical.
+2. Run the expanded migration recovery regression suite on disposable macOS fixtures and revalidate embedded iPhone/Watch Simulator builds.
+3. Review all five already captured iOS Simulator screenshots manually, including text truncation, touch targets, long translations and dynamic accessibility type. CI screenshot creation alone is not a full visual review.
+4. Validate signed iOS 26+ and watchOS 27 real-device App Groups, install, backup/rollback and per-build feature gates.
+5. Finish and verify the actual upstream privileged operations still marked incomplete before calling the suite 'all four apps fully integrated'.
