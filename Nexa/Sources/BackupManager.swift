@@ -81,7 +81,9 @@ enum BackupManager {
         let fm = FileManager.default
         try fm.createDirectory(at: backupFolder, withIntermediateDirectories: true)
         return try fm.contentsOfDirectory(
-            at: backupFolder, includingPropertiesForKeys: [.isDirectoryKey, .isSymbolicLinkKey]
+            at: backupFolder,
+            includingPropertiesForKeys: [.isDirectoryKey, .isSymbolicLinkKey],
+            options: [.skipsHiddenFiles]
         )
             .filter {
                 guard let flags = try? $0.resourceValues(forKeys: [

@@ -2,6 +2,9 @@
 
 ## Unreleased — upstream integration branch
 
+- Added non-destructive portable Nexa backup ZIP import through the iOS Files picker. The original WQFiles archive engine extracts into private staging, skips are rejected, and the SHA-256 manifest must pass before the backup becomes visible. The current imported data is not restored or overwritten.
+- Backup import publishes only completed, verified snapshots: hidden .incoming-* directories are omitted from lists. Regression checks verify hidden staging and visible final backups.
+
 - Added a portable, verified backup ZIP flow (Backup > Prepare ZIP > Share), using WQFiles' original archive engine and exporting both manifest.json and Payload; unsafe or changed backups fail closed.
 - Hardened backup verification: direct-child sandbox boundaries, symlink rejection for payload/manifest, unexpected backup items and missing payloads are rejected. Added host coverage for tampered backup layouts.
 - Interrupted restore rollback now retains the rejected staged payload in private RestoreStaging/rejected-<transaction> instead of deleting it; added crash-recovery regression.

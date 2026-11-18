@@ -11,12 +11,14 @@ enum NexaZipManager {
     enum ZipError: LocalizedError {
         case nothingToArchive
         case notAnImportedFile
+        case invalidPortableBackup
         case failed(String)
 
         var errorDescription: String? {
             switch self {
             case .nothingToArchive: return "There are no imported files to archive."
             case .notAnImportedFile: return "The ZIP must be a file imported into Nexa."
+            case .invalidPortableBackup: return "Select a regular portable Nexa backup ZIP with exactly one backup directory."
             case .failed(let message): return message
             }
         }
@@ -90,6 +92,110 @@ enum NexaZipManager {
             return archive
         } catch {
             try? FileManager.default.removeItem(at: archive.file)
+            throw error
+        }
+    }
+
+    /// Import an explicitly selected portable Nexa backup ZIP, without
+    /// restoring it to the current Files workspace. The source is read-only.
+    /// The caller must keep security-scoped access alive until this returns.
+    private static let portableImportLock = NSRecursiveLock()
+
+    static func importPortableBackup(_ archive: URL) throws -> URL {
+        portableImportLock.lock()
+        defer { portableImportLock.unlock() }
+        let fm = FileManager.default
+        let input = archive.standardizedFileURL
+        let info = try input.resourceValues(forKeys: [
+            .isRegularFileKey, .isSymbolicLinkKey
+        ])
+        guard input.pathExtension.lowercased() == "zip",
+              info.isRegularFile == true, info.isSymbolicLink != true else {
+            throw ZipError.invalidPortableBackup
+        }
+
+        let stagingRoot = AppPaths.documents.appendingPathComponent(
+            "PortableBackupStaging", isDirectory: true
+        )
+        try fm.createDirectory(at: stagingRoot, withIntermediateDirectories: true)
+        let stageFlags = try stagingRoot.resourceValues(forKeys: [
+            .isDirectoryKey, .isSymbolicLinkKey
+        ])
+        guard stageFlags.isDirectory == true,
+              stageFlags.isSymbolicLink != true else {
+            throw ZipError.invalidPortableBackup
+        }
+
+        let transaction = UUID().uuidString
+        let working = stagingRoot.appendingPathComponent(transaction, isDirectory: true)
+        let unpacked = working.appendingPathComponent("Unpacked", isDirectory: true)
+        let incoming = AppPaths.backupFolder.appendingPathComponent(
+            ".incoming-" + transaction, isDirectory: true
+        )
+        var ownsIncoming = false
+        try fm.createDirectory(at: unpacked, withIntermediateDirectories: true)
+        do {
+            var extracted: UInt = 0
+            var skipped: UInt = 0
+            var failure: NSString?
+            let validZip = wq_zip_extract(
+                input.path,
+                unpacked.path,
+                wq_archive_posix_io(),
+                2 * 1024 * 1024 * 1024,
+                nil,
+                nil,
+                &extracted,
+                &skipped,
+                &failure
+            )
+            guard validZip, skipped == 0, extracted > 0 else {
+                throw ZipError.failed(
+                    failure as String? ?? "The backup ZIP is invalid, incomplete or contains skipped entries."
+                )
+            }
+
+            let topLevel = try fm.contentsOfDirectory(
+                at: unpacked,
+                includingPropertiesForKeys: [.isDirectoryKey, .isSymbolicLinkKey]
+            )
+            guard topLevel.count == 1, let selected = topLevel.first else {
+                throw ZipError.invalidPortableBackup
+            }
+            let folderInfo = try selected.resourceValues(forKeys: [
+                .isDirectoryKey, .isSymbolicLinkKey
+            ])
+            guard folderInfo.isDirectory == true,
+                  folderInfo.isSymbolicLink != true else {
+                throw ZipError.invalidPortableBackup
+            }
+
+            try fm.createDirectory(
+                at: AppPaths.backupFolder, withIntermediateDirectories: true
+            )
+            guard !fm.fileExists(atPath: incoming.path) else {
+                throw ZipError.invalidPortableBackup
+            }
+            try fm.moveItem(at: selected, to: incoming)
+            ownsIncoming = true
+            _ = try BackupManager.verify(incoming)
+
+            let timestamp = ISO8601DateFormatter().string(from: Date())
+                .replacingOccurrences(of: ":", with: "-")
+            let final = AppPaths.backupFolder.appendingPathComponent(
+                "Imported-" + timestamp + "-" + String(UUID().uuidString.prefix(8)),
+                isDirectory: true
+            )
+            guard !fm.fileExists(atPath: final.path) else {
+                throw ZipError.invalidPortableBackup
+            }
+            try fm.moveItem(at: incoming, to: final)
+            ownsIncoming = false
+            try? fm.removeItem(at: working)
+            return final
+        } catch {
+            if ownsIncoming { try? fm.removeItem(at: incoming) }
+            try? fm.removeItem(at: working)
             throw error
         }
     }

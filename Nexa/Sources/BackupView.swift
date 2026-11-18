@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct BackupView: View {
     @EnvironmentObject private var language: NexaLanguage
@@ -11,6 +12,8 @@ struct BackupView: View {
     @State private var showRestoreDialog = false
     @State private var previousImports: URL?
     @State private var portableArchives: [String: URL] = [:]
+    @State private var showPortableImport = false
+    @State private var portableImportBusy = false
 
     var body: some View {
         ZStack {
@@ -30,20 +33,40 @@ struct BackupView: View {
                         createBackup()
                     }
                     .disabled(busy)
+                    Button {
+                        showPortableImport = true
+                    } label: {
+                        Label(
+                            language.code == "en" ? "Import backup ZIP" : "导入备份 ZIP",
+                            systemImage: "square.and.arrow.down"
+                        )
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(busy)
                     if busy {
                         NexaCard {
                             VStack(alignment: .leading, spacing: 8) {
-                                ProgressView(value: progressFraction)
-                                    .tint(NexaPalette.mint)
-                                if let remaining = estimate.remaining {
+                                if portableImportBusy {
+                                    ProgressView(language.code == "en"
+                                        ? "Validating imported backup ZIP…" : "正在校验并导入备份 ZIP…")
+                                        .tint(NexaPalette.mint)
+                                } else {
+                                    ProgressView(value: progressFraction)
+                                        .tint(NexaPalette.mint)
+                                }
+                                if !portableImportBusy, let remaining = estimate.remaining {
                                     Text(language.code == "en"
                                         ? "Estimated remaining: \(Int(remaining)) seconds"
                                         : "预计剩余：\(OperationEstimate.timeText(remaining))")
                                         .font(.caption)
                                         .foregroundStyle(NexaPalette.muted)
                                 }
-                                Text(language.code == "en" ? "Copy progress is measured by top-level items." : "进度按一级文件／目录统计，大目录可能耗时较长。")
-                                    .font(.caption2).foregroundStyle(NexaPalette.muted)
+                                if !portableImportBusy {
+                                    Text(language.code == "en"
+                                        ? "Copy progress is measured by top-level items."
+                                        : "进度按一级文件／目录统计，大目录可能耗时较长。")
+                                        .font(.caption2).foregroundStyle(NexaPalette.muted)
+                                }
                             }
                         }
                     }
@@ -155,6 +178,17 @@ struct BackupView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .onAppear(perform: refresh)
+        .fileImporter(
+            isPresented: $showPortableImport,
+            allowedContentTypes: [.zip]
+        ) { result in
+            switch result {
+            case .success(let url):
+                importPortableZIP(url)
+            case .failure(let error):
+                message = error.localizedDescription
+            }
+        }
         .confirmationDialog(
             language.code == "en" ? "Replace imported files?" : "确定替换现有导入文件？",
             isPresented: $showRestoreDialog,
@@ -226,6 +260,29 @@ struct BackupView: View {
                 message = language.t("backup.success")
                 refresh()
             } catch { message = error.localizedDescription }
+            busy = false
+        }
+    }
+
+    private func importPortableZIP(_ file: URL) {
+        guard !busy else { return }
+        busy = true
+        portableImportBusy = true
+        Task {
+            do {
+                let imported = try await Task.detached(priority: .userInitiated) {
+                    let access = file.startAccessingSecurityScopedResource()
+                    defer { if access { file.stopAccessingSecurityScopedResource() } }
+                    return try NexaZipManager.importPortableBackup(file)
+                }.value
+                message = language.code == "en"
+                    ? "Verified backup \(imported.lastPathComponent) is now in your backup list. Current imported files were not changed."
+                    : "备份 \(imported.lastPathComponent) 已校验并加入列表；当前导入文件未被修改。"
+                refresh()
+            } catch {
+                message = error.localizedDescription
+            }
+            portableImportBusy = false
             busy = false
         }
     }

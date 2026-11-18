@@ -95,6 +95,26 @@ struct NexaRestoreHostTests {
         }
         print("PASS: backup structure validates manifest, payload and direct-child path")
 
+        // Imported backup ZIPs are verified under a hidden same-volume
+        // staging directory, then published under a visible final name.
+        let incoming = AppPaths.backupFolder.appendingPathComponent(
+            ".incoming-" + UUID().uuidString
+        )
+        try fm.copyItem(at: backup, to: incoming)
+        require(try BackupManager.verify(incoming) == 2,
+                "valid portable backup was rejected in hidden staging")
+        require(try !BackupManager.listBackups().contains(where: {
+            $0.folder == incoming
+        }), "unfinished imported backup is visible in the UI")
+        let finalImported = AppPaths.backupFolder.appendingPathComponent("Imported-Test")
+        try fm.moveItem(at: incoming, to: finalImported)
+        require(try BackupManager.verify(finalImported) == 2,
+                "published imported backup failed verification")
+        require(try BackupManager.listBackups().contains(where: {
+            $0.folder == finalImported
+        }), "completed imported backup was not listed")
+        print("PASS: portable backup staging is hidden and publication is verified")
+
         let tampered = AppPaths.backupFolder.appendingPathComponent("Tampered")
         try fm.copyItem(at: backup, to: tampered)
         try createFile(tampered.appendingPathComponent("Payload/note.txt"), [99, 99])
