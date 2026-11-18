@@ -125,20 +125,29 @@ enum NexaImportCombine {
     static func preview(source: URL, target: URL, mode: Mode) throws -> Plan {
         lock.lock()
         defer { lock.unlock() }
-        let a = canonical(source), b = canonical(target)
+        // Validate the *original* URL before resolving symlinks. Resolving
+        // first could hide a link pointing to another imported directory.
+        let leftPlan = try NexaImportMigration.preview(
+            source: source, destination: AppPaths.importFolder
+        )
+        let rightPlan = try NexaImportMigration.preview(
+            source: target, destination: AppPaths.importFolder
+        )
+        let a = leftPlan.source, b = rightPlan.source
         let aa = a.pathComponents, bb = b.pathComponents
         guard a != b, !aa.starts(with: bb), !bb.starts(with: aa) else {
             throw Failure.invalidSelection
         }
-        let left = try importedInventory(a)
-        let right = try importedInventory(b)
-        var selected = Dictionary(uniqueKeysWithValues: (
-            mode == .merge ? right : []
-        ).map { ($0.path, $0) })
-        for file in left { selected[file.path] = file }
-        let expected = selected.values.sorted { $0.path < $1.path }
+        let left = leftPlan.files
+        let right = rightPlan.files
         try validateManifest(left)
         try validateManifest(right)
+        var selected: [String: Digest] = [:]
+        if mode == .merge {
+            for file in right { selected[file.path] = file }
+        }
+        for file in left { selected[file.path] = file }
+        let expected = selected.values.sorted { $0.path < $1.path }
         try validateManifest(expected)
         let rightNames = Set(right.map(\.path))
         let matching = left.filter { rightNames.contains($0.path) }.count

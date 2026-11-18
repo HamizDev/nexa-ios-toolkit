@@ -105,6 +105,14 @@ struct NexaImportCombineHostTests {
             _ = try NexaImportCombine.preview(source: from, target: target, mode: .merge)
         }
         try fm.removeItem(at: link)
+        let localAlias = root.appendingPathComponent("AliasedSource")
+        try fm.createSymbolicLink(at: localAlias, withDestinationURL: from)
+        fails("symlinked selected root even when target stays inside Imports") {
+            _ = try NexaImportCombine.preview(
+                source: localAlias, target: target, mode: .merge
+            )
+        }
+        try fm.removeItem(at: localAlias)
 
         let conflictSource = root.appendingPathComponent("FileConflictSource")
         let conflictTarget = root.appendingPathComponent("FileConflictTarget")
