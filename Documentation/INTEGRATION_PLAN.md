@@ -16,6 +16,7 @@
 - [x] WCMigrate account identity parsing on user-imported data (on demand, no cross-app access)
 - [ ] Xcode and device compilation acceptance
 - [ ] Signed IPA and release artifacts
+- [x] CI simulator bundle verification and downloadable, unsigned iOS Simulator artifact (not a signed device IPA)
 - [x] Embedded NexaWatch target and bidirectional WatchConnectivity diagnostic source added (Xcode/watchOS CI pending)
 - [ ] Actual HermesEnabler face engine, entitlement review and watchOS 27+ runtime validation
 

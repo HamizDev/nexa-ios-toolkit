@@ -96,3 +96,16 @@ Nexa 的开发分支已链接 WQFiles 原版 `WQAccess.m` / `WQLaunchServices.m`
 这些功能**不是跨 App 系统文件管理**，不需要利用漏洞，也不能绕过 iOS 其他 App 的沙盒权限。详见 [本地文件操作安全设计](Documentation/LOCAL_FILE_MANAGEMENT.md)。
 
 此外，导入时会检查源文件树中的符号链接，避免把不安全的链接复制到 Nexa 的工作区；“移动到文件夹”只列出应用自己导入区中符合条件的目标目录，不会覆盖同名文件或允许将文件夹移动进其子目录。
+
+## GitHub Actions 模拟器预览包（非 IPA）
+
+开发分支的 GitHub Actions 构建成功后，会将 **Nexa iPhone App（内含 NexaWatch）** 打包为 `Nexa-0.0.1-simulator-<run-id>` 工件，保留 7 天。可进入对应构建记录的 Artifacts 下载 ZIP，并在具备 iOS 26+ 模拟器的 macOS Xcode 上测试：
+
+```sh
+unzip Nexa-simulator-0.0.1.zip
+xcrun simctl boot 'iPhone 17 Pro'  # 或改为本机已安装的 iOS 26+ 模拟器
+xcrun simctl install booted Nexa.app
+xcrun simctl launch booted com.example.Nexa
+```
+
+该压缩包**只针对模拟器**，并非已签名 IPA，不能直接安装到实体 iPhone 或 Apple Watch；高级漏洞权限在模拟器上禁用。正式可安装 IPA 需要符合签名能力的 Apple 开发者证书、App Group 和真机测试，不能由无签名的模拟器产物代替。

@@ -93,8 +93,25 @@ jobs:
             -configuration Debug \
             -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath "$RUNNER_TEMP/NexaDerived" \
             CODE_SIGNING_ALLOWED=NO \
             build
+      - name: Verify bundled Watch app and package unsigned simulator preview
+        run: |
+          set -euo pipefail
+          app="$RUNNER_TEMP/NexaDerived/Build/Products/Debug-iphonesimulator/Nexa.app"
+          test -f "$app/Nexa"
+          test -f "$app/Watch/NexaWatch.app/NexaWatch"
+          /usr/libexec/PlistBuddy -c "Print CFBundleIdentifier" "$app/Info.plist"
+          /usr/libexec/PlistBuddy -c "Print CFBundleIdentifier" "$app/Watch/NexaWatch.app/Info.plist"
+          ditto -c -k --sequesterRsrc --keepParent \
+            "$app" "$RUNNER_TEMP/Nexa-simulator-0.0.1.zip"
+      - name: Upload simulator preview (not a signed IPA)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Nexa-0.0.1-simulator-${{ github.run_id }}
+          path: ${{ runner.temp }}/Nexa-simulator-0.0.1.zip
+          retention-days: 7
 
   watch-build:
     runs-on: macos-latest

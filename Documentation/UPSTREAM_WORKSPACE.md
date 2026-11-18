@@ -97,3 +97,7 @@ The original pinned `GXMobileGestaltImage.m/h` helper from the GestaltX submodul
 ## Nexa imported-file workspace operations
 
 The built-in `NexaLocalFiles.swift` now owns safe name/path validation, folder creation, rename, duplicate, move, and recoverable deletion for the user-imported `Documents/Imports` tree. The root and nested folder UIs expose create/rename/duplicate/trash; the root also links to recently deleted items, where recovery never overwrites existing paths. This is a Nexa-native complement to the upstream WQFiles archive engine, **not** cross-app access. `Tests/LocalFilesHostTests.swift` runs on an isolated host-test directory and exercises path containment, symlink rejection, collision handling and trash recovery.
+
+## CI simulator test artifact
+
+When GitHub Actions completes a successful unsigned iOS Simulator build, it checks that `Nexa.app` actually contains `Watch/NexaWatch.app/NexaWatch` and uploads an archived copy of `Nexa.app` as a seven-day artifact. It is for Xcode Simulator testing only, not an IPA or physical-device installation. The official 0.0.1 tag/release remains gated on a correctly provisioned App Group and physical iPhone/Watch installation, backup/rollback and functional acceptance tests.
