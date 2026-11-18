@@ -7,7 +7,7 @@ This file distinguishes **vendored, compiled, and used code** from projects that
 | Project | Pinned upstream SHA | Files copied | License | Runtime usage |
 | --- | --- | --- | --- | --- |
 | [kolbicz/WQFiles](https://github.com/kolbicz/WQFiles) | `fe92ae94067983b94fd927e0b4eee52e5a99a4e7` | `WQCore.h/m`, `WQArchive.h/m`, `WQLocalization.h/m` → `Vendor/WQFiles/` | GPL-3.0-or-later | Hex validation; ZIP writer and safe extractor on imported files |
-| [yangokok886/WCMigrate](https://github.com/yangokok886/WCMigrate) | `55faba721fd44e04c65be481860c9d93e12f6f61` | Original `OperationEstimate.swift` and extracted `BackupProgress` model → `Vendor/WCMigrate/` | GPL-3.0-or-later | Backup progress / ETA only |
+| [yangokok886/WCMigrate](https://github.com/yangokok886/WCMigrate) | `55faba721fd44e04c65be481860c9d93e12f6f61` | Original `OperationEstimate.swift`, extracted `BackupProgress` / `DatabaseReport` models, adapted `DatabaseInspector.swift`, original `WeChatIdentityResolver.swift` → `Vendor/WCMigrate/` | GPL-3.0-or-later | Backup progress / ETA; SQLite quick_check on verified local backup copies (not chat recovery) |
 | [huamidev/GestaltX](https://github.com/huamidev/GestaltX) | `311f78999d9f5f062f7e3b4c6374684782be5382` | Adapted `VersionSupport.swift` → `Vendor/GestaltX/` | GPL-3.0-only | Read-only version gating only |
 
 The copied WQCore files are unchanged upstream source; attribution and license headers are preserved. `Nexa/Nexa-Bridging-Header.h` and Xcode project compilation/linking settings are Nexa glue code. **No WQFiles container-access implementation is included.**
@@ -24,7 +24,7 @@ The `ThirdParty/` folder contains four Git submodules: WQFiles, WCMigrate, Gesta
 | [yangokok886/WCMigrate](https://github.com/yangokok886/WCMigrate) | `55faba721fd44e04c65be481860c9d93e12f6f61` | Partial direct component integration; full cross-app migration still unavailable |
 | [MchinaMd57764/WQToolkit](https://github.com/MchinaMd57764/WQToolkit) | `a5969d624e62c42803f1ef2973e5fd99405b0150` | Reference only; explicit repository LICENSE not found, review needed |
 | [huamidev/GestaltX](https://github.com/huamidev/GestaltX) | `311f78999d9f5f062f7e3b4c6374684782be5382` | Read-only VersionSupport component integrated; no MobileGestalt writer |
-| [pookjw/HermesEnabler](https://github.com/pookjw/HermesEnabler) | `c0ae1666cba67ab7fbae6d3e481cc2731f5550a1` | Full source pinned as submodule, but no watchOS target built into Nexa |
+| [pookjw/HermesEnabler](https://github.com/pookjw/HermesEnabler) | `c0ae1666cba67ab7fbae6d3e481cc2731f5550a1` | Source pinned as submodule; original BQCore/feature views and resources directly compiled into embedded NexaWatch |
 | [jailbreakdotparty/Erosion](https://github.com/jailbreakdotparty/Erosion) | `2e118f4e575b2cb745d9462ac445f023e09ec4da` | Reference only |
 | [ichitaso/Regitela](https://github.com/ichitaso/Regitela) | `e1ed6597816e8ce30457607239a2216345cfd8a1` | Reference only |
 | [GoldensHQ/worstgestalt](https://github.com/GoldensHQ/worstgestalt) | `1839f044e807ea203d7a1131ca16a38f123fd557` | Reference only |
@@ -35,3 +35,23 @@ No third-party IPA or binary has been copied into Nexa. Please examine each upst
 ## Offline plist editing (GestaltX excerpt)
 
 `Vendor/GestaltX/PlistValueKind.swift` preserves an exact excerpt of `GestaltDocument.swift` (`GestaltFailure` and `PlistValueKind`), from the same pinned SHA. It is compiled into Nexa's `NexaPlistInspectorView` for type detection, safe input parsing, and local plist serialization. Changes are limited to files that the user explicitly imported, with a backup of the imported copy taken before each write. This **does not** write to system MobileGestalt or access other app containers.
+
+## Additional WQFiles original backend references
+
+Nexa directly compiles these unchanged upstream files from `ThirdParty/WQFiles`: `WQAccess.m`, `WQLaunchServices.m`, `WQScanTask.m`, with corresponding headers from the same pinned commit. A consent-gated SwiftUI read-only container browser calls `wq_list` and bounded `wq_read`. Real-device functioning depends on the installed App Group entitlement, supported OS/build and the results of an on-device grant; no such acceptance tests have been completed. License: GPL-3.0-or-later.
+
+## WCMigrate account identity parsing
+
+`Vendor/WCMigrate/WeChatIdentityResolver.swift` copies the original parser from pinned commit `55faba721fd44e04c65be481860c9d93e12f6f61` (GPL-3.0-or-later) with only a provenance comment prepended. `NexaImportedWeChatIdentity.detect(in:)` validates a path inside Nexa's imported folder, disallows symlink traversals, caps inspected account folders and LoginInfo2.dat size, then invokes the upstream parser only on explicit user action. It only identifies a probable WeChat account identity; **it does not migrate, decrypt or restore chat data**. Synthetic host fixtures test valid and invalid parser records.
+
+## GestaltX loaded-library read-only helper
+
+The unmodified `ThirdParty/GestaltX/GestaltX/GXMobileGestaltImage.m/h` files from pinned commit `311f78999d9f5f062f7e3b4c6374684782be5382` (GPL-3.0-only) compile directly into the Nexa iOS target and are declared in its Swift bridging header. Device diagnostics invoke `GXCopyMobileGestaltImage()` only on user request to summarize the **loaded system library**'s string and constant section byte counts. The raw section bytes are never displayed, saved or uploaded. This is **not** an exploit or on-disk MobileGestalt cache modification.
+
+## HermesEnabler 2 direct watch integration in unified build
+
+The embedded NexaWatch target directly compiles the pinned original `ThirdParty/HermesEnabler/HermesEnabler2/BQCore.m`, `BQRecoveryValidation.h`, feature SwiftUI views and original WatchConnectivity manager. Both MGDefaults and MGOffsets resources are included; original upstream `@main` is intentionally excluded. NexaWatch's entry requires a provisioned Watch App Group, an explicit warning acknowledgement and watchOS 27.0–27.2 on real hardware. 82 matching Chinese/English Watch translation keys are bundled. License MIT; original source remains unchanged. No real-watch write or rollback verification has been completed.
+
+## WQFiles selected-file read-only export
+
+`NexaWQFileExport.swift` invokes pinned upstream `wq_copy_to_local` and `wq_file_version` directly from the unchanged WQAccess Objective-C implementation. It streams a single user-selected, readable regular file into a uniquely named Nexa Imports copy, then verifies the remote file's version did not change. The UI requires explicit user authorization, signed App Group, supported OS/build gate and an individual preview/selection. It never overwrites, deletes, renames or modifies the remote file. `NexaWQImportName.swift` and its host tests reject traversal and unsafe local naming. **True availability remains device and entitlement dependent.** License GPL-3.0-or-later.

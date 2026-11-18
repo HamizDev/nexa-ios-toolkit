@@ -8,6 +8,15 @@ struct FilesView: View {
     @State private var archiveURL: URL?
     @State private var archiveBusy = false
     @State private var archiveNotice: String?
+    @State private var searchText = ""
+    @State private var namePrompt: NexaFileNamePrompt?
+    @State private var deletionCandidate: ImportedEntry?
+    @State private var moveRequest: NexaMoveRequest?
+
+    private var visibleEntries: [ImportedEntry] {
+        guard !searchText.isEmpty else { return store.entries }
+        return store.entries.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+    }
 
     var body: some View {
         ZStack {
@@ -27,12 +36,57 @@ struct FilesView: View {
                     NexaActionButton(title: language.t("files.import"), symbol: "plus") {
                         importSheet = true
                     }
+                    .disabled(store.operationBusy)
+                    if store.operationBusy {
+                        ProgressView(language.code == "en"
+                                     ? "Importing or copying files…" : "正在导入或复制文件…")
+                            .tint(NexaPalette.mint)
+                    }
+                    HStack(spacing: 12) {
+                        Button {
+                            namePrompt = NexaFileNamePrompt(
+                                titleZh: "新建文件夹",
+                                titleEn: "New folder",
+                                initialValue: "",
+                                target: nil
+                            )
+                        } label: {
+                            Label(language.code == "en" ? "New folder" : "新建文件夹",
+                                  systemImage: "folder.badge.plus")
+                        }
+                        .buttonStyle(.bordered)
+                        .disabled(store.operationBusy)
+                        NavigationLink {
+                            NexaTrashView()
+                        } label: {
+                            Label(language.code == "en" ? "Recently deleted" : "最近删除",
+                                  systemImage: "trash.slash")
+                        }
+                        .buttonStyle(.bordered)
+                    }
+                    NexaSearchField(
+                        placeholder: language.code == "en" ? "Search imported files" : "搜索已导入的文件",
+                        text: $searchText,
+                        clearLabel: language.code == "en" ? "Clear search" : "清除搜索"
+                    )
+                    NavigationLink {
+                        NexaWQExplorerView()
+                    } label: {
+                        HStack {
+                            Image(systemName: "lock.doc")
+                            Text(language.code == "en" ? "Experimental container browser" : "实验性容器只读浏览")
+                                .font(.subheadline.weight(.semibold))
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                        }
+                    }
+                    .buttonStyle(.bordered)
                     HStack(spacing: 12) {
                         Button { createArchive() } label: {
                             Label(language.code == "en" ? "Create ZIP" : "打包为 ZIP", systemImage: "archivebox")
                         }
                         .buttonStyle(.bordered)
-                        .disabled(archiveBusy || store.entries.isEmpty)
+                        .disabled(archiveBusy || store.operationBusy || store.entries.isEmpty)
                         if let archiveURL {
                             ShareLink(item: archiveURL) {
                                 Label(language.code == "en" ? "Share ZIP" : "分享 ZIP", systemImage: "square.and.arrow.up")
@@ -66,7 +120,7 @@ struct FilesView: View {
                     } else {
                         NexaCard {
                             VStack(spacing: 0) {
-                                ForEach(Array(store.entries.enumerated()), id: \.element.id) { index, entry in
+                                ForEach(Array(visibleEntries.enumerated()), id: \.element.id) { index, entry in
                                     HStack(spacing: 11) {
                                         NavigationLink(destination: entry.isDirectory ? AnyView(LocalFolderView(folder: entry.url)) : AnyView(FileInspectorView(file: entry.url))) {
                                             HStack(spacing: 11) {
@@ -91,9 +145,30 @@ struct FilesView: View {
                                     .padding(.vertical, 10)
                                     .contextMenu {
                                         ShareLink(item: entry.url) { Label(language.t("common.share"), systemImage: "square.and.arrow.up") }
-                                        Button(role: .destructive) { store.remove(entry) } label: { Label(language.t("files.delete"), systemImage: "trash") }
+                                        Button {
+                                            namePrompt = NexaFileNamePrompt(
+                                                titleZh: "重命名", titleEn: "Rename",
+                                                initialValue: entry.name,
+                                                target: entry.url
+                                            )
+                                        } label: {
+                                            Label(language.code == "en" ? "Rename" : "重命名",
+                                                  systemImage: "pencil")
+                                        }
+                                        Button { store.duplicate(entry) } label: {
+                                            Label(language.code == "en" ? "Duplicate" : "复制副本",
+                                                  systemImage: "doc.on.doc")
+                                        }
+                                        Button { moveRequest = NexaMoveRequest(source: entry.url) } label: {
+                                            Label(language.code == "en" ? "Move" : "移动到文件夹",
+                                                  systemImage: "folder.badge.arrow.down")
+                                        }
+                                        Button(role: .destructive) { deletionCandidate = entry } label: {
+                                            Label(language.code == "en" ? "Move to trash" : "移至回收站",
+                                                  systemImage: "trash")
+                                        }
                                     }
-                                    if index + 1 < store.entries.count { Divider().overlay(.white.opacity(0.07)) }
+                                    if index + 1 < visibleEntries.count { Divider().overlay(.white.opacity(0.07)) }
                                 }
                             }
                         }
@@ -107,7 +182,47 @@ struct FilesView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button { importSheet = true } label: { Image(systemName: "plus") }
+                    .disabled(store.operationBusy)
             }
+        }
+        .sheet(item: $moveRequest) { request in
+            NexaMoveSheet(request: request) { destination in
+                if let item = store.entries.first(where: { $0.url == request.source }) {
+                    store.move(item, into: destination)
+                }
+            }
+            .environmentObject(language)
+        }
+        .sheet(item: $namePrompt) { prompt in
+            NexaFileNameSheet(request: prompt) { value in
+                if let target = prompt.target,
+                   let entry = store.entries.first(where: { $0.url == target }) {
+                    store.rename(entry, to: value)
+                } else if prompt.target == nil {
+                    store.createFolder(value)
+                }
+            }
+            .environmentObject(language)
+        }
+        .confirmationDialog(
+            language.code == "en" ? "Move this file to Recently Deleted?" : "将此文件移至回收站？",
+            isPresented: Binding(
+                get: { deletionCandidate != nil },
+                set: { if !$0 { deletionCandidate = nil } }
+            ),
+            titleVisibility: .visible
+        ) {
+            Button(language.code == "en" ? "Move to trash" : "移至回收站", role: .destructive) {
+                if let entry = deletionCandidate { store.remove(entry) }
+                deletionCandidate = nil
+            }
+            Button(language.t("common.cancel"), role: .cancel) {
+                deletionCandidate = nil
+            }
+        } message: {
+            Text(language.code == "en"
+                ? "You can restore this item later from Recently Deleted."
+                : "此文件可以稍后从“最近删除”恢复。")
         }
         .fileImporter(isPresented: $importSheet, allowedContentTypes: [.item, .folder], allowsMultipleSelection: true) { result in
             switch result {

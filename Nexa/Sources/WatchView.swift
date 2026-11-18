@@ -37,6 +37,16 @@ struct WatchView: View {
                             .font(.caption)
                             Button(language.t("common.refresh")) { monitor.refresh() }
                                 .font(.caption)
+                            Button {
+                                monitor.pingWatch()
+                            } label: {
+                                Label(language.code == "en" ? "Test Watch link" : "测试手表连接",
+                                      systemImage: "arrow.left.arrow.right")
+                            }
+                            .disabled(!monitor.reachable)
+                            if let pingResult = monitor.pingResult {
+                                Text(pingResult).font(.caption).foregroundStyle(NexaPalette.muted)
+                            }
                             Text(language.t("watch.none"))
                                 .font(.footnote).foregroundStyle(NexaPalette.muted)
                         }

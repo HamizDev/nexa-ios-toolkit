@@ -51,7 +51,7 @@ final class NexaLanguage: ObservableObject {
         "home.shortcut.watch": "Apple Watch",
         "home.section": "研究模块",
         "home.section.subtitle": "项目来源与真实开发状态一目了然",
-        "home.notice": "当前未集成跨 App 容器读写或系统写入；仅处理你明确选择的文件。",
+        "home.notice": "跨容器实验功能需要真机权限验证；系统修改尚未通过验收，请先备份个人数据。",
         "home.storage": "可用空间",
         "home.os": "系统版本",
         "home.files": "已导入文件",
@@ -107,14 +107,14 @@ final class NexaLanguage: ObservableObject {
         "watch.installed": "配套 App",
         "watch.yes": "已配对",
         "watch.no": "不可用或未检测到",
-        "watch.none": "尚未建立 watchOS target。表盘修改不可用。",
+        "watch.none": "Nexa Watch 配套端已建立；Hermes 表盘修改尚未启用。",
         "watch.source": "HermesEnabler 上游",
         "module.title": "探索实验室",
         "module.subtitle": "已核实的上游项目和分阶段接入计划",
         "module.implemented": "已接入",
         "module.upstream": "上游待移植",
         "module.warning": "此功能尚未编译进 Nexa，不是可用按钮。",
-        "module.safe": "只读组件",
+        "module.safe": "部分接入",
         "module.app": "来源项目",
         "settings.title": "偏好设置",
         "settings.subtitle": "语言、隐私与开源信息",
@@ -126,7 +126,7 @@ final class NexaLanguage: ObservableObject {
         "settings.upstream": "第三方许可与接入情况",
         "settings.about": "关于 Nexa",
         "settings.build": "0.0.1 · 开发预览版",
-        "settings.disclaimer": "本版本尚未经过 Xcode 真机测试，不提供越狱、系统提权或已完成的微信迁移能力。"
+        "settings.disclaimer": "开发预览版：系统修改和跨 App 迁移尚未通过真机验收。详细风险与免责声明请查看上方入口。"
     ]
 
     static let en: [String: String] = [
@@ -164,7 +164,7 @@ final class NexaLanguage: ObservableObject {
         "home.shortcut.watch": "Apple Watch",
         "home.section": "Research modules",
         "home.section.subtitle": "Upstream sources and true integration status",
-        "home.notice": "Cross-app access and system writes are not integrated. Only explicitly selected files are processed.",
+        "home.notice": "Advanced container access requires device validation. System changes are not release-ready; back up your data first.",
         "home.storage": "Free storage",
         "home.os": "System version",
         "home.files": "Imported items",
@@ -220,14 +220,14 @@ final class NexaLanguage: ObservableObject {
         "watch.installed": "Companion app",
         "watch.yes": "Paired",
         "watch.no": "Unavailable or undetected",
-        "watch.none": "No watchOS target yet. Face modifications are unavailable.",
+        "watch.none": "Nexa Watch companion is included; Hermes face changes are not enabled.",
         "watch.source": "HermesEnabler upstream",
         "module.title": "Exploration Lab",
         "module.subtitle": "Verified upstream projects and a staged integration plan",
         "module.implemented": "Integrated",
         "module.upstream": "Upstream pending",
         "module.warning": "This module is not compiled into Nexa yet. It is not a working action.",
-        "module.safe": "Read-only helper",
+        "module.safe": "Partially integrated",
         "module.app": "Source project",
         "settings.title": "Preferences",
         "settings.subtitle": "Language, privacy and open source",
@@ -239,6 +239,6 @@ final class NexaLanguage: ObservableObject {
         "settings.upstream": "Third-party licenses & integration",
         "settings.about": "About Nexa",
         "settings.build": "0.0.1 · Development preview",
-        "settings.disclaimer": "This version is not Xcode-verified and does not implement jailbreaks, privilege escalation or full WeChat migration."
+        "settings.disclaimer": "Development preview: system changes and cross-app migration are not validated on real hardware. See the disclaimer and per-module risk notes above."
     ]
 }

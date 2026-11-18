@@ -4,15 +4,28 @@
 
 ## 0.0.1 accepted scope
 
-- [x] New high-contrast midnight SwiftUI design with reusable components
+- [x] New high-contrast midnight SwiftUI design with reusable components and reduced-transparency support
+- [x] Source-backed navigation actions in module details for partially integrated tools (no fake actions for research-only tools)
+- [ ] Confirm five-tab CI simulator screenshots on a runner with iOS 26+ runtime
 - [x] Language preference: default Simplified Chinese, switch to English, persistent across launches
 - [x] User-authorized file imports, file/folder browser and sharing
+- [x] Nexa-local create/rename/duplicate/move/search and recoverable trash, with import-symlink checks (host regression added; iOS runtime test pending)
+- [x] WQFiles original source-to-local streaming copy for an explicitly selected, authorized file, with optimistic change checks and safe local names (experimental; device capability unverified)
 - [x] Text and hex file preview, with WQFiles' upstream `WQCore.m/h` hex validation compiled in
+- [x] GestaltX typed offline plist editor with SHA-256 checked snapshot history, restore and stale-write rejection (host regression added; CI pending)
 - [x] Local backup manifests with SHA-256 verification
+- [x] Nexa-local backup restoration with validated staging, retained safety snapshots and interrupted-restore journal (source integration; CI/device tests pending)
 - [x] Read-only device summary, build number / capacity and conservative upstream compatibility notice
 - [x] Source credits and accurate module readiness states
-- [ ] Xcode and device compilation acceptance
+- [x] WCMigrate account identity parsing on user-imported data (on demand, no cross-app access)
+- [x] Nexa-local, source-preserving data staging between imported folders with SHA-256 inventories and durable receipts (CI pending); NOT WCMigrate privileged cross-app migration
+- [x] Automated Xcode iPhone + watchOS simulator compilation and host regression suites
+- [ ] Signed on-device build and iPhone + Watch runtime acceptance
 - [ ] Signed IPA and release artifacts
+- [x] CI simulator bundle verification and downloadable, unsigned iOS Simulator artifact (not a signed device IPA)
+- [x] Embedded NexaWatch target and bidirectional WatchConnectivity diagnostic source added (Xcode/watchOS CI pending)
+- [x] Pinned HermesEnabler 2 original watchOS BQCore engine and panels wired into NexaWatch with build/gate controls (combined CI pending)
+- [ ] Signed Watch App Group entitlement and watchOS 27+ physical-device backup/write/rollback validation
 
 ## Modules not yet integrated
 
@@ -20,7 +33,7 @@
 - GestaltX, Erosion, Regitela, WorstGestalt MobileGestalt write and rollback engines
 - WCMigrate cross-app transfer, account resolution, staging and transfer journals
 - WQToolkit advanced own-container maintenance features (license to review)
-- HermesEnabler independent watchOS target and companion communication
+- HermesEnabler's watch-face modification routines (the NexaWatch companion target and ping are now present, not yet validated)
 - worse_query sandbox extension engine and its matching App Group signing configuration
 
 No unverified module should be represented as available to end users. Prefer read-only diagnostics and source-backed validation before writing system files.
@@ -55,3 +68,27 @@ No unverified module should be represented as available to end users. Prefer rea
 - [ ] Record actual model / iOS build and failure logs
 
 Source details: [UPSTREAM_SOURCES.md](UPSTREAM_SOURCES.md).
+
+## Owner signing and IPA handoff
+
+`Scripts/archive_signed_ipa.sh` is a noninteractive local macOS script for the repository owner to archive Nexa + embedded NexaWatch with their Apple Developer Team, provisioned App Groups and unique Bundle ID, then export a debugging signed IPA. CI only checks Bash syntax and does **not** run this script with personal credentials. See [SIGNING.md](SIGNING.md) for the run commands, safe secrets handling and real-device acceptance requirements. A signed device IPA has **not** been produced or validated by this project yet.
+
+## Next verification priorities
+
+1. Clear remaining **first-party** Swift 6 actor/Sendable warnings in iOS and Watch builds; preserve unmodified upstream implementation where practical.
+2. Run the expanded migration recovery regression suite on disposable macOS fixtures and revalidate embedded iPhone/Watch Simulator builds.
+3. Review all five already captured iOS Simulator screenshots manually, including text truncation, touch targets, long translations and dynamic accessibility type. CI screenshot creation alone is not a full visual review.
+4. Validate signed iOS 26+ and watchOS 27 real-device App Groups, install, backup/rollback and per-build feature gates.
+5. Finish and verify the actual upstream privileged operations still marked incomplete before calling the suite 'all four apps fully integrated'.
+
+## UI screenshot regression and corrected acceptance
+
+The five PNG artifacts from workflow `44232278062` were found to all display the Home tab. Earlier claims that this run visually covered five distinct tabs were therefore overstated. The fixed CI config adds `DEBUG` explicitly to the iOS target and asserts the running app's own selected-tab acknowledgment for each requested screenshot. This is now a required UI smoke check when an iOS 26+ Simulator runtime is available. Manual review, Dynamic Type, VoiceOver and physical-device acceptance remain outstanding.
+
+## Upstream risk and disclaimer release gate
+
+- [x] Pinned WQFiles/WCMigrate/Hermes risk statements recorded with source links; GestaltX system-write warnings explicitly identified as Nexa assessment, not attributed to an undocumented upstream guarantee.
+- [x] First-launch bilingual disclaimer with acknowledgment and revisitable Settings page.
+- [x] Per-module risk and integration status shown near real actions; direct WQFiles explorer and Watch warnings.
+- [ ] Validate first-run disclaimer and long bilingual warnings on iPhone sizes, VoiceOver and real devices.
+- [ ] Do not mark upstream unsupported/unintegrated privileged operations as stable; do not infer cross-App writes from submodule inclusion.

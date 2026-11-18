@@ -35,11 +35,65 @@ enum BackupManager {
 
     static var backupFolder: URL { AppPaths.backupFolder }
 
+    /// Restrict backup access to one direct child of Nexa's backup root.
+    /// A valid archive always has exactly one manifest and one directory payload;
+    /// symlink aliases and unexpected extra files are not trusted as backups.
+    static func validatedBackupFolder(_ selected: URL) throws -> URL {
+        let fm = FileManager.default
+        let candidate = selected.standardizedFileURL
+        let trusted = backupFolder.standardizedFileURL
+        guard candidate.deletingLastPathComponent() == trusted,
+              !candidate.lastPathComponent.isEmpty,
+              candidate.lastPathComponent != ".",
+              candidate.lastPathComponent != ".." else {
+            throw BackupError.verificationFailed("备份不在 Nexa 专用目录内")
+        }
+        let properties = try candidate.resourceValues(forKeys: [
+            .isDirectoryKey, .isSymbolicLinkKey
+        ])
+        guard properties.isDirectory == true,
+              properties.isSymbolicLink != true else {
+            throw BackupError.verificationFailed("备份目录无效或为符号链接")
+        }
+        let payload = candidate.appendingPathComponent("Payload", isDirectory: true)
+        let manifest = candidate.appendingPathComponent("manifest.json")
+        let payloadFlags = try payload.resourceValues(forKeys: [
+            .isDirectoryKey, .isSymbolicLinkKey
+        ])
+        let manifestFlags = try manifest.resourceValues(forKeys: [
+            .isRegularFileKey, .isSymbolicLinkKey
+        ])
+        guard payloadFlags.isDirectory == true,
+              payloadFlags.isSymbolicLink != true,
+              manifestFlags.isRegularFile == true,
+              manifestFlags.isSymbolicLink != true else {
+            throw BackupError.verificationFailed("备份结构无效或包含符号链接")
+        }
+        let names = try fm.contentsOfDirectory(at: candidate, includingPropertiesForKeys: nil)
+            .map(\.lastPathComponent)
+        guard Set(names) == Set(["Payload", "manifest.json"]) else {
+            throw BackupError.verificationFailed("备份目录包含未知项目")
+        }
+        return candidate
+    }
+
     static func listBackups() throws -> [BackupRecord] {
         let fm = FileManager.default
         try fm.createDirectory(at: backupFolder, withIntermediateDirectories: true)
-        return try fm.contentsOfDirectory(at: backupFolder, includingPropertiesForKeys: [.isDirectoryKey])
-            .filter { (try? $0.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true }
+        return try fm.contentsOfDirectory(
+            at: backupFolder,
+            includingPropertiesForKeys: [.isDirectoryKey, .isSymbolicLinkKey]
+        )
+            .filter {
+                // A renamed .incoming-* directory may retain Finder's hidden
+                // metadata. Filter by the CURRENT path instead of relying on
+                // FileManager's .skipsHiddenFiles resource-flag behavior.
+                guard !$0.lastPathComponent.hasPrefix(".") else { return false }
+                guard let flags = try? $0.resourceValues(forKeys: [
+                    .isDirectoryKey, .isSymbolicLinkKey
+                ]) else { return false }
+                return flags.isDirectory == true && flags.isSymbolicLink != true
+            }
             .sorted { $0.lastPathComponent > $1.lastPathComponent }
             .map { BackupRecord(folder: $0) }
     }
@@ -68,6 +122,8 @@ enum BackupManager {
             encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
             encoder.dateEncodingStrategy = .iso8601
             try encoder.encode(manifest).write(to: folder.appendingPathComponent("manifest.json"), options: .atomic)
+            // Do not publish a backup that cannot immediately be verified.
+            _ = try verify(folder)
             return folder
         } catch {
             try? fm.removeItem(at: folder)
@@ -76,13 +132,26 @@ enum BackupManager {
     }
 
     static func verify(_ folder: URL) throws -> Int {
+        try verifyFiles(in: folder.appendingPathComponent("Payload", isDirectory: true), usingManifestAt: folder)
+    }
+
+    // The same manifest verification is used for a staged restore payload
+    // and for post-commit recovery checks.
+    static func verifyFiles(in payload: URL, usingManifestAt folder: URL) throws -> Int {
+        let trustedFolder = try validatedBackupFolder(folder)
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
-        let manifest = try decoder.decode(BackupManifest.self, from: Data(contentsOf: folder.appendingPathComponent("manifest.json")))
-        let payload = folder.appendingPathComponent("Payload", isDirectory: true)
+        let manifest = try decoder.decode(BackupManifest.self, from: Data(contentsOf: trustedFolder.appendingPathComponent("manifest.json")))
+        guard manifest.formatVersion == 1 else {
+            throw BackupError.verificationFailed("不支持的备份清单版本")
+        }
         let current = try digests(in: payload)
         guard current.count == manifest.files.count else {
             throw BackupError.verificationFailed("数量不一致")
+        }
+        let paths = manifest.files.map(\.relativePath)
+        guard Set(paths).count == paths.count else {
+            throw BackupError.verificationFailed("备份清单存在重复路径")
         }
         let known = Dictionary(uniqueKeysWithValues: manifest.files.map { ($0.relativePath, $0) })
         for entry in current {
@@ -95,8 +164,19 @@ enum BackupManager {
 
     private static func rejectSymlinks(in root: URL) throws {
         let fm = FileManager.default
-        let enumerator = fm.enumerator(at: root, includingPropertiesForKeys: [.isSymbolicLinkKey])
-        while let item = enumerator?.nextObject() as? URL {
+        let rootFlags = try root.resourceValues(forKeys: [
+            .isDirectoryKey, .isSymbolicLinkKey
+        ])
+        guard rootFlags.isDirectory == true,
+              rootFlags.isSymbolicLink != true else {
+            throw BackupError.symbolicLinkNotAllowed
+        }
+        guard let enumerator = fm.enumerator(
+            at: root, includingPropertiesForKeys: [.isSymbolicLinkKey]
+        ) else {
+            throw BackupError.verificationFailed("无法遍历备份数据源")
+        }
+        while let item = enumerator.nextObject() as? URL {
             if (try item.resourceValues(forKeys: [.isSymbolicLinkKey])).isSymbolicLink == true {
                 throw BackupError.symbolicLinkNotAllowed
             }
@@ -105,14 +185,36 @@ enum BackupManager {
 
     private static func digests(in root: URL) throws -> [FileDigest] {
         let fm = FileManager.default
-        let enumerator = fm.enumerator(at: root, includingPropertiesForKeys: [.isRegularFileKey, .isSymbolicLinkKey, .fileSizeKey])
+        let rootFlags = try root.resourceValues(forKeys: [
+            .isDirectoryKey, .isSymbolicLinkKey
+        ])
+        guard rootFlags.isDirectory == true,
+              rootFlags.isSymbolicLink != true else {
+            throw BackupError.verificationFailed("备份 Payload 缺失或为符号链接")
+        }
+        guard let enumerator = fm.enumerator(at: root, includingPropertiesForKeys: [
+            .isDirectoryKey, .isRegularFileKey, .isSymbolicLinkKey, .fileSizeKey
+        ]) else { throw BackupError.verificationFailed("无法枚举备份内容") }
         var result: [FileDigest] = []
-        while let file = enumerator?.nextObject() as? URL {
-            let values = try file.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey, .fileSizeKey])
+        while let file = enumerator.nextObject() as? URL {
+            let values = try file.resourceValues(forKeys: [
+                .isDirectoryKey, .isRegularFileKey, .isSymbolicLinkKey, .fileSizeKey
+            ])
             guard values.isSymbolicLink != true else { throw BackupError.symbolicLinkNotAllowed }
-            guard values.isRegularFile == true else { continue }
-            let prefix = root.path + "/"
-            let relative = String(file.path.dropFirst(prefix.count))
+            if values.isDirectory == true { continue }
+            guard values.isRegularFile == true else {
+                throw BackupError.verificationFailed("备份包含不支持的特殊文件")
+            }
+            // A path can be presented as /var/... or /private/var/... on
+            // macOS. Never compute relative paths by trimming a string length;
+            // canonicalize both URLs and compare full path components instead.
+            let rootParts = root.resolvingSymlinksInPath().standardizedFileURL.pathComponents
+            let fileParts = file.resolvingSymlinksInPath().standardizedFileURL.pathComponents
+            guard fileParts.count > rootParts.count,
+                  fileParts.starts(with: rootParts) else {
+                throw BackupError.verificationFailed("文件路径超出备份目录：" + file.lastPathComponent)
+            }
+            let relative = fileParts.dropFirst(rootParts.count).joined(separator: "/")
             result.append(FileDigest(relativePath: relative, byteCount: Int64(values.fileSize ?? 0), sha256: try sha256(file)))
         }
         return result.sorted { $0.relativePath < $1.relativePath }

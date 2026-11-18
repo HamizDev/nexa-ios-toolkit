@@ -56,6 +56,169 @@
     F5A200000000000000000006 /* WQLocalization.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Vendor/WQFiles/WQLocalization.h; sourceTree = SOURCE_ROOT; };
     F5A200000000000000000008 /* WQLocalization.m in Sources */ = {isa = PBXBuildFile; fileRef = F5A200000000000000000007 /* WQLocalization.m */; };
     F5A200000000000000000007 /* WQLocalization.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Vendor/WQFiles/WQLocalization.m; sourceTree = SOURCE_ROOT; };
+    F5A300000000000000000002 /* DatabaseInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A300000000000000000001 /* DatabaseInspector.swift */; };
+    F5A300000000000000000001 /* DatabaseInspector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/WCMigrate/DatabaseInspector.swift; sourceTree = SOURCE_ROOT; };
+    F5A300000000000000000004 /* DatabaseReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A300000000000000000003 /* DatabaseReport.swift */; };
+    F5A300000000000000000003 /* DatabaseReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/WCMigrate/DatabaseReport.swift; sourceTree = SOURCE_ROOT; };
+    F5A300000000000000000006 /* NexaDatabaseReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A300000000000000000005 /* NexaDatabaseReportView.swift */; };
+    F5A300000000000000000005 /* NexaDatabaseReportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaDatabaseReportView.swift; sourceTree = "<group>"; };
+    B00000000000000000000003 /* NexaWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000002 /* NexaWatchApp.swift */; };
+    B0000000000000000000000C /* NexaWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = B00000000000000000000001 /* NexaWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+    B00000000000000000000002 /* NexaWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NexaWatchApp.swift; sourceTree = "<group>"; };
+    B00000000000000000000001 /* NexaWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NexaWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+    B00000000000000000000004 /* NexaWatch Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (B00000000000000000000003 /* NexaWatchApp.swift in Sources */, E50000000000000000000002 /* BackupView.swift in Sources */, E50000000000000000000004 /* ContentModel.swift in Sources */, E50000000000000000000006 /* ContentView.swift in Sources */, E50000000000000000000008 /* DisplayAndControlsView.swift in Sources */, E5000000000000000000000A /* IntelligenceView.swift in Sources */, E5000000000000000000000C /* RegionCodeOptionsView.swift in Sources */, E5000000000000000000000E /* ResolutionOptionsView.swift in Sources */, E50000000000000000000010 /* SalesRegionOptionsView.swift in Sources */, E50000000000000000000012 /* SensorsAndWorkoutsView.swift in Sources */, E50000000000000000000014 /* ViewRows.swift in Sources */, E50000000000000000000016 /* WatchConnectivityManager.swift in Sources */, E50000000000000000000018 /* WatchFacesView.swift in Sources */, E5000000000000000000001A /* NexaHermesGate.swift in Sources */, E5000000000000000000001C /* BQCore.m in Sources */, ); runOnlyForDeploymentPostprocessing = 0; };
+    B00000000000000000000005 /* NexaWatch Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+    B00000000000000000000006 /* NexaWatch Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (E60000000000000000000004 /* Localizable.strings in Resources */, E50000000000000000000022 /* MGDefaults.plist in Resources */, E50000000000000000000024 /* MGOffsets.plist in Resources */, ); runOnlyForDeploymentPostprocessing = 0; };
+    B0000000000000000000000B /* Embed Watch Content */ = {
+      isa = PBXCopyFilesBuildPhase;
+      buildActionMask = 2147483647;
+      dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+      dstSubfolderSpec = 16;
+      files = (B0000000000000000000000C /* NexaWatch.app in Embed Watch Content */, );
+      name = "Embed Watch Content";
+      runOnlyForDeploymentPostprocessing = 0;
+    };
+    B0000000000000000000000F /* NexaWatch */ = {isa = PBXGroup; children = (E60000000000000000000003 /* Localizable.strings */, B00000000000000000000002 /* NexaWatchApp.swift */, E50000000000000000000001 /* BackupView.swift */, E50000000000000000000003 /* ContentModel.swift */, E50000000000000000000005 /* ContentView.swift */, E50000000000000000000007 /* DisplayAndControlsView.swift */, E50000000000000000000009 /* IntelligenceView.swift */, E5000000000000000000000B /* RegionCodeOptionsView.swift */, E5000000000000000000000D /* ResolutionOptionsView.swift */, E5000000000000000000000F /* SalesRegionOptionsView.swift */, E50000000000000000000011 /* SensorsAndWorkoutsView.swift */, E50000000000000000000013 /* ViewRows.swift */, E50000000000000000000015 /* WatchConnectivityManager.swift */, E50000000000000000000017 /* WatchFacesView.swift */, E50000000000000000000019 /* NexaHermesGate.swift */, E5000000000000000000001B /* BQCore.m */, E5000000000000000000001D /* BQCore.h */, E5000000000000000000001E /* BQRecoveryValidation.h */, E5000000000000000000001F /* NexaWatch-Bridging-Header.h */, E50000000000000000000020 /* NexaWatch.entitlements */, E50000000000000000000021 /* MGDefaults.plist */, E50000000000000000000023 /* MGOffsets.plist */, ); path = NexaWatch; sourceTree = "<group>"; };
+    B0000000000000000000000E /* PBXContainerItemProxy */ = {isa = PBXContainerItemProxy; containerPortal = 16EEAF57BAFC2A41CAB7C99A /* Project */; proxyType = 1; remoteGlobalIDString = B00000000000000000000007; remoteInfo = NexaWatch; };
+    B0000000000000000000000D /* PBXTargetDependency */ = {isa = PBXTargetDependency; target = B00000000000000000000007 /* NexaWatch */; targetProxy = B0000000000000000000000E /* PBXContainerItemProxy */; };
+    B00000000000000000000007 /* NexaWatch */ = {
+      isa = PBXNativeTarget;
+      buildConfigurationList = B0000000000000000000000A /* NexaWatch configurations */;
+      buildPhases = (B00000000000000000000004 /* NexaWatch Sources */, B00000000000000000000005 /* NexaWatch Frameworks */, B00000000000000000000006 /* NexaWatch Resources */, );
+      buildRules = ();
+      dependencies = ();
+      name = NexaWatch;
+      productName = NexaWatch;
+      productReference = B00000000000000000000001 /* NexaWatch.app */;
+      productType = "com.apple.product-type.application";
+    };
+    B00000000000000000000008 /* NexaWatch Debug */ = {isa = XCBuildConfiguration; buildSettings = {
+      CODE_SIGN_STYLE = Automatic;
+      CURRENT_PROJECT_VERSION = 1;
+      ENABLE_PREVIEWS = YES;
+      GENERATE_INFOPLIST_FILE = YES;
+      INFOPLIST_KEY_CFBundleDisplayName = Nexa;
+      INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "$(NEXA_COMPANION_BUNDLE_IDENTIFIER)";
+      MARKETING_VERSION = 0.0.1;
+      PRODUCT_BUNDLE_IDENTIFIER = "$(NEXA_COMPANION_BUNDLE_IDENTIFIER).watchkitapp";
+      PRODUCT_NAME = "$(TARGET_NAME)";
+      SDKROOT = watchos;
+      SKIP_INSTALL = YES;
+      SUPPORTED_PLATFORMS = "watchos watchsimulator";
+      SWIFT_VERSION = 5.0;
+      TARGETED_DEVICE_FAMILY = 4;
+      CODE_SIGN_ENTITLEMENTS = NexaWatch/NexaWatch.entitlements;
+      HEADER_SEARCH_PATHS = ("$(inherited)", "$(SRCROOT)/ThirdParty/HermesEnabler/HermesEnabler2");
+      INFOPLIST_KEY_NexaWatchAppGroup = "$(NEXA_WATCH_APP_GROUP_IDENTIFIER)";
+      NEXA_WATCH_APP_GROUP_IDENTIFIER = group.com.example.Nexa.watchkitapp;
+      OTHER_LDFLAGS = ("$(inherited)", "-lz");
+      SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+      SWIFT_OBJC_BRIDGING_HEADER = NexaWatch/NexaWatch-Bridging-Header.h;
+      WATCHOS_DEPLOYMENT_TARGET = 26.0;
+    }; name = Debug; };
+    B00000000000000000000009 /* NexaWatch Release */ = {isa = XCBuildConfiguration; buildSettings = {
+      CODE_SIGN_STYLE = Automatic;
+      CURRENT_PROJECT_VERSION = 1;
+      GENERATE_INFOPLIST_FILE = YES;
+      INFOPLIST_KEY_CFBundleDisplayName = Nexa;
+      INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "$(NEXA_COMPANION_BUNDLE_IDENTIFIER)";
+      MARKETING_VERSION = 0.0.1;
+      PRODUCT_BUNDLE_IDENTIFIER = "$(NEXA_COMPANION_BUNDLE_IDENTIFIER).watchkitapp";
+      PRODUCT_NAME = "$(TARGET_NAME)";
+      SDKROOT = watchos;
+      SKIP_INSTALL = YES;
+      SUPPORTED_PLATFORMS = "watchos watchsimulator";
+      SWIFT_VERSION = 5.0;
+      TARGETED_DEVICE_FAMILY = 4;
+      CODE_SIGN_ENTITLEMENTS = NexaWatch/NexaWatch.entitlements;
+      HEADER_SEARCH_PATHS = ("$(inherited)", "$(SRCROOT)/ThirdParty/HermesEnabler/HermesEnabler2");
+      INFOPLIST_KEY_NexaWatchAppGroup = "$(NEXA_WATCH_APP_GROUP_IDENTIFIER)";
+      NEXA_WATCH_APP_GROUP_IDENTIFIER = group.com.example.Nexa.watchkitapp;
+      OTHER_LDFLAGS = ("$(inherited)", "-lz");
+      SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+      SWIFT_OBJC_BRIDGING_HEADER = NexaWatch/NexaWatch-Bridging-Header.h;
+      WATCHOS_DEPLOYMENT_TARGET = 26.0;
+    }; name = Release; };
+    B0000000000000000000000A /* NexaWatch configurations */ = {isa = XCConfigurationList; buildConfigurations = (B00000000000000000000008, B00000000000000000000009); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+    C20000000000000000000002 /* NexaWQExplorerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000000000000000000001 /* NexaWQExplorerView.swift */; };
+    C20000000000000000000001 /* NexaWQExplorerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaWQExplorerView.swift; sourceTree = "<group>"; };
+    C20000000000000000000004 /* WQAccess.m in Sources */ = {isa = PBXBuildFile; fileRef = C20000000000000000000003 /* WQAccess.m */; };
+    C20000000000000000000003 /* WQAccess.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThirdParty/WQFiles/WQAccess.m; sourceTree = SOURCE_ROOT; };
+    C20000000000000000000006 /* WQLaunchServices.m in Sources */ = {isa = PBXBuildFile; fileRef = C20000000000000000000005 /* WQLaunchServices.m */; };
+    C20000000000000000000005 /* WQLaunchServices.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThirdParty/WQFiles/WQLaunchServices.m; sourceTree = SOURCE_ROOT; };
+    C20000000000000000000008 /* WQScanTask.m in Sources */ = {isa = PBXBuildFile; fileRef = C20000000000000000000007 /* WQScanTask.m */; };
+    C20000000000000000000007 /* WQScanTask.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThirdParty/WQFiles/WQScanTask.m; sourceTree = SOURCE_ROOT; };
+    C30000000000000000000002 /* NexaBackupRestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30000000000000000000001 /* NexaBackupRestore.swift */; };
+    C30000000000000000000001 /* NexaBackupRestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaBackupRestore.swift; sourceTree = "<group>"; };
+    D40000000000000000000002 /* WeChatIdentityResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40000000000000000000001 /* WeChatIdentityResolver.swift */; };
+    D40000000000000000000001 /* WeChatIdentityResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/WCMigrate/WeChatIdentityResolver.swift; sourceTree = SOURCE_ROOT; };
+    D40000000000000000000004 /* NexaWeChatIdentityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40000000000000000000003 /* NexaWeChatIdentityView.swift */; };
+    D40000000000000000000003 /* NexaWeChatIdentityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaWeChatIdentityView.swift; sourceTree = "<group>"; };
+    F10000000000000000000002 /* GXMobileGestaltImage.m in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000001 /* GXMobileGestaltImage.m */; };
+    F10000000000000000000001 /* GXMobileGestaltImage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThirdParty/GestaltX/GestaltX/GXMobileGestaltImage.m; sourceTree = SOURCE_ROOT; };
+    F10000000000000000000003 /* GXMobileGestaltImage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ThirdParty/GestaltX/GestaltX/GXMobileGestaltImage.h; sourceTree = SOURCE_ROOT; };
+    F20000000000000000000002 /* NexaLocalFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000001 /* NexaLocalFiles.swift */; };
+    F20000000000000000000001 /* NexaLocalFiles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaLocalFiles.swift; sourceTree = "<group>"; };
+    F20000000000000000000004 /* NexaFileOperationsUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000003 /* NexaFileOperationsUI.swift */; };
+    F20000000000000000000003 /* NexaFileOperationsUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaFileOperationsUI.swift; sourceTree = "<group>"; };
+    E50000000000000000000002 /* BackupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E50000000000000000000001 /* BackupView.swift */; };
+    E50000000000000000000001 /* BackupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdParty/HermesEnabler/HermesEnabler2/BackupView.swift; sourceTree = SOURCE_ROOT; };
+    E50000000000000000000004 /* ContentModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E50000000000000000000003 /* ContentModel.swift */; };
+    E50000000000000000000003 /* ContentModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdParty/HermesEnabler/HermesEnabler2/ContentModel.swift; sourceTree = SOURCE_ROOT; };
+    E50000000000000000000006 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E50000000000000000000005 /* ContentView.swift */; };
+    E50000000000000000000005 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdParty/HermesEnabler/HermesEnabler2/ContentView.swift; sourceTree = SOURCE_ROOT; };
+    E50000000000000000000008 /* DisplayAndControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E50000000000000000000007 /* DisplayAndControlsView.swift */; };
+    E50000000000000000000007 /* DisplayAndControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdParty/HermesEnabler/HermesEnabler2/DisplayAndControlsView.swift; sourceTree = SOURCE_ROOT; };
+    E5000000000000000000000A /* IntelligenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E50000000000000000000009 /* IntelligenceView.swift */; };
+    E50000000000000000000009 /* IntelligenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdParty/HermesEnabler/HermesEnabler2/IntelligenceView.swift; sourceTree = SOURCE_ROOT; };
+    E5000000000000000000000C /* RegionCodeOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5000000000000000000000B /* RegionCodeOptionsView.swift */; };
+    E5000000000000000000000B /* RegionCodeOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdParty/HermesEnabler/HermesEnabler2/RegionCodeOptionsView.swift; sourceTree = SOURCE_ROOT; };
+    E5000000000000000000000E /* ResolutionOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5000000000000000000000D /* ResolutionOptionsView.swift */; };
+    E5000000000000000000000D /* ResolutionOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdParty/HermesEnabler/HermesEnabler2/ResolutionOptionsView.swift; sourceTree = SOURCE_ROOT; };
+    E50000000000000000000010 /* SalesRegionOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5000000000000000000000F /* SalesRegionOptionsView.swift */; };
+    E5000000000000000000000F /* SalesRegionOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdParty/HermesEnabler/HermesEnabler2/SalesRegionOptionsView.swift; sourceTree = SOURCE_ROOT; };
+    E50000000000000000000012 /* SensorsAndWorkoutsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E50000000000000000000011 /* SensorsAndWorkoutsView.swift */; };
+    E50000000000000000000011 /* SensorsAndWorkoutsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdParty/HermesEnabler/HermesEnabler2/SensorsAndWorkoutsView.swift; sourceTree = SOURCE_ROOT; };
+    E50000000000000000000014 /* ViewRows.swift in Sources */ = {isa = PBXBuildFile; fileRef = E50000000000000000000013 /* ViewRows.swift */; };
+    E50000000000000000000013 /* ViewRows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdParty/HermesEnabler/HermesEnabler2/ViewRows.swift; sourceTree = SOURCE_ROOT; };
+    E50000000000000000000016 /* WatchConnectivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E50000000000000000000015 /* WatchConnectivityManager.swift */; };
+    E50000000000000000000015 /* WatchConnectivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdParty/HermesEnabler/HermesEnabler2/WatchConnectivity/WatchConnectivityManager.swift; sourceTree = SOURCE_ROOT; };
+    E50000000000000000000018 /* WatchFacesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E50000000000000000000017 /* WatchFacesView.swift */; };
+    E50000000000000000000017 /* WatchFacesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdParty/HermesEnabler/HermesEnabler2/WatchFacesView.swift; sourceTree = SOURCE_ROOT; };
+    E5000000000000000000001A /* NexaHermesGate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E50000000000000000000019 /* NexaHermesGate.swift */; };
+    E50000000000000000000019 /* NexaHermesGate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NexaHermesGate.swift; sourceTree = "<group>"; };
+    E5000000000000000000001C /* BQCore.m in Sources */ = {isa = PBXBuildFile; fileRef = E5000000000000000000001B /* BQCore.m */; };
+    E5000000000000000000001B /* BQCore.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThirdParty/HermesEnabler/HermesEnabler2/BQCore.m; sourceTree = SOURCE_ROOT; };
+    E5000000000000000000001D /* BQCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ThirdParty/HermesEnabler/HermesEnabler2/BQCore.h; sourceTree = SOURCE_ROOT; };
+    E5000000000000000000001E /* BQRecoveryValidation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ThirdParty/HermesEnabler/HermesEnabler2/BQRecoveryValidation.h; sourceTree = SOURCE_ROOT; };
+    E5000000000000000000001F /* NexaWatch-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NexaWatch-Bridging-Header.h; sourceTree = "<group>"; };
+    E50000000000000000000020 /* NexaWatch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = NexaWatch.entitlements; sourceTree = "<group>"; };
+    E50000000000000000000022 /* MGDefaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = E50000000000000000000021 /* MGDefaults.plist */; };
+    E50000000000000000000021 /* MGDefaults.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = ThirdParty/HermesEnabler/HermesEnabler2/MGDefaults.plist; sourceTree = SOURCE_ROOT; };
+    E50000000000000000000024 /* MGOffsets.plist in Resources */ = {isa = PBXBuildFile; fileRef = E50000000000000000000023 /* MGOffsets.plist */; };
+    E50000000000000000000023 /* MGOffsets.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = ThirdParty/HermesEnabler/HermesEnabler2/MGOffsets.plist; sourceTree = SOURCE_ROOT; };
+    E60000000000000000000001 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh-Hans; path = NexaWatch/Localization/zh-Hans.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
+    E60000000000000000000002 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = NexaWatch/Localization/en.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
+    E60000000000000000000003 /* Localizable.strings */ = {isa = PBXVariantGroup; children = (E60000000000000000000001 /* zh-Hans */, E60000000000000000000002 /* en */, ); name = Localizable.strings; sourceTree = "<group>"; };
+    E60000000000000000000004 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E60000000000000000000003 /* Localizable.strings */; };
+    F30000000000000000000002 /* NexaImportMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30000000000000000000001 /* NexaImportMigration.swift */; };
+    F30000000000000000000001 /* NexaImportMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaImportMigration.swift; sourceTree = "<group>"; };
+    F30000000000000000000004 /* NexaMigrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30000000000000000000003 /* NexaMigrationView.swift */; };
+    F30000000000000000000003 /* NexaMigrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaMigrationView.swift; sourceTree = "<group>"; };
+    F40000000000000000000002 /* NexaPlistHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F40000000000000000000001 /* NexaPlistHistory.swift */; };
+    F40000000000000000000001 /* NexaPlistHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaPlistHistory.swift; sourceTree = "<group>"; };
+    F40000000000000000000004 /* NexaPlistHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F40000000000000000000003 /* NexaPlistHistoryView.swift */; };
+    F40000000000000000000003 /* NexaPlistHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaPlistHistoryView.swift; sourceTree = "<group>"; };
+    F50000000000000000000002 /* NexaWQImportName.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50000000000000000000001 /* NexaWQImportName.swift */; };
+    F50000000000000000000001 /* NexaWQImportName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaWQImportName.swift; sourceTree = "<group>"; };
+    F50000000000000000000004 /* NexaWQFileExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50000000000000000000003 /* NexaWQFileExport.swift */; };
+    F50000000000000000000003 /* NexaWQFileExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaWQFileExport.swift; sourceTree = "<group>"; };
+    F60000000000000000000002 /* NexaSafety.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60000000000000000000001 /* NexaSafety.swift */; };
+    F60000000000000000000001 /* NexaSafety.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaSafety.swift; sourceTree = "<group>"; };
+    F70000000000000000000002 /* NexaImportCombine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70000000000000000000001 /* NexaImportCombine.swift */; };
+    F70000000000000000000001 /* NexaImportCombine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaImportCombine.swift; sourceTree = "<group>"; };
+    F70000000000000000000004 /* NexaImportCombineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70000000000000000000003 /* NexaImportCombineView.swift */; };
+    F70000000000000000000003 /* NexaImportCombineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaImportCombineView.swift; sourceTree = "<group>"; };
     964BD5656C7A016EF0C9ADA7 /* Nexa.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nexa.app; sourceTree = BUILT_PRODUCTS_DIR; };
     EC981767C62EA833B107403F /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
     984AA73C6A3518E356174B49 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
@@ -87,10 +250,32 @@
         F5A200000000000000000002 /* NexaZipManager.swift in Sources */,
         F5A200000000000000000005 /* WQArchive.m in Sources */,
         F5A200000000000000000008 /* WQLocalization.m in Sources */,
+        F5A300000000000000000002 /* DatabaseInspector.swift in Sources */,
+        F5A300000000000000000004 /* DatabaseReport.swift in Sources */,
+        F5A300000000000000000006 /* NexaDatabaseReportView.swift in Sources */,
+        C20000000000000000000002 /* NexaWQExplorerView.swift in Sources */,
+        C20000000000000000000004 /* WQAccess.m in Sources */,
+        C20000000000000000000006 /* WQLaunchServices.m in Sources */,
+        C20000000000000000000008 /* WQScanTask.m in Sources */,
+        C30000000000000000000002 /* NexaBackupRestore.swift in Sources */,
+        D40000000000000000000002 /* WeChatIdentityResolver.swift in Sources */,
+        D40000000000000000000004 /* NexaWeChatIdentityView.swift in Sources */,
+        F10000000000000000000002 /* GXMobileGestaltImage.m in Sources */,
+        F20000000000000000000002 /* NexaLocalFiles.swift in Sources */,
+        F20000000000000000000004 /* NexaFileOperationsUI.swift in Sources */,
+        F30000000000000000000002 /* NexaImportMigration.swift in Sources */,
+        F30000000000000000000004 /* NexaMigrationView.swift in Sources */,
+        F40000000000000000000002 /* NexaPlistHistory.swift in Sources */,
+        F40000000000000000000004 /* NexaPlistHistoryView.swift in Sources */,
+        F50000000000000000000002 /* NexaWQImportName.swift in Sources */,
+        F50000000000000000000004 /* NexaWQFileExport.swift in Sources */,
+        F60000000000000000000002 /* NexaSafety.swift in Sources */,
+        F70000000000000000000002 /* NexaImportCombine.swift in Sources */,
+        F70000000000000000000004 /* NexaImportCombineView.swift in Sources */,
       );
       runOnlyForDeploymentPostprocessing = 0;
     };
-    3C9D7F1ECE6B1C2C05B9A223 /* Main */ = {isa = PBXGroup; children = (CC6A140804F390EB618F6366 /* Nexa */, 8A226E0C47ACC7183C1F4F91 /* Products */); sourceTree = "<group>"; };
+    3C9D7F1ECE6B1C2C05B9A223 /* Main */ = {isa = PBXGroup; children = (CC6A140804F390EB618F6366 /* Nexa */, B0000000000000000000000F /* NexaWatch */, 8A226E0C47ACC7183C1F4F91 /* Products */); sourceTree = "<group>"; };
     CC6A140804F390EB618F6366 /* Nexa */ = {
       isa = PBXGroup;
       children = (
@@ -122,18 +307,41 @@
         F5A200000000000000000004 /* WQArchive.m */,
         F5A200000000000000000006 /* WQLocalization.h */,
         F5A200000000000000000007 /* WQLocalization.m */,
+        F5A300000000000000000001 /* DatabaseInspector.swift */,
+        F5A300000000000000000003 /* DatabaseReport.swift */,
+        F5A300000000000000000005 /* NexaDatabaseReportView.swift */,
+        C20000000000000000000001 /* NexaWQExplorerView.swift */,
+        C20000000000000000000003 /* WQAccess.m */,
+        C20000000000000000000005 /* WQLaunchServices.m */,
+        C20000000000000000000007 /* WQScanTask.m */,
+        C30000000000000000000001 /* NexaBackupRestore.swift */,
+        D40000000000000000000001 /* WeChatIdentityResolver.swift */,
+        D40000000000000000000003 /* NexaWeChatIdentityView.swift */,
+        F10000000000000000000001 /* GXMobileGestaltImage.m */,
+        F10000000000000000000003 /* GXMobileGestaltImage.h */,
+        F20000000000000000000001 /* NexaLocalFiles.swift */,
+        F20000000000000000000003 /* NexaFileOperationsUI.swift */,
+        F30000000000000000000001 /* NexaImportMigration.swift */,
+        F30000000000000000000003 /* NexaMigrationView.swift */,
+        F40000000000000000000001 /* NexaPlistHistory.swift */,
+        F40000000000000000000003 /* NexaPlistHistoryView.swift */,
+        F50000000000000000000001 /* NexaWQImportName.swift */,
+        F50000000000000000000003 /* NexaWQFileExport.swift */,
+        F60000000000000000000001 /* NexaSafety.swift */,
+        F70000000000000000000001 /* NexaImportCombine.swift */,
+        F70000000000000000000003 /* NexaImportCombineView.swift */,
       );
       name = Nexa;
       path = Nexa;
       sourceTree = "<group>";
     };
-    8A226E0C47ACC7183C1F4F91 /* Products */ = {isa = PBXGroup; children = (964BD5656C7A016EF0C9ADA7 /* Nexa.app */); name = Products; sourceTree = "<group>"; };
+    8A226E0C47ACC7183C1F4F91 /* Products */ = {isa = PBXGroup; children = (964BD5656C7A016EF0C9ADA7 /* Nexa.app */, B00000000000000000000001 /* NexaWatch.app */); name = Products; sourceTree = "<group>"; };
     F762108CA727F0BCD961FC74 /* Nexa */ = {
       isa = PBXNativeTarget;
       buildConfigurationList = 281EA7C4EFE2067F920FB1D9;
-      buildPhases = (A3E0018A89AAE54963D28A13, EC981767C62EA833B107403F, 984AA73C6A3518E356174B49);
+      buildPhases = (A3E0018A89AAE54963D28A13, EC981767C62EA833B107403F, 984AA73C6A3518E356174B49, B0000000000000000000000B /* Embed Watch Content */);
       buildRules = ();
-      dependencies = ();
+      dependencies = (B0000000000000000000000D /* PBXTargetDependency */, );
       name = Nexa;
       productReference = 964BD5656C7A016EF0C9ADA7;
       productName = Nexa;
@@ -144,7 +352,7 @@
       attributes = {
         BuildIndependentTargetsInParallel = YES;
         LastUpgradeCheck = 1600;
-        TargetAttributes = {F762108CA727F0BCD961FC74 = {CreatedOnToolsVersion = 16.0; ProvisioningStyle = Automatic; }; };
+        TargetAttributes = {F762108CA727F0BCD961FC74 = {CreatedOnToolsVersion = 16.0; ProvisioningStyle = Automatic; }; B00000000000000000000007 = {CreatedOnToolsVersion = 26.0; ProvisioningStyle = Automatic; }; };
       };
       buildConfigurationList = 0B47E1D6E323FD3DE693085E;
       compatibilityVersion = "Xcode 14.0";
@@ -155,7 +363,7 @@
       productRefGroup = 8A226E0C47ACC7183C1F4F91;
       projectDirPath = "";
       projectRoot = "";
-      targets = (F762108CA727F0BCD961FC74);
+      targets = (F762108CA727F0BCD961FC74, B00000000000000000000007 /* NexaWatch */);
     };
     2CE647D298F7377539BDA550 /* Project Debug */ = {isa = XCBuildConfiguration; buildSettings = {
         ALWAYS_SEARCH_USER_PATHS = NO;
@@ -165,6 +373,7 @@
         CODE_SIGN_STYLE = Automatic;
         GCC_C_LANGUAGE_STANDARD = gnu17;
         IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+        NEXA_COMPANION_BUNDLE_IDENTIFIER = com.example.Nexa;
         SDKROOT = iphoneos;
         SWIFT_VERSION = 5.0;
         TARGETED_DEVICE_FAMILY = "1,2";
@@ -177,6 +386,7 @@
         CODE_SIGN_STYLE = Automatic;
         GCC_C_LANGUAGE_STANDARD = gnu17;
         IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+        NEXA_COMPANION_BUNDLE_IDENTIFIER = com.example.Nexa;
         SDKROOT = iphoneos;
         SWIFT_VERSION = 5.0;
         TARGETED_DEVICE_FAMILY = "1,2";
@@ -186,14 +396,17 @@
         CURRENT_PROJECT_VERSION = 1;
         GENERATE_INFOPLIST_FILE = NO;
         INFOPLIST_FILE = Nexa/Info.plist;
+        CODE_SIGN_ENTITLEMENTS = Nexa/Nexa.entitlements;
+        NEXA_APP_GROUP_IDENTIFIER = group.com.example.Nexa;
         SWIFT_OBJC_BRIDGING_HEADER = Nexa/Nexa-Bridging-Header.h;
-        HEADER_SEARCH_PATHS = ("$(inherited)", "$(SRCROOT)/Vendor/WQFiles");
+        HEADER_SEARCH_PATHS = ("$(inherited)", "$(SRCROOT)/Vendor/WQFiles", "$(SRCROOT)/ThirdParty/WQFiles", "$(SRCROOT)/ThirdParty/GestaltX/GestaltX");
         IPHONEOS_DEPLOYMENT_TARGET = 26.0;
         LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks");
         MARKETING_VERSION = 0.0.1;
-        OTHER_LDFLAGS = ("$(inherited)", "-lz");
-        PRODUCT_BUNDLE_IDENTIFIER = com.example.Nexa;
+        OTHER_LDFLAGS = ("$(inherited)", "-lz", "-lsqlite3");
+        PRODUCT_BUNDLE_IDENTIFIER = "$(NEXA_COMPANION_BUNDLE_IDENTIFIER)";
         PRODUCT_NAME = "$(TARGET_NAME)";
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
         SWIFT_VERSION = 5.0;
         SUPPORTS_MACCATALYST = NO;
         TARGETED_DEVICE_FAMILY = "1,2";
@@ -203,13 +416,15 @@
         CURRENT_PROJECT_VERSION = 1;
         GENERATE_INFOPLIST_FILE = NO;
         INFOPLIST_FILE = Nexa/Info.plist;
+        CODE_SIGN_ENTITLEMENTS = Nexa/Nexa.entitlements;
+        NEXA_APP_GROUP_IDENTIFIER = group.com.example.Nexa;
         SWIFT_OBJC_BRIDGING_HEADER = Nexa/Nexa-Bridging-Header.h;
-        HEADER_SEARCH_PATHS = ("$(inherited)", "$(SRCROOT)/Vendor/WQFiles");
+        HEADER_SEARCH_PATHS = ("$(inherited)", "$(SRCROOT)/Vendor/WQFiles", "$(SRCROOT)/ThirdParty/WQFiles", "$(SRCROOT)/ThirdParty/GestaltX/GestaltX");
         IPHONEOS_DEPLOYMENT_TARGET = 26.0;
         LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks");
         MARKETING_VERSION = 0.0.1;
-        OTHER_LDFLAGS = ("$(inherited)", "-lz");
-        PRODUCT_BUNDLE_IDENTIFIER = com.example.Nexa;
+        OTHER_LDFLAGS = ("$(inherited)", "-lz", "-lsqlite3");
+        PRODUCT_BUNDLE_IDENTIFIER = "$(NEXA_COMPANION_BUNDLE_IDENTIFIER)";
         PRODUCT_NAME = "$(TARGET_NAME)";
         SWIFT_VERSION = 5.0;
         SUPPORTS_MACCATALYST = NO;
