@@ -4,7 +4,7 @@ The file manager only operates on copies **explicitly imported into Nexa's own D
 
 ## Implemented operations
 
-- Create a folder, rename an existing item, duplicate a regular file or directory, and move an item between existing imported folders (service API; movement UI is future work).
+- Create a folder, rename an existing item, duplicate a regular file or directory, and move an item between existing imported folders (now available in root and nested folder context menus).
 - Root and nested folder UIs offer scoped search and file sharing.
 - Delete moves to `Application Support/Nexa/FileTrash/<UUID>/Payload` with a JSON metadata record describing the original relative path.
 - Recently Deleted lists recoverable items. Restore refuses to overwrite existing items, and checks the original imported path before re-creating intermediate folders.
@@ -30,3 +30,7 @@ The file manager only operates on copies **explicitly imported into Nexa's own D
 - [ ] Verify low-storage and interruption behavior with large folder trees.
 
 Upstream WQFiles ZIP compression, WCMigrate diagnostics and GestaltX offline plist editing remain separate features with their own documented limitations.
+
+## Move picker and import hardening
+
+Moving a file invokes `availableMoveFolders(for:limit:)` and presents existing folders inside Imports only. The original parent and a source directory's descendants are excluded, and the picker limits enumeration to 200 folders. The actual move API rechecks scope, source and destination before mutating anything. Newly imported content is inspected for symlinks, including inside a selected directory, before copying from a user-granted file-provider URL. This validation does not permit opening protected private app containers.

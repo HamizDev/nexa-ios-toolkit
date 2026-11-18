@@ -10,6 +10,7 @@ struct LocalFolderView: View {
     @State private var searchText = ""
     @State private var prompt: NexaFileNamePrompt?
     @State private var pendingTrash: URL?
+    @State private var moveRequest: NexaMoveRequest?
     @State private var notice: String?
     @State private var busy = false
 
@@ -90,6 +91,10 @@ struct LocalFolderView: View {
                                 Button { duplicate(url) } label: {
                                     Label(en ? "Duplicate" : "复制副本", systemImage: "doc.on.doc")
                                 }
+                                Button { moveRequest = NexaMoveRequest(source: url) } label: {
+                                    Label(en ? "Move" : "移动到文件夹",
+                                          systemImage: "folder.badge.arrow.down")
+                                }
                                 Button(role: .destructive) { pendingTrash = url } label: {
                                     Label(en ? "Move to trash" : "移至回收站", systemImage: "trash")
                                 }
@@ -116,6 +121,17 @@ struct LocalFolderView: View {
         }
         .onAppear(perform: reload)
         .refreshable { reload() }
+        .sheet(item: $moveRequest) { request in
+            NexaMoveSheet(request: request) { target in
+                do {
+                    _ = try NexaLocalFiles.move(request.source, into: target)
+                    reload()
+                } catch {
+                    notice = error.localizedDescription
+                }
+            }
+            .environmentObject(language)
+        }
         .sheet(item: $prompt) { request in
             NexaFileNameSheet(request: request) { name in
                 do {

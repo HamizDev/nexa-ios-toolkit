@@ -11,6 +11,7 @@ struct FilesView: View {
     @State private var searchText = ""
     @State private var namePrompt: NexaFileNamePrompt?
     @State private var deletionCandidate: ImportedEntry?
+    @State private var moveRequest: NexaMoveRequest?
 
     private var visibleEntries: [ImportedEntry] {
         guard !searchText.isEmpty else { return store.entries }
@@ -151,6 +152,10 @@ struct FilesView: View {
                                             Label(language.code == "en" ? "Duplicate" : "复制副本",
                                                   systemImage: "doc.on.doc")
                                         }
+                                        Button { moveRequest = NexaMoveRequest(source: entry.url) } label: {
+                                            Label(language.code == "en" ? "Move" : "移动到文件夹",
+                                                  systemImage: "folder.badge.arrow.down")
+                                        }
                                         Button(role: .destructive) { deletionCandidate = entry } label: {
                                             Label(language.code == "en" ? "Move to trash" : "移至回收站",
                                                   systemImage: "trash")
@@ -171,6 +176,14 @@ struct FilesView: View {
             ToolbarItem(placement: .topBarTrailing) {
                 Button { importSheet = true } label: { Image(systemName: "plus") }
             }
+        }
+        .sheet(item: $moveRequest) { request in
+            NexaMoveSheet(request: request) { destination in
+                if let item = store.entries.first(where: { $0.url == request.source }) {
+                    store.move(item, into: destination)
+                }
+            }
+            .environmentObject(language)
         }
         .sheet(item: $namePrompt) { prompt in
             NexaFileNameSheet(request: prompt) { value in

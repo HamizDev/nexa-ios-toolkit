@@ -42,6 +42,7 @@ final class FilesStore: ObservableObject {
             let access = url.startAccessingSecurityScopedResource()
             defer { if access { url.stopAccessingSecurityScopedResource() } }
             do {
+                try NexaLocalFiles.validateUserImport(url)
                 let destination = Self.importFolder
                     .appendingPathComponent(String(UUID().uuidString.prefix(8)) + "_" + url.lastPathComponent)
                 try FileManager.default.copyItem(at: url, to: destination)
@@ -58,6 +59,12 @@ final class FilesStore: ObservableObject {
 
     func rename(_ entry: ImportedEntry, to name: String) {
         do { _ = try NexaLocalFiles.rename(entry.url, to: name) }
+        catch { errorMessage = error.localizedDescription }
+        refresh()
+    }
+
+    func move(_ entry: ImportedEntry, into folder: URL) {
+        do { _ = try NexaLocalFiles.move(entry.url, into: folder) }
         catch { errorMessage = error.localizedDescription }
         refresh()
     }

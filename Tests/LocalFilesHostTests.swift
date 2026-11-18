@@ -65,12 +65,22 @@ struct NexaLocalFileHostTests {
         rejects("move folder into own descendant") {
             _ = try NexaLocalFiles.move(nested, into: subset)
         }
+        let destinationOptions = try NexaLocalFiles.availableMoveFolders(for: original)
+        check(destinationOptions.contains(where: {
+            $0.resolvingSymlinksInPath() == subset.resolvingSymlinksInPath()
+        }), "move picker omitted a safe nested destination")
+        let folderOptions = try NexaLocalFiles.availableMoveFolders(for: nested)
+        check(!folderOptions.contains(where: {
+            $0.resolvingSymlinksInPath() == subset.resolvingSymlinksInPath()
+        }), "move picker exposed a descendant of source folder")
+        print("PASS: move destinations exclude own folder and descendants")
         rejects("move out of import sandbox") {
             _ = try NexaLocalFiles.move(original, into: root)
         }
 
         let outside = root.appendingPathComponent("Unselected.txt")
         try put([66, 77], at: outside)
+        try NexaLocalFiles.validateUserImport(outside)
         rejects("rename external file") {
             _ = try NexaLocalFiles.rename(outside, to: "unsafe.txt")
         }
@@ -81,6 +91,9 @@ struct NexaLocalFileHostTests {
         }
         rejects("read through symlink") {
             _ = try NexaLocalFiles.duplicate(externalLink)
+        }
+        rejects("security-scoped import does not accept symlinks") {
+            try NexaLocalFiles.validateUserImport(externalLink)
         }
         try fm.removeItem(at: externalLink)
         print("PASS: paths, collisions, nested moves and symlink safety")

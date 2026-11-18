@@ -2,6 +2,8 @@
 
 ## Unreleased — upstream integration branch
 
+- Added a bounded destination-folder picker for moving files within Nexa Imports, plus a recursive symlink check before accepting security-scoped file provider imports. Included positive and negative fixture tests.
+
 - Added usable Nexa-imported file operations: create folder, search, rename, duplicate, and recoverable trash with an optional permanent-delete confirmation. Rejects name collisions, symlink trees, unsafe names, and moves into descendant directories; includes disposable host regression tests.
 
 - Compiled original GestaltX `GXMobileGestaltImage.m/h` read-only loaded-library inspector into Nexa's device information page. Displays only section counts/sizes, with no MobileGestalt cache writes.

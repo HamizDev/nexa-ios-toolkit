@@ -171,3 +171,116 @@ struct NexaTrashView: View {
         } catch { notice = error.localizedDescription }
     }
 }
+
+struct NexaMoveRequest: Identifiable {
+    let id = UUID()
+    let source: URL
+}
+
+struct NexaMoveSheet: View {
+    @EnvironmentObject private var language: NexaLanguage
+    @Environment(\.dismiss) private var dismiss
+    let request: NexaMoveRequest
+    let onMove: (URL) -> Void
+
+    @State private var folders: [URL] = []
+    @State private var selected: URL?
+    @State private var searchText = ""
+    @State private var loading = true
+    @State private var notice: String?
+
+    private var en: Bool { language.code == "en" }
+
+    private var visible: [URL] {
+        guard !searchText.isEmpty else { return folders }
+        return folders.filter {
+            displayPath($0).localizedCaseInsensitiveContains(searchText)
+        }
+    }
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Section {
+                    TextField(en ? "Find destination folder" : "搜索目标文件夹",
+                              text: $searchText)
+                        .autocorrectionDisabled()
+                }
+                if loading {
+                    ProgressView(en ? "Finding folders…" : "正在查找文件夹…")
+                }
+                if !loading && folders.isEmpty {
+                    Text(en ? "No valid move destination found." : "没有可用的移动目标文件夹。")
+                        .foregroundStyle(.secondary)
+                }
+                ForEach(visible, id: \.path) { folder in
+                    Button {
+                        selected = folder
+                    } label: {
+                        HStack(spacing: 10) {
+                            Image(systemName: "folder")
+                                .foregroundStyle(.purple)
+                            Text(displayPath(folder))
+                                .font(.subheadline)
+                                .lineLimit(2)
+                                .foregroundStyle(.primary)
+                            Spacer()
+                            if selected == folder {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundStyle(.mint)
+                            }
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .navigationTitle(en ? "Move file" : "移动文件")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(language.t("common.cancel")) { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(en ? "Move" : "移动") {
+                        if let selected {
+                            onMove(selected)
+                            dismiss()
+                        }
+                    }
+                    .disabled(selected == nil || loading)
+                }
+            }
+            .task { await loadFolders() }
+            .alert(en ? "Move" : "移动文件", isPresented: Binding(
+                get: { notice != nil },
+                set: { if !$0 { notice = nil } }
+            )) {
+                Button(language.t("common.confirm"), role: .cancel) { notice = nil }
+            } message: {
+                Text(notice ?? "")
+            }
+        }
+    }
+
+    private func displayPath(_ folder: URL) -> String {
+        let root = AppPaths.importFolder.resolvingSymlinksInPath().standardizedFileURL
+        let canonical = folder.resolvingSymlinksInPath().standardizedFileURL
+        let remainder = canonical.pathComponents.dropFirst(root.pathComponents.count)
+        let relative = remainder.joined(separator: "/")
+        return relative.isEmpty ? (en ? "Imported Files" : "导入文件根目录") : relative
+    }
+
+    private func loadFolders() async {
+        loading = true
+        let file = request.source
+        do {
+            let result = try await Task.detached(priority: .userInitiated) {
+                try NexaLocalFiles.availableMoveFolders(for: file)
+            }.value
+            folders = result
+        } catch {
+            notice = error.localizedDescription
+        }
+        loading = false
+    }
+}

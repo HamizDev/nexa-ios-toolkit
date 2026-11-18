@@ -143,6 +143,49 @@ enum NexaLocalFiles {
         }
     }
 
+    /// Only existing imported directories may be chosen as move targets.
+    /// Excludes the original parent and moving a folder into its own subtree.
+    /// The list is bounded so a huge imported tree cannot fill the picker.
+    static func availableMoveFolders(for source: URL, limit: Int = 200) throws -> [URL] {
+        lock.lock()
+        defer { lock.unlock() }
+        let old = try item(source)
+        let oldIsFolder = (try old.resourceValues(forKeys: [.isDirectoryKey])).isDirectory == true
+        let originalParent = old.deletingLastPathComponent()
+        let root = try directory(AppPaths.importFolder)
+        var queue: [URL] = [root]
+        var folders: [URL] = []
+        let maximum = min(500, max(1, limit))
+        while !queue.isEmpty && folders.count < maximum {
+            let candidate = queue.removeFirst()
+            if oldIsFolder && candidate.pathComponents.starts(with: old.pathComponents) {
+                continue
+            }
+            if candidate != originalParent {
+                folders.append(candidate)
+            }
+            let entries = try list(in: candidate)
+            for child in entries {
+                if (try child.resourceValues(forKeys: [.isDirectoryKey])).isDirectory == true {
+                    queue.append(child.resolvingSymlinksInPath().standardizedFileURL)
+                }
+            }
+        }
+        return folders
+    }
+
+    /// Validate an externally selected, security-scoped source before copying
+    /// into Nexa. This does not grant access to other app sandboxes.
+    static func validateUserImport(_ source: URL) throws {
+        lock.lock()
+        defer { lock.unlock() }
+        try rejectNestedLinks(source)
+        let flags = try source.resourceValues(forKeys: [.isDirectoryKey, .isRegularFileKey])
+        guard flags.isDirectory == true || flags.isRegularFile == true else {
+            throw FileError.missingFile
+        }
+    }
+
     static func createFolder(in folder: URL, name: String) throws -> URL {
         lock.lock()
         defer { lock.unlock() }
