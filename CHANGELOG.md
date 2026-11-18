@@ -2,6 +2,9 @@
 
 ## Unreleased — upstream integration branch
 
+- Staged user-selected file/folder imports off the main thread with an atomic commit into Nexa Imports, randomized collision-resistant names, source preservation, progress feedback, and symlink rejection. Added host fixtures for successful, repeated, nested and unsafe imports.
+- Routed WQFiles ZIP extraction through the same imported-file path/symlink policy and added a direct navigation action to the extracted folder; unified nested-folder search styling with the rest of Nexa.
+
 - Replaced low-contrast system rounded search boxes with a reusable, accessible Nexa dark search field in Files and the imported plist editor; added localized clear actions and reduce-transparency support.
 
 - Fixed imported snapshot Merge's ancestor file/directory conflict validation: check every path component, not only lexically adjacent filenames. Added a synthetic regression for intervening filename ordering and safe Replace behavior.

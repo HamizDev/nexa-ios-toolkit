@@ -28,8 +28,11 @@ struct LocalFolderView: View {
             NexaBackground()
             ScrollView {
                 VStack(alignment: .leading, spacing: 12) {
-                    TextField(en ? "Search this folder" : "搜索当前文件夹", text: $searchText)
-                        .textFieldStyle(.roundedBorder)
+                    NexaSearchField(
+                        placeholder: en ? "Search this folder" : "搜索当前文件夹",
+                        text: $searchText,
+                        clearLabel: en ? "Clear search" : "清除搜索"
+                    )
                     HStack(spacing: 10) {
                         Button {
                             prompt = NexaFileNamePrompt(titleZh: "新建文件夹",
@@ -208,6 +211,7 @@ struct FileInspectorView: View {
     @State private var readError: String?
     @State private var extracting = false
     @State private var archiveNotice: String?
+    @State private var extractedFolder: URL?
 
     var body: some View {
         ZStack {
@@ -280,6 +284,15 @@ struct FileInspectorView: View {
                         }
                         .buttonStyle(.bordered)
                         .disabled(extracting)
+                        if let extractedFolder {
+                            NavigationLink(destination: LocalFolderView(folder: extractedFolder)) {
+                                Label(
+                                    language.code == "en" ? "Open extracted folder" : "打开解压后的文件夹",
+                                    systemImage: "folder.fill"
+                                )
+                            }
+                            .buttonStyle(.borderedProminent)
+                        }
                     }
                     ShareLink(item: file) {
                         Label(language.t("files.export"), systemImage: "square.and.arrow.up")
@@ -303,13 +316,16 @@ struct FileInspectorView: View {
     }
 
     private func extractZip() {
+        guard !extracting else { return }
         extracting = true
+        extractedFolder = nil
         Task {
             do {
                 let source = file
                 let result = try await Task.detached(priority: .userInitiated) {
                     try NexaZipManager.extractImportedArchive(source)
                 }.value
+                extractedFolder = result.file
                 archiveNotice = language.code == "en"
                     ? "Extracted to \(result.file.lastPathComponent). Skipped entries: \(result.skipped)."
                     : "已解压到 \(result.file.lastPathComponent)，跳过条目：\(result.skipped)。"

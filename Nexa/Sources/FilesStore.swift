@@ -38,17 +38,28 @@ final class FilesStore: ObservableObject {
     }
 
     func importURLs(_ urls: [URL]) {
-        for url in urls {
-            let access = url.startAccessingSecurityScopedResource()
-            defer { if access { url.stopAccessingSecurityScopedResource() } }
-            do {
-                try NexaLocalFiles.validateUserImport(url)
-                let destination = Self.importFolder
-                    .appendingPathComponent(String(UUID().uuidString.prefix(8)) + "_" + url.lastPathComponent)
-                try FileManager.default.copyItem(at: url, to: destination)
-            } catch { errorMessage = "Import \(url.lastPathComponent): \(error.localizedDescription)" }
+        guard !operationBusy, !urls.isEmpty else { return }
+        operationBusy = true
+        // Security-scoped access remains open for the duration of each staged
+        // copy. File-provider I/O does not block the SwiftUI main actor.
+        Task {
+            let failures = await Task.detached(priority: .userInitiated) { () -> [String] in
+                var problems: [String] = []
+                for url in urls {
+                    let access = url.startAccessingSecurityScopedResource()
+                    do {
+                        _ = try NexaLocalFiles.importSelected(url)
+                    } catch {
+                        problems.append("Import \(url.lastPathComponent): \(error.localizedDescription)")
+                    }
+                    if access { url.stopAccessingSecurityScopedResource() }
+                }
+                return problems
+            }.value
+            operationBusy = false
+            if !failures.isEmpty { errorMessage = failures.joined(separator: "\n") }
+            refresh()
         }
-        refresh()
     }
 
     func createFolder(_ name: String) {

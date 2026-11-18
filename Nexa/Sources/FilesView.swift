@@ -36,6 +36,12 @@ struct FilesView: View {
                     NexaActionButton(title: language.t("files.import"), symbol: "plus") {
                         importSheet = true
                     }
+                    .disabled(store.operationBusy)
+                    if store.operationBusy {
+                        ProgressView(language.code == "en"
+                                     ? "Importing or copying files…" : "正在导入或复制文件…")
+                            .tint(NexaPalette.mint)
+                    }
                     HStack(spacing: 12) {
                         Button {
                             namePrompt = NexaFileNamePrompt(
@@ -49,6 +55,7 @@ struct FilesView: View {
                                   systemImage: "folder.badge.plus")
                         }
                         .buttonStyle(.bordered)
+                        .disabled(store.operationBusy)
                         NavigationLink {
                             NexaTrashView()
                         } label: {
@@ -175,6 +182,7 @@ struct FilesView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button { importSheet = true } label: { Image(systemName: "plus") }
+                    .disabled(store.operationBusy)
             }
         }
         .sheet(item: $moveRequest) { request in

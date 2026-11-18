@@ -61,11 +61,10 @@ enum NexaZipManager {
     }
 
     static func extractImportedArchive(_ archive: URL) throws -> Result {
-        let input = archive.standardizedFileURL
+        // This rejects path traversal, symlinked ancestors and symlinked ZIPs,
+        // not merely strings that happen to share the Imports path prefix.
+        let input = try NexaLocalFiles.validatedImportedZIP(archive)
         let root = AppPaths.importFolder.standardizedFileURL
-        guard input.path.hasPrefix(root.path + "/"), input.pathExtension.lowercased() == "zip" else {
-            throw ZipError.notAnImportedFile
-        }
         let fm = FileManager.default
         let output = root.appendingPathComponent("Unpacked-" + UUID().uuidString, isDirectory: true)
         try fm.createDirectory(at: output, withIntermediateDirectories: false)

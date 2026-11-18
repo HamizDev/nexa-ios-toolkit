@@ -89,6 +89,60 @@ struct NexaLocalFileHostTests {
         rejects("rename external file") {
             _ = try NexaLocalFiles.rename(outside, to: "unsafe.txt")
         }
+
+        // The ZIP gate shares the sandbox policy with local file operations.
+        let archive = nested.appendingPathComponent("example.ZIP")
+        try put([80, 75, 3, 4], at: archive)
+        check(try NexaLocalFiles.validatedImportedZIP(archive) == archive,
+              "valid imported ZIP should pass its input gate")
+        rejects("ZIP outside Imports") {
+            _ = try NexaLocalFiles.validatedImportedZIP(root.appendingPathComponent("external.zip"))
+        }
+        let linkedArchive = nested.appendingPathComponent("alias.zip")
+        try fm.createSymbolicLink(at: linkedArchive, withDestinationURL: archive)
+        rejects("symlinked ZIP inside Imports") {
+            _ = try NexaLocalFiles.validatedImportedZIP(linkedArchive)
+        }
+        try fm.removeItem(at: linkedArchive)
+        let fakeZip = try NexaLocalFiles.createFolder(in: nested, name: "fake.zip")
+        rejects("ZIP filename that is actually a directory") {
+            _ = try NexaLocalFiles.validatedImportedZIP(fakeZip)
+        }
+        print("PASS: ZIP extraction input gate rejects links, directories and outside files")
+
+        // Imported copies are committed only after staging succeeds; no
+        // security-scoped or other app container is touched by these fixtures.
+        let importedCopy = try NexaLocalFiles.importSelected(outside)
+        check(importedCopy.deletingLastPathComponent().standardizedFileURL ==
+              importRoot.standardizedFileURL, "import escaped Nexa Imports")
+        check(try Data(contentsOf: importedCopy) == Data([66, 77]),
+              "imported bytes do not match source")
+        let importedSecondCopy = try NexaLocalFiles.importSelected(outside)
+        check(importedCopy != importedSecondCopy, "import should never overwrite")
+        check(try Data(contentsOf: outside) == Data([66, 77]),
+              "import changed original source")
+
+        let providerFolder = root.appendingPathComponent("ProviderFolder")
+        try put([17, 18], at: providerFolder.appendingPathComponent("Nested/notes.bin"))
+        let importedFolder = try NexaLocalFiles.importSelected(providerFolder)
+        check(try Data(contentsOf: importedFolder.appendingPathComponent("Nested/notes.bin"))
+              == Data([17, 18]), "recursive import lost file data")
+        let stagingRoot = AppPaths.documents.appendingPathComponent("ImportStaging")
+        check((try fm.contentsOfDirectory(atPath: stagingRoot.path)).isEmpty,
+              "staging directories were not cleaned after success")
+
+        let maliciousFolder = root.appendingPathComponent("UnsafeProviderFolder")
+        try fm.createDirectory(at: maliciousFolder, withIntermediateDirectories: true)
+        try fm.createSymbolicLink(
+            at: maliciousFolder.appendingPathComponent("private"),
+            withDestinationURL: outside
+        )
+        rejects("import folder containing a symlink") {
+            _ = try NexaLocalFiles.importSelected(maliciousFolder)
+        }
+        check((try fm.contentsOfDirectory(atPath: stagingRoot.path)).isEmpty,
+              "failed import left staged partial data")
+        print("PASS: staged imported files and folders preserve sources and clean up")
         let externalLink = nested.appendingPathComponent("outside-link")
         try fm.createSymbolicLink(at: externalLink, withDestinationURL: outside)
         rejects("duplicate directory containing external symlink") {

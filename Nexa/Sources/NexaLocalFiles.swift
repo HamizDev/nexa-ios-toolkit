@@ -9,7 +9,7 @@ enum NexaLocalFiles {
     enum FileError: LocalizedError {
         case invalidName, outsideImports, symlink, notDirectory
         case alreadyExists, cannotMoveIntoSelf, missingFile
-        case invalidTrashRecord
+        case invalidTrashRecord, invalidArchive, invalidImportStage
 
         var errorDescription: String? {
             switch self {
@@ -21,6 +21,8 @@ enum NexaLocalFiles {
             case .cannotMoveIntoSelf: return "A folder cannot be moved into itself or its children."
             case .missingFile: return "The source file no longer exists."
             case .invalidTrashRecord: return "This deleted item cannot be safely restored."
+            case .invalidArchive: return "Choose an existing regular ZIP file inside Nexa Imports."
+            case .invalidImportStage: return "Nexa's private import staging directory is not safe to use."
             }
         }
     }
@@ -183,6 +185,67 @@ enum NexaLocalFiles {
         let flags = try source.resourceValues(forKeys: [.isDirectoryKey, .isRegularFileKey])
         guard flags.isDirectory == true || flags.isRegularFile == true else {
             throw FileError.missingFile
+        }
+    }
+
+    /// Single validation path used by the ZIP UI before touching a file.
+    /// A symlink to an imported or external ZIP is never an authorized ZIP.
+    static func validatedImportedZIP(_ url: URL) throws -> URL {
+        lock.lock()
+        defer { lock.unlock() }
+        let source = try item(url)
+        let values = try source.resourceValues(forKeys: [
+            .isRegularFileKey, .isSymbolicLinkKey
+        ])
+        guard source.pathExtension.lowercased() == "zip",
+              values.isRegularFile == true,
+              values.isSymbolicLink != true else { throw FileError.invalidArchive }
+        return source
+    }
+
+    /// Copy an explicitly user-selected item into private staging first.
+    /// Only publish the completed copy with a same-volume move into Imports.
+    /// Failed or interrupted copies do not appear as completed imports.
+    static func importSelected(_ source: URL) throws -> URL {
+        lock.lock()
+        defer { lock.unlock() }
+        try validateUserImport(source)
+        let stagingRoot = AppPaths.documents
+            .appendingPathComponent("ImportStaging", isDirectory: true)
+        try fm.createDirectory(at: stagingRoot, withIntermediateDirectories: true)
+        let stagingFlags = try stagingRoot.resourceValues(forKeys: [
+            .isDirectoryKey, .isSymbolicLinkKey
+        ])
+        guard stagingFlags.isDirectory == true,
+              stagingFlags.isSymbolicLink != true else { throw FileError.invalidImportStage }
+
+        let work = stagingRoot.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try fm.createDirectory(at: work, withIntermediateDirectories: false)
+        let staged = work.appendingPathComponent("Payload")
+        do {
+            try fm.copyItem(at: source, to: staged)
+            // Recheck the copied tree before making it visible to the user.
+            try rejectNestedLinks(staged)
+            try fm.createDirectory(at: AppPaths.importFolder, withIntermediateDirectories: true)
+
+            // Keep the provider's filename, prefixing a random identifier to
+            // prevent overwrites. Reject unsafe/oversized names rather than
+            // silently creating an ambiguous or truncated filename.
+            for _ in 0..<8 {
+                let name = String(UUID().uuidString.prefix(8)) + "_" + source.lastPathComponent
+                try checkName(name)
+                let target = AppPaths.importFolder.appendingPathComponent(name)
+                _ = try safe(target)
+                if !fm.fileExists(atPath: target.path) {
+                    try fm.moveItem(at: staged, to: target)
+                    try? fm.removeItem(at: work)
+                    return target
+                }
+            }
+            throw FileError.alreadyExists
+        } catch {
+            try? fm.removeItem(at: work)
+            throw error
         }
     }
 
