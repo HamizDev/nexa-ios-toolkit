@@ -152,7 +152,7 @@ struct NexaMigrationView: View {
             try NexaImportMigration.recoverIfNeeded()
             folders = try NexaImportMigration.availableFolders()
             history = try NexaImportMigration.receipts()
-        } catch { error = error.localizedDescription }
+        } catch { self.error = error.localizedDescription }
     }
 
     private func preview() {
@@ -164,7 +164,7 @@ struct NexaMigrationView: View {
                 plan = try await Task.detached(priority: .userInitiated) {
                     try NexaImportMigration.preview(source: source, destination: destination)
                 }.value
-            } catch { error = error.localizedDescription }
+            } catch { self.error = error.localizedDescription }
             busy = false
         }
     }
@@ -182,7 +182,7 @@ struct NexaMigrationView: View {
                     ? "Verified \(receipt.fileCount) files. Source retained."
                     : "已校验迁移 \(receipt.fileCount) 个文件，来源保持不变。"
                 reload()
-            } catch { error = error.localizedDescription }
+            } catch { self.error = error.localizedDescription }
             busy = false
         }
     }
