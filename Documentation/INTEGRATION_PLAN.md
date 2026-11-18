@@ -9,6 +9,7 @@
 - [x] User-authorized file imports, file/folder browser and sharing
 - [x] Nexa-local create/rename/duplicate/move/search and recoverable trash, with import-symlink checks (host regression added; iOS runtime test pending)
 - [x] Text and hex file preview, with WQFiles' upstream `WQCore.m/h` hex validation compiled in
+- [x] GestaltX typed offline plist editor with SHA-256 checked snapshot history, restore and stale-write rejection (host regression added; CI pending)
 - [x] Local backup manifests with SHA-256 verification
 - [x] Nexa-local backup restoration with validated staging, retained safety snapshots and interrupted-restore journal (source integration; CI/device tests pending)
 - [x] Read-only device summary, build number / capacity and conservative upstream compatibility notice

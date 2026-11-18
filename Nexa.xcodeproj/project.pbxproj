@@ -205,6 +205,10 @@
     F30000000000000000000001 /* NexaImportMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaImportMigration.swift; sourceTree = "<group>"; };
     F30000000000000000000004 /* NexaMigrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30000000000000000000003 /* NexaMigrationView.swift */; };
     F30000000000000000000003 /* NexaMigrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaMigrationView.swift; sourceTree = "<group>"; };
+    F40000000000000000000002 /* NexaPlistHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F40000000000000000000001 /* NexaPlistHistory.swift */; };
+    F40000000000000000000001 /* NexaPlistHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaPlistHistory.swift; sourceTree = "<group>"; };
+    F40000000000000000000004 /* NexaPlistHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F40000000000000000000003 /* NexaPlistHistoryView.swift */; };
+    F40000000000000000000003 /* NexaPlistHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaPlistHistoryView.swift; sourceTree = "<group>"; };
     964BD5656C7A016EF0C9ADA7 /* Nexa.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nexa.app; sourceTree = BUILT_PRODUCTS_DIR; };
     EC981767C62EA833B107403F /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
     984AA73C6A3518E356174B49 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
@@ -251,6 +255,8 @@
         F20000000000000000000004 /* NexaFileOperationsUI.swift in Sources */,
         F30000000000000000000002 /* NexaImportMigration.swift in Sources */,
         F30000000000000000000004 /* NexaMigrationView.swift in Sources */,
+        F40000000000000000000002 /* NexaPlistHistory.swift in Sources */,
+        F40000000000000000000004 /* NexaPlistHistoryView.swift in Sources */,
       );
       runOnlyForDeploymentPostprocessing = 0;
     };
@@ -302,6 +308,8 @@
         F20000000000000000000003 /* NexaFileOperationsUI.swift */,
         F30000000000000000000001 /* NexaImportMigration.swift */,
         F30000000000000000000003 /* NexaMigrationView.swift */,
+        F40000000000000000000001 /* NexaPlistHistory.swift */,
+        F40000000000000000000003 /* NexaPlistHistoryView.swift */,
       );
       name = Nexa;
       path = Nexa;

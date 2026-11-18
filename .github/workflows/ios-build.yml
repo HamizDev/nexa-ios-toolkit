@@ -78,6 +78,17 @@ jobs:
             Tests/GestaltPlistHostTests.swift \
             -o "$scratch/gestalt-parser-tests"
           "$scratch/gestalt-parser-tests"
+      - name: Test imported plist versions, SHA-256 verification and safe restore
+        run: |
+          set -euo pipefail
+          scratch="$(mktemp -d)"
+          trap 'rm -rf "$scratch"' EXIT
+          swiftc -D NEXA_LOCAL_TEST \
+            Nexa/Sources/AppPaths.swift \
+            Nexa/Sources/NexaPlistHistory.swift \
+            Tests/PlistHistoryHostTests.swift \
+            -o "$scratch/nexa-plist-history-tests"
+          NEXA_TEST_ROOT="$scratch/TestRoot" "$scratch/nexa-plist-history-tests"
       - name: Targeted upstream WQFiles core, archive and access safety regressions
         timeout-minutes: 12
         run: bash Scripts/test_wqfiles_integrated.sh

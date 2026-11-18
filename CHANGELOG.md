@@ -2,6 +2,8 @@
 
 ## Unreleased — upstream integration branch
 
+- Added a private, SHA-256 checked plist version history with a restore/export UI, previous-version preservation and stale-file conflict detection. Applies only to user-imported copies, not system MobileGestalt.
+
 - Added a source-preserving **imported-folder data migration workspace**, including preview, folder enumeration, SHA-256 inventories, staging, no-overwrite destination commit, durable receipts and interrupted-commit recovery. Uses local imported files only; full upstream WeChat container migration remains blocked by real-device authorization and recovery testing.
 
 - Unified iOS local-file, backup, WCMigrate and GestaltX sources with the original HermesEnabler watchOS BQCore engine, panels and 82 bilingual keys in a single Xcode project, to validate joint simulator builds. Physical watch system writes remain unverified.
