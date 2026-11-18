@@ -105,3 +105,7 @@ When GitHub Actions completes a successful unsigned iOS Simulator build, it chec
 ## Unified Nexa 0.0.1 experimental watch integration
 
 The unified branch incorporates the HermesEnabler candidate from the separate Watch PR into the same project as the latest local file manager and WCMigrate/GestaltX work. It retains the original Watch App Group entitlement placeholder, original Hermes source references, a bilingual wrapper (82 fixed labels translated), and embedded Watch app validation in CI. The iOS simulator artifact includes `Nexa.app/Watch/NexaWatch.app`; this does not validate a provisioned physical Watch, its system writes or recovery behavior.
+
+## Source-preserving imported-folder migration
+
+`NexaImportMigration.swift` adds a native, **Nexa-container-only** migration engine inspired by WCMigrate's source-preserving durable staging architecture. It previews hashes and byte totals, checks for path escapes and symlinks, stages the source to an app-private temporary folder, revalidates both trees using SHA-256, and commits a uniquely named destination directory by rename. It retains a receipt and marks interrupted commits complete only when the destination matches its manifest. A visible `NexaMigrationView.swift` offers source/destination pickers, preview, confirmation, progress and history. `Tests/ImportMigrationHostTests.swift` uses synthetic local data. This is **not** live WeChat migration or database merging; WCMigrate's original `DirectMigrationService` is not compiled into Nexa. Do not advertise it as such.

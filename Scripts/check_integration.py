@@ -10,6 +10,8 @@ project = (root / "Nexa.xcodeproj/project.pbxproj").read_text()
 required_sources = [
     "NexaBackupRestore.swift",
     "NexaLocalFiles.swift",
+    "NexaImportMigration.swift",
+    "NexaMigrationView.swift",
     "BQCore.m",
     "NexaHermesGate.swift",
     "NexaFileOperationsUI.swift",

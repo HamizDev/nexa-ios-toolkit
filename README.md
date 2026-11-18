@@ -113,3 +113,9 @@ xcrun simctl launch booted com.example.Nexa
 ## HermesEnabler Watch 实验性集成
 
 NexaWatch 直接引用固定版本的 HermesEnabler 2 原始 `BQCore.m/h`、各功能面板、恢复验证头文件与配置资源，且新增 **82 条中文／英文界面字符串**。仅在真实 Apple Watch、受支持的 watchOS 27.0～27.2、有效签名 App Group 且用户确认操作风险时，才开放实验功能入口。该范围比上游公布的部分 Beta 范围更保守。**这不是已验证安全的 Watch 系统修改应用；模拟器禁用系统写入，真实设备仍需完成原始配置备份、恢复及表盘变化测试。** 配置见 [NexaWatch 说明](NexaWatch/README.md)。
+
+## 本地迁移工作台（WCMigrate 思路，源码已接入）
+
+新版“备份”页添加 **本地数据迁移**：在用户事先导入 Nexa 的文件夹之间选择来源与目标，预检文件数量和 SHA-256 摘要，然后先复制至专用暂存目录，核对每个文件，最后用独立名称提交到目标文件夹。原始数据不会被删除、覆盖或自动修改。迁移记录存储于 Nexa 私有 Application Support；因进程中断而留下的记录可在再次打开页面时检查并标记为完成或失败。
+
+这项功能是 **Nexa 自己实现的授权导入文件迁移**，借鉴 WCMigrate 的保留源文件、暂存和持久记录设计；与已接入的 WCMigrate 原版进度估算、SQLite 检查和账号识别代码配套。**它不是 WCMigrate 原版跨应用迁移引擎，不包含微信数据合并，也不能向微信的私有容器直接写入。** 详情见 [安全与恢复说明](Documentation/LOCAL_MIGRATION.md)。

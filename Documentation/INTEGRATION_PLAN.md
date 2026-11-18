@@ -14,6 +14,7 @@
 - [x] Read-only device summary, build number / capacity and conservative upstream compatibility notice
 - [x] Source credits and accurate module readiness states
 - [x] WCMigrate account identity parsing on user-imported data (on demand, no cross-app access)
+- [x] Nexa-local, source-preserving data staging between imported folders with SHA-256 inventories and durable receipts (CI pending); NOT WCMigrate privileged cross-app migration
 - [ ] Xcode and device compilation acceptance
 - [ ] Signed IPA and release artifacts
 - [x] CI simulator bundle verification and downloadable, unsigned iOS Simulator artifact (not a signed device IPA)

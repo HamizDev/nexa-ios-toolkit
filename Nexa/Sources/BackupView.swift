@@ -57,6 +57,30 @@ struct BackupView: View {
                             }
                         }
                     }
+                    NavigationLink {
+                        NexaMigrationView()
+                    } label: {
+                        NexaCard {
+                            HStack(spacing: 12) {
+                                Image(systemName: "arrow.left.arrow.right.square")
+                                    .font(.title2)
+                                    .foregroundStyle(NexaPalette.violet)
+                                VStack(alignment: .leading, spacing: 5) {
+                                    Text(language.code == "en" ? "Local data migration" : "本地数据迁移")
+                                        .font(.headline)
+                                    Text(language.code == "en"
+                                        ? "SHA-256-verified copy of user-imported data"
+                                        : "对已导入数据执行 SHA-256 校验复制")
+                                        .font(.caption)
+                                        .foregroundStyle(NexaPalette.muted)
+                                }
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundStyle(NexaPalette.muted)
+                            }
+                        }
+                    }
+                    .buttonStyle(.plain)
                     Text(language.t("backup.list")).font(.title3.weight(.semibold))
                     if backups.isEmpty {
                         NexaCard {

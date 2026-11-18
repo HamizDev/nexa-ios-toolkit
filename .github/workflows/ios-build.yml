@@ -56,6 +56,18 @@ jobs:
             Tests/LocalFilesHostTests.swift \
             -o "$scratch/nexa-local-files-tests"
           NEXA_TEST_ROOT="$scratch/TestRoot" "$scratch/nexa-local-files-tests"
+      - name: Verify staged imported-data migrations with synthetic folders
+        run: |
+          set -euo pipefail
+          scratch="$(mktemp -d)"
+          trap 'rm -rf "$scratch"' EXIT
+          swiftc -D NEXA_LOCAL_TEST \
+            Nexa/Sources/AppPaths.swift \
+            Nexa/Sources/NexaLocalFiles.swift \
+            Nexa/Sources/NexaImportMigration.swift \
+            Tests/ImportMigrationHostTests.swift \
+            -o "$scratch/nexa-migration-tests"
+          NEXA_TEST_ROOT="$scratch/TestRoot" "$scratch/nexa-migration-tests"
       - name: Test original GestaltX typed plist parser
         run: |
           set -euo pipefail
