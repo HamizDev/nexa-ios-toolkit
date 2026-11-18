@@ -10,6 +10,7 @@ struct BackupView: View {
     @State private var restoreCandidate: BackupRecord?
     @State private var showRestoreDialog = false
     @State private var previousImports: URL?
+    @State private var portableArchives: [String: URL] = [:]
 
     var body: some View {
         ZStack {
@@ -107,12 +108,25 @@ struct BackupView: View {
                                             Label(language.t("backup.verify"), systemImage: "checkmark.seal")
                                         }
                                         .buttonStyle(.bordered)
-                                        ShareLink(item: record.folder) {
-                                            Label(language.t("backup.export"), systemImage: "square.and.arrow.up")
+                                        Button { preparePortableZIP(record) } label: {
+                                            Label(
+                                                language.code == "en" ? "Prepare ZIP" : "生成 ZIP",
+                                                systemImage: "archivebox"
+                                            )
                                         }
                                         .buttonStyle(.bordered)
                                     }
                                     .disabled(busy)
+                                    if let archive = portableArchives[record.id] {
+                                        ShareLink(item: archive) {
+                                            Label(
+                                                language.code == "en" ? "Share verified backup ZIP" : "分享已校验的备份 ZIP",
+                                                systemImage: "square.and.arrow.up"
+                                            )
+                                        }
+                                        .buttonStyle(.borderedProminent)
+                                        .disabled(busy)
+                                    }
                                     NavigationLink {
                                         NexaDatabaseReportView(folder: record.folder)
                                     } label: {
@@ -212,6 +226,27 @@ struct BackupView: View {
                 message = language.t("backup.success")
                 refresh()
             } catch { message = error.localizedDescription }
+            busy = false
+        }
+    }
+
+    private func preparePortableZIP(_ backup: BackupRecord) {
+        guard !busy else { return }
+        busy = true
+        portableArchives[backup.id] = nil
+        Task {
+            do {
+                let selected = backup.folder
+                let result = try await Task.detached(priority: .userInitiated) {
+                    try NexaZipManager.createVerifiedBackupArchive(selected)
+                }.value
+                portableArchives[backup.id] = result.file
+                message = language.code == "en"
+                    ? "Verified ZIP ready. Share the ZIP to keep a portable copy of manifest.json and Payload."
+                    : "校验后的备份 ZIP 已生成，可以分享保存，内含 manifest.json 和 Payload。"
+            } catch {
+                message = error.localizedDescription
+            }
             busy = false
         }
     }

@@ -2,6 +2,10 @@
 
 ## Unreleased — upstream integration branch
 
+- Added a portable, verified backup ZIP flow (Backup > Prepare ZIP > Share), using WQFiles' original archive engine and exporting both manifest.json and Payload; unsafe or changed backups fail closed.
+- Hardened backup verification: direct-child sandbox boundaries, symlink rejection for payload/manifest, unexpected backup items and missing payloads are rejected. Added host coverage for tampered backup layouts.
+- Interrupted restore rollback now retains the rejected staged payload in private RestoreStaging/rejected-<transaction> instead of deleting it; added crash-recovery regression.
+
 - Added user-selected imported-folder ZIP creation using the original WQFiles archive writer, with recursive symlink checks and one-tap ZIP sharing from the nested folder UI.
 - Added a lock-safe, best-effort cleanup of abandoned import staging directories on Files entry. It only removes UUID-shaped work folders, skips linked directories, and preserves the original selected data; host regression fixtures cover orphan and alias handling.
 

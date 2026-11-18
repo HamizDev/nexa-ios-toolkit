@@ -54,6 +54,47 @@ struct NexaRestoreHostTests {
         require(try BackupManager.verify(backup) == 2, "Expected verified 2-file backup")
         print("PASS: backup and SHA-256 verification")
 
+        let missingPayload = AppPaths.backupFolder.appendingPathComponent("MissingPayload")
+        try fm.copyItem(at: backup, to: missingPayload)
+        try fm.removeItem(at: missingPayload.appendingPathComponent("Payload"))
+        expectError("missing backup payload rejected") {
+            _ = try BackupManager.verify(missingPayload)
+        }
+        let linkedPayload = AppPaths.backupFolder.appendingPathComponent("LinkedPayload")
+        try fm.copyItem(at: backup, to: linkedPayload)
+        try fm.removeItem(at: linkedPayload.appendingPathComponent("Payload"))
+        try fm.createSymbolicLink(
+            at: linkedPayload.appendingPathComponent("Payload"),
+            withDestinationURL: backup.appendingPathComponent("Payload")
+        )
+        expectError("symlinked backup payload rejected") {
+            _ = try BackupManager.verify(linkedPayload)
+        }
+        let linkedManifest = AppPaths.backupFolder.appendingPathComponent("LinkedManifest")
+        try fm.copyItem(at: backup, to: linkedManifest)
+        try fm.removeItem(at: linkedManifest.appendingPathComponent("manifest.json"))
+        try fm.createSymbolicLink(
+            at: linkedManifest.appendingPathComponent("manifest.json"),
+            withDestinationURL: backup.appendingPathComponent("manifest.json")
+        )
+        expectError("symlinked backup manifest rejected") {
+            _ = try BackupManager.verify(linkedManifest)
+        }
+        let extraFile = AppPaths.backupFolder.appendingPathComponent("UnexpectedFile")
+        try fm.copyItem(at: backup, to: extraFile)
+        try createFile(extraFile.appendingPathComponent("unknown.dat"), [3, 5])
+        expectError("unknown backup root entries rejected") {
+            _ = try BackupManager.verify(extraFile)
+        }
+        let alias = AppPaths.backupFolder.appendingPathComponent("LinkedBackup")
+        try fm.createSymbolicLink(at: alias, withDestinationURL: backup)
+        require(try !BackupManager.listBackups().contains(where: { $0.folder == alias }),
+                "symlinked backups should not be offered for restore")
+        expectError("cannot restore a linked backup") {
+            _ = try NexaBackupRestore.restore(from: alias)
+        }
+        print("PASS: backup structure validates manifest, payload and direct-child path")
+
         let tampered = AppPaths.backupFolder.appendingPathComponent("Tampered")
         try fm.copyItem(at: backup, to: tampered)
         try createFile(tampered.appendingPathComponent("Payload/note.txt"), [99, 99])
@@ -132,7 +173,13 @@ struct NexaRestoreHostTests {
         try NexaBackupRestore.recoverIfNeeded()
         require(try BackupManager.verifyFiles(in: imported, usingManifestAt: backup) == 2,
                 "Corrupt staged data should have rolled back")
-        print("PASS: corrupted post-commit data rolls back")
+        let quarantined = root.appendingPathComponent(
+            "Documents/RestoreStaging/rejected-" + broken
+        )
+        require(try Data(contentsOf: quarantined.appendingPathComponent("note.txt"))
+                == Data([7, 8, 9]),
+                "Rollback unexpectedly destroyed the rejected staged data")
+        print("PASS: corrupt restore rolls back and preserves rejected data for inspection")
 
         print("PASS: Nexa backup and restore host regression suite")
     }

@@ -36,7 +36,9 @@ enum NexaZipManager {
         }
     }
 
-    private static func writeImportedArchive(_ items: [URL]) throws -> Result {
+    private static func writeImportedArchive(
+        _ items: [URL], requireComplete: Bool = false
+    ) throws -> Result {
         guard !items.isEmpty else { throw ZipError.nothingToArchive }
         let fm = FileManager.default
         let folder = AppPaths.documents.appendingPathComponent("Archives", isDirectory: true)
@@ -57,6 +59,10 @@ enum NexaZipManager {
             try? fm.removeItem(at: zipURL)
             throw ZipError.failed(failure as String? ?? "WQFiles archive writer failed.")
         }
+        if requireComplete && skipped > 0 {
+            try? fm.removeItem(at: zipURL)
+            throw ZipError.failed("The ZIP skipped some files; the incomplete archive was discarded.")
+        }
         return Result(file: zipURL, skipped: skipped)
     }
 
@@ -69,6 +75,23 @@ enum NexaZipManager {
     static func createImportedFolderArchive(_ folder: URL) throws -> Result {
         let verified = try NexaLocalFiles.validatedArchiveFolder(folder)
         return try writeImportedArchive([verified])
+    }
+
+    /// Export a self-contained copy of a SHA-256-verified Nexa backup.
+    /// The ZIP contains the original manifest.json and Payload folder.
+    /// The pinned WQFiles ZIP writer is used, not a new archive implementation.
+    static func createVerifiedBackupArchive(_ selected: URL) throws -> Result {
+        let backup = try BackupManager.validatedBackupFolder(selected)
+        _ = try BackupManager.verify(backup)
+        let archive = try writeImportedArchive([backup], requireComplete: true)
+        do {
+            // Detect any modifications to the backup while ZIP was being built.
+            _ = try BackupManager.verify(backup)
+            return archive
+        } catch {
+            try? FileManager.default.removeItem(at: archive.file)
+            throw error
+        }
     }
 
     static func extractImportedArchive(_ archive: URL) throws -> Result {

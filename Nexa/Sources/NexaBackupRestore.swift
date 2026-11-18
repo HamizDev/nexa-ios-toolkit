@@ -100,7 +100,9 @@ enum NexaBackupRestore {
                     try fm.moveItem(at: imports, to: rejected)
                     do {
                         try fm.moveItem(at: saved, to: imports)
-                        try? fm.removeItem(at: rejected)
+                        // Never destroy a rejected post-crash payload. It may
+                        // contain user edits made before recovery. Keep it in
+                        // RestoreStaging/rejected-<transaction> for inspection.
                     } catch {
                         // Keep rejected files for manual recovery when rollback fails.
                         throw error
@@ -125,15 +127,8 @@ enum NexaBackupRestore {
         let fm = FileManager.default
         try recoverIfNeeded()
 
-        // The UI may only request restores from Nexa's own backup directory.
-        let backup = selected.standardizedFileURL
-        let trusted = AppPaths.backupFolder.standardizedFileURL
-        guard backup.deletingLastPathComponent() == trusted,
-              isValidName(backup.lastPathComponent),
-              (try? backup.resourceValues(forKeys: [.isSymbolicLinkKey]).isSymbolicLink) == false else {
-            throw RestoreError.invalidBackup
-        }
-
+        // Share the same path, payload and manifest checks as backup export.
+        let backup = try BackupManager.validatedBackupFolder(selected)
         let count = try BackupManager.verify(backup)
         let transaction = UUID().uuidString
         let working = workingRoot.appendingPathComponent(transaction, isDirectory: true)
