@@ -2,6 +2,8 @@
 
 ## Unreleased — upstream integration branch
 
+- Added an owner-run macOS Xcode archive and debugging IPA export script that validates a signed iPhone + embedded Watch bundle. All identifiers must be explicitly provisioned; no signing certificates or secrets are stored in the repo.
+
 - Added a source-backed module detail action for each partially integrated upstream tool; corrected readiness labeling so compiled helpers are not presented as fully verified. Improved card contrast and Dynamic Type headers.
 - Added optional iOS 26+ Simulator launch-and-screenshot smoke checks for all five main tabs. Screenshots are available as a short-lived CI artifact when a compatible simulator runtime is installed.
 

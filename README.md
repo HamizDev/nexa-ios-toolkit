@@ -135,3 +135,9 @@ Nexa 的离线 plist 编辑器现在支持**版本历史、原文件恢复、SHA
 Nexa 0.0.1 的基础深色 SwiftUI 设计已继续优化：卡片描边与透明度对比度提高，标题采用支持动态字体的系统字号，减少透明度的辅助功能设置会使用更实的卡片背景。探索模块详情现在直接通往已编译的文件工作台、备份、本地迁移、设备诊断或 Watch 状态页，不再仅有上游 GitHub 链接；研究中/未移植组件仍不会显示虚假的操作按钮。
 
 在 CI 运行器具备 **iOS 26+ 模拟器运行时**时，GitHub Actions 会依次启动首页、文件、备份、探索、设置 5 个页面，保存 `Nexa-0.0.1-ui-screens-<run-id>` 截图工件，保留七天。运行时缺失时 CI 会记录跳过，**不能把跳过当作 UI 真正验收通过**。所有页面还需要检查不同尺寸、动态字体、辅助功能及真机状态栏/手势。
+
+## 真机签名与 IPA 导出（需要开发者账户）
+
+仓库新增 `Scripts/archive_signed_ipa.sh`，可以在你自己已配置 Apple Developer 签名的 Mac 上，使用实际 Team ID、iPhone/Watch Bundle ID 和 App Group 编译 Nexa + NexaWatch，并通过 Xcode 导出 **调试分发方式的签名 IPA**。脚本会检查两个 App 是否被签名、Watch App 是否嵌入和 IPA 是否真正生成；不会上传证书、私钥或自动发布 Release。
+
+具体参数及真机验收清单见 [Documentation/SIGNING.md](Documentation/SIGNING.md)。**目前还没有用你的证书执行过签名，更没有经过真机功能验收**；仅添加归档脚本不代表 IPA 已经制作成功。

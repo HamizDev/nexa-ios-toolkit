@@ -19,7 +19,8 @@
 - [x] Source credits and accurate module readiness states
 - [x] WCMigrate account identity parsing on user-imported data (on demand, no cross-app access)
 - [x] Nexa-local, source-preserving data staging between imported folders with SHA-256 inventories and durable receipts (CI pending); NOT WCMigrate privileged cross-app migration
-- [ ] Xcode and device compilation acceptance
+- [x] Automated Xcode iPhone + watchOS simulator compilation and host regression suites
+- [ ] Signed on-device build and iPhone + Watch runtime acceptance
 - [ ] Signed IPA and release artifacts
 - [x] CI simulator bundle verification and downloadable, unsigned iOS Simulator artifact (not a signed device IPA)
 - [x] Embedded NexaWatch target and bidirectional WatchConnectivity diagnostic source added (Xcode/watchOS CI pending)
@@ -67,3 +68,7 @@ No unverified module should be represented as available to end users. Prefer rea
 - [ ] Record actual model / iOS build and failure logs
 
 Source details: [UPSTREAM_SOURCES.md](UPSTREAM_SOURCES.md).
+
+## Owner signing and IPA handoff
+
+`Scripts/archive_signed_ipa.sh` is a noninteractive local macOS script for the repository owner to archive Nexa + embedded NexaWatch with their Apple Developer Team, provisioned App Groups and unique Bundle ID, then export a debugging signed IPA. CI only checks Bash syntax and does **not** run this script with personal credentials. See [SIGNING.md](SIGNING.md) for the run commands, safe secrets handling and real-device acceptance requirements. A signed device IPA has **not** been produced or validated by this project yet.
