@@ -23,7 +23,7 @@ Open `Nexa.xcworkspace` with a current macOS Xcode that supports the iOS 26 SDK.
 | WQFiles | `ThirdParty/WQFiles` | Clang/`build.sh`, **no .xcodeproj** | WQCore already compiled into Nexa. Full browser NOT merged |
 | WCMigrate | `ThirdParty/WCMigrate` | `XChatTransfer.xcodeproj` | Independent Xcode target; not installed as Nexa submodule |
 | GestaltX | `ThirdParty/GestaltX` | `GestaltX.xcodeproj` | Independent Xcode target; writes NOT wired to Nexa |
-| HermesEnabler | `ThirdParty/HermesEnabler` | `HermesEnabler2.xcodeproj`, includes watchOS | Independent signed watch app/companion; NOT bundled in Nexa |
+| HermesEnabler | `ThirdParty/HermesEnabler` | `HermesEnabler2.xcodeproj`, includes watchOS | Original engine, feature panels and resources compiled by reference in embedded NexaWatch; upstream Xcode project retained separately |
 
 Do not assume a workspace reference embeds another App target or grants its capabilities. All upstream Bundle IDs, App Groups, bridging headers, build settings and watch extension provisioning must be reviewed and reconciled before distributing a unified app.
 
@@ -76,7 +76,7 @@ The original read-only WCMigrate `DatabaseInspector.swift` was adapted to the Ne
 
 ## NexaWatch companion target
 
-Nexa now defines **two linked native targets in a single Xcode project**: `Nexa` for iOS and `NexaWatch` for watchOS. The iOS target embeds `NexaWatch.app` into its Watch bundle and depends on the watch target; both derive their IDs from `NEXA_COMPANION_BUNDLE_IDENTIFIER` in Xcode Build Settings. The included watch app implements bilingual SwiftUI and a two-way WatchConnectivity ping. It **does not** embed HermesEnabler's watch-face modification engine; the full original source remains pinned in `ThirdParty/HermesEnabler` for licensed integration. Real Watch pairing, provisioning, signing and device execution remain acceptance requirements.
+Nexa now defines **two linked native targets in a single Xcode project**: `Nexa` for iOS and `NexaWatch` for watchOS. The iOS target embeds `NexaWatch.app` into its Watch bundle and depends on the watch target; both derive their IDs from `NEXA_COMPANION_BUNDLE_IDENTIFIER` in Xcode Build Settings. The included watch app implements bilingual SwiftUI and a two-way WatchConnectivity ping. It now compiles the pinned original HermesEnabler watch-face engine and feature UI through the NexaWatch target, with a conservative permission/version gate. The original source remains pinned in `ThirdParty/HermesEnabler` for licensed integration. Real Watch pairing, provisioning, signing and device execution remain acceptance requirements.
 
 ## WQFiles container access (experimental)
 
@@ -101,3 +101,7 @@ The built-in `NexaLocalFiles.swift` now owns safe name/path validation, folder c
 ## CI simulator test artifact
 
 When GitHub Actions completes a successful unsigned iOS Simulator build, it checks that `Nexa.app` actually contains `Watch/NexaWatch.app/NexaWatch` and uploads an archived copy of `Nexa.app` as a seven-day artifact. It is for Xcode Simulator testing only, not an IPA or physical-device installation. The official 0.0.1 tag/release remains gated on a correctly provisioned App Group and physical iPhone/Watch installation, backup/rollback and functional acceptance tests.
+
+## Unified Nexa 0.0.1 experimental watch integration
+
+The unified branch incorporates the HermesEnabler candidate from the separate Watch PR into the same project as the latest local file manager and WCMigrate/GestaltX work. It retains the original Watch App Group entitlement placeholder, original Hermes source references, a bilingual wrapper (82 fixed labels translated), and embedded Watch app validation in CI. The iOS simulator artifact includes `Nexa.app/Watch/NexaWatch.app`; this does not validate a provisioned physical Watch, its system writes or recovery behavior.

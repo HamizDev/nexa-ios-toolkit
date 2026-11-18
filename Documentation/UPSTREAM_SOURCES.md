@@ -24,7 +24,7 @@ The `ThirdParty/` folder contains four Git submodules: WQFiles, WCMigrate, Gesta
 | [yangokok886/WCMigrate](https://github.com/yangokok886/WCMigrate) | `55faba721fd44e04c65be481860c9d93e12f6f61` | Partial direct component integration; full cross-app migration still unavailable |
 | [MchinaMd57764/WQToolkit](https://github.com/MchinaMd57764/WQToolkit) | `a5969d624e62c42803f1ef2973e5fd99405b0150` | Reference only; explicit repository LICENSE not found, review needed |
 | [huamidev/GestaltX](https://github.com/huamidev/GestaltX) | `311f78999d9f5f062f7e3b4c6374684782be5382` | Read-only VersionSupport component integrated; no MobileGestalt writer |
-| [pookjw/HermesEnabler](https://github.com/pookjw/HermesEnabler) | `c0ae1666cba67ab7fbae6d3e481cc2731f5550a1` | Full source pinned as submodule, but no watchOS target built into Nexa |
+| [pookjw/HermesEnabler](https://github.com/pookjw/HermesEnabler) | `c0ae1666cba67ab7fbae6d3e481cc2731f5550a1` | Source pinned as submodule; original BQCore/feature views and resources directly compiled into embedded NexaWatch |
 | [jailbreakdotparty/Erosion](https://github.com/jailbreakdotparty/Erosion) | `2e118f4e575b2cb745d9462ac445f023e09ec4da` | Reference only |
 | [ichitaso/Regitela](https://github.com/ichitaso/Regitela) | `e1ed6597816e8ce30457607239a2216345cfd8a1` | Reference only |
 | [GoldensHQ/worstgestalt](https://github.com/GoldensHQ/worstgestalt) | `1839f044e807ea203d7a1131ca16a38f123fd557` | Reference only |
@@ -47,3 +47,7 @@ Nexa directly compiles these unchanged upstream files from `ThirdParty/WQFiles`:
 ## GestaltX loaded-library read-only helper
 
 The unmodified `ThirdParty/GestaltX/GestaltX/GXMobileGestaltImage.m/h` files from pinned commit `311f78999d9f5f062f7e3b4c6374684782be5382` (GPL-3.0-only) compile directly into the Nexa iOS target and are declared in its Swift bridging header. Device diagnostics invoke `GXCopyMobileGestaltImage()` only on user request to summarize the **loaded system library**'s string and constant section byte counts. The raw section bytes are never displayed, saved or uploaded. This is **not** an exploit or on-disk MobileGestalt cache modification.
+
+## HermesEnabler 2 direct watch integration in unified build
+
+The embedded NexaWatch target directly compiles the pinned original `ThirdParty/HermesEnabler/HermesEnabler2/BQCore.m`, `BQRecoveryValidation.h`, feature SwiftUI views and original WatchConnectivity manager. Both MGDefaults and MGOffsets resources are included; original upstream `@main` is intentionally excluded. NexaWatch's entry requires a provisioned Watch App Group, an explicit warning acknowledgement and watchOS 27.0–27.2 on real hardware. 82 matching Chinese/English Watch translation keys are bundled. License MIT; original source remains unchanged. No real-watch write or rollback verification has been completed.

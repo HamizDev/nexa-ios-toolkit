@@ -10,6 +10,8 @@ project = (root / "Nexa.xcodeproj/project.pbxproj").read_text()
 required_sources = [
     "NexaBackupRestore.swift",
     "NexaLocalFiles.swift",
+    "BQCore.m",
+    "NexaHermesGate.swift",
     "NexaFileOperationsUI.swift",
     "NexaWeChatIdentityView.swift",
     "WeChatIdentityResolver.swift",
@@ -73,6 +75,20 @@ for name in ["WQCore.h", "WQCore.m", "WQArchive.h", "WQArchive.m",
     b = root / "ThirdParty/WQFiles" / name
     if not (a.is_file() and b.is_file() and a.read_bytes() == b.read_bytes()):
         errors.append(f"Vendored WQFiles source differs from pinned upstream: {name}")
+
+# Localized Watch resources: both languages must contain the same fixed keys.
+localized = []
+for locale in ["zh-Hans", "en"]:
+    path = root / "NexaWatch/Localization" / (locale + ".lproj/Localizable.strings")
+    if path.is_file():
+        keys = set(re.findall(r'^"((?:[^"\\]|\\.)*)"\s*=', path.read_text(), flags=re.MULTILINE))
+        localized.append(keys)
+        if len(keys) < 82:
+            errors.append(f"Missing Hermes watch translations: {locale}")
+    else:
+        errors.append(f"Missing Watch strings file: {locale}")
+if len(localized) == 2 and localized[0] != localized[1]:
+    errors.append("Watch zh-Hans and English translation keys differ")
 
 if errors:
     for error in errors:

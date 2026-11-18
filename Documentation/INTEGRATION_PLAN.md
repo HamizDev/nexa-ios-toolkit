@@ -18,7 +18,8 @@
 - [ ] Signed IPA and release artifacts
 - [x] CI simulator bundle verification and downloadable, unsigned iOS Simulator artifact (not a signed device IPA)
 - [x] Embedded NexaWatch target and bidirectional WatchConnectivity diagnostic source added (Xcode/watchOS CI pending)
-- [ ] Actual HermesEnabler face engine, entitlement review and watchOS 27+ runtime validation
+- [x] Pinned HermesEnabler 2 original watchOS BQCore engine and panels wired into NexaWatch with build/gate controls (combined CI pending)
+- [ ] Signed Watch App Group entitlement and watchOS 27+ physical-device backup/write/rollback validation
 
 ## Modules not yet integrated
 
