@@ -104,14 +104,14 @@ struct NexaRestoreHostTests {
         require(try BackupManager.verify(incoming) == 2,
                 "valid portable backup was rejected in hidden staging")
         require(try !BackupManager.listBackups().contains(where: {
-            $0.folder == incoming
+            $0.folder.standardizedFileURL.path == incoming.standardizedFileURL.path
         }), "unfinished imported backup is visible in the UI")
         let finalImported = AppPaths.backupFolder.appendingPathComponent("Imported-Test")
         try fm.moveItem(at: incoming, to: finalImported)
         require(try BackupManager.verify(finalImported) == 2,
                 "published imported backup failed verification")
         require(try BackupManager.listBackups().contains(where: {
-            $0.folder == finalImported
+            $0.folder.standardizedFileURL.path == finalImported.standardizedFileURL.path
         }), "completed imported backup was not listed")
         print("PASS: portable backup staging is hidden and publication is verified")
 
