@@ -171,8 +171,11 @@ struct NexaPlistInspectorView: View {
                         }
                     }
                     .buttonStyle(.plain)
-                    TextField(en ? "Search keys" : "搜索键名", text: $editor.search)
-                        .textFieldStyle(.roundedBorder)
+                    NexaSearchField(
+                        placeholder: en ? "Search keys" : "搜索键名",
+                        text: $editor.search,
+                        clearLabel: en ? "Clear search" : "清除搜索"
+                    )
                     ForEach(editor.filtered) { entry in
                         Button { active = entry } label: {
                             NexaCard {

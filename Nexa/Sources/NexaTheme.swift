@@ -93,3 +93,56 @@ struct NexaActionButton: View {
         .buttonStyle(.plain)
     }
 }
+/// Shared high-contrast search field for the dark Nexa workspace.
+/// Uses a plain TextField instead of the system rounded-border appearance,
+/// which can render a nearly black input with an unreadable placeholder.
+struct NexaSearchField: View {
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    let placeholder: String
+    @Binding var text: String
+    let clearLabel: String
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "magnifyingglass")
+                .foregroundStyle(NexaPalette.muted)
+                .accessibilityHidden(true)
+            TextField(
+                "",
+                text: $text,
+                prompt: Text(placeholder).foregroundColor(NexaPalette.muted)
+            )
+            .textFieldStyle(.plain)
+            .font(.subheadline)
+            .foregroundStyle(.white)
+            .tint(NexaPalette.mint)
+            .textInputAutocapitalization(.never)
+            .autocorrectionDisabled()
+            .submitLabel(.search)
+            .accessibilityLabel(placeholder)
+
+            if !text.isEmpty {
+                Button {
+                    text = ""
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(NexaPalette.muted)
+                        .frame(minWidth: 28, minHeight: 28)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(clearLabel)
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 13)
+        .frame(minHeight: 48)
+        .background(
+            reduceTransparency ? NexaPalette.ink2 : .white.opacity(0.075),
+            in: RoundedRectangle(cornerRadius: 15, style: .continuous)
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: 15, style: .continuous)
+                .stroke(.white.opacity(0.18), lineWidth: 1)
+        }
+    }
+}

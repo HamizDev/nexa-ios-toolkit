@@ -2,6 +2,8 @@
 
 ## Unreleased — upstream integration branch
 
+- Replaced low-contrast system rounded search boxes with a reusable, accessible Nexa dark search field in Files and the imported plist editor; added localized clear actions and reduce-transparency support.
+
 - Fixed imported snapshot Merge's ancestor file/directory conflict validation: check every path component, not only lexically adjacent filenames. Added a synthetic regression for intervening filename ordering and safe Replace behavior.
 
 - Added a visible, source-preserving Nexa-imported **file-level Merge/Replace** workflow: preview overlaps/bytes, select source-vs-target filename precedence, stage and SHA-256 verify a *new* output directory, retain originals, journal results and validate interrupted commits. Covers only imported snapshots and is not WCMigrate's live cross-app engine.

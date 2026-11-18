@@ -57,11 +57,11 @@ struct FilesView: View {
                         }
                         .buttonStyle(.bordered)
                     }
-                    TextField(
-                        language.code == "en" ? "Search imported files" : "搜索已导入的文件",
-                        text: $searchText
+                    NexaSearchField(
+                        placeholder: language.code == "en" ? "Search imported files" : "搜索已导入的文件",
+                        text: $searchText,
+                        clearLabel: language.code == "en" ? "Clear search" : "清除搜索"
                     )
-                    .textFieldStyle(.roundedBorder)
                     NavigationLink {
                         NexaWQExplorerView()
                     } label: {
