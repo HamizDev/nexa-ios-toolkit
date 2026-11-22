@@ -106,8 +106,16 @@ enum BackupManager {
         guard !imports.isEmpty else { throw BackupError.emptySource }
         try rejectSymlinks(in: source)
         try fm.createDirectory(at: backupFolder, withIntermediateDirectories: true)
-        let folder = backupFolder.appendingPathComponent(ISO8601DateFormatter().string(from: Date()).replacingOccurrences(of: ":", with: "-") + "_" + String(UUID().uuidString.prefix(6)), isDirectory: true)
-        let payload = folder.appendingPathComponent("Payload", isDirectory: true)
+        // Incomplete snapshots remain hidden from the backup picker. A
+        // same-volume rename publishes the verified snapshot in one step.
+        let transaction = UUID().uuidString
+        let working = backupFolder.appendingPathComponent(
+            ".creating-" + transaction, isDirectory: true
+        )
+        let label = ISO8601DateFormatter().string(from: Date())
+            .replacingOccurrences(of: ":", with: "-") + "_" + transaction
+        let published = backupFolder.appendingPathComponent(label, isDirectory: true)
+        let payload = working.appendingPathComponent("Payload", isDirectory: true)
         try fm.createDirectory(at: payload, withIntermediateDirectories: true)
         do {
             // Progress counts completed top-level items (including directories),
@@ -115,18 +123,27 @@ enum BackupManager {
             onProgress?(BackupProgress("copy", 0, imports.count, 0, fraction: 0))
             for (index, item) in imports.enumerated() {
                 try fm.copyItem(at: item, to: payload.appendingPathComponent(item.lastPathComponent))
-                onProgress?(BackupProgress("copy", index + 1, imports.count, 0, fraction: Double(index + 1) / Double(imports.count)))
+                onProgress?(BackupProgress("copy", index + 1, imports.count, 0,
+                                           fraction: Double(index + 1) / Double(imports.count)))
             }
-            let manifest = BackupManifest(createdAt: Date(), files: try digests(in: payload), formatVersion: 1)
+            let manifest = BackupManifest(
+                createdAt: Date(), files: try digests(in: payload), formatVersion: 1
+            )
             let encoder = JSONEncoder()
             encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
             encoder.dateEncodingStrategy = .iso8601
-            try encoder.encode(manifest).write(to: folder.appendingPathComponent("manifest.json"), options: .atomic)
-            // Do not publish a backup that cannot immediately be verified.
-            _ = try verify(folder)
-            return folder
+            try encoder.encode(manifest).write(
+                to: working.appendingPathComponent("manifest.json"), options: .atomic
+            )
+            // Keep a partial or unverifiable backup out of the visible list.
+            _ = try verify(working)
+            guard !fm.fileExists(atPath: published.path) else {
+                throw BackupError.verificationFailed("备份目录名称已存在")
+            }
+            try fm.moveItem(at: working, to: published)
+            return published
         } catch {
-            try? fm.removeItem(at: folder)
+            try? fm.removeItem(at: working)
             throw error
         }
     }

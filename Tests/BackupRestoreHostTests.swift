@@ -54,6 +54,26 @@ struct NexaRestoreHostTests {
         require(try BackupManager.verify(backup) == 2, "Expected verified 2-file backup")
         print("PASS: backup and SHA-256 verification")
 
+        // Force the copy to fail after the source snapshot was enumerated.
+        // The partial backup must be cleaned up rather than listed as valid.
+        let disappearing = imported.appendingPathComponent("disappearing.bin")
+        try createFile(disappearing, [0xC1, 0xA7])
+        let beforeFailure = try BackupManager.listBackups().map(\.name)
+        expectError("incomplete backup is never published") {
+            _ = try BackupManager.createBackup(onProgress: { progress in
+                // The first callback precedes the very first copyItem.
+                if progress.fraction == 0 { try? fm.removeItem(at: disappearing) }
+            })
+        }
+        require(try BackupManager.listBackups().map(\.name) == beforeFailure,
+                "failed backup became visible")
+        require(try fm.contentsOfDirectory(atPath: AppPaths.backupFolder.path)
+            .filter { $0.hasPrefix(".creating-") }.isEmpty,
+                "failed backup left partial hidden staging")
+        require(try Data(contentsOf: second) == Data("Original document".utf8),
+                "failed backup changed unrelated source files")
+        print("PASS: failed backup copy cleans up hidden staging without publication")
+
         let missingPayload = AppPaths.backupFolder.appendingPathComponent("MissingPayload")
         try fm.copyItem(at: backup, to: missingPayload)
         try fm.removeItem(at: missingPayload.appendingPathComponent("Payload"))

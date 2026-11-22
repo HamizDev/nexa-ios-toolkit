@@ -8,8 +8,9 @@ On 2026-11-18 the first ZIP containing five screenshots (`44232278062`) was insp
 
 - The iOS Target Debug build explicitly sets `SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)"`; Release never enables this.
 - `NexaRootView` accepts only `home/files/backups/explore/settings` test arguments **in Debug**, and it writes its actual current selection to `Documents/.nexa-ui-smoke-current-tab` when a test argument is present.
-- GitHub Actions starts the same app process for each requested tab, checks the file contents through `simctl get_app_container`, and **fails** if the tab differs. It then takes a screenshot.
-- If there is no bootable iOS 26+ Simulator runtime, the script currently issues a warning and skips. It must not count as visual acceptance; review the job log and artifact before approval.
+- GitHub Actions boots an iOS 26+ simulator in a dedicated 16-minute step, separating slow first-run CoreSimulator migrations from the seven-minute five-tab screenshot budget. It starts the app for each tab, checks the acknowledged tab through `simctl get_app_container`, and **fails** if the tab differs.
+- If no compatible simulator is available, the UI smoke step now **fails** instead of silently skipping. A green workflow therefore requires an actual compatible simulator.
+- Earlier run `44296214503` captured distinct Home, Files and Backups screens but exceeded the original shared ten-minute budget after a six-minute first boot; Explore and Settings still required rerunning.
 
 ## Human review to perform on a successful five-tab ZIP
 

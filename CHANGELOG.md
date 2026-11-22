@@ -2,6 +2,10 @@
 
 ## Unreleased — upstream integration branch
 
+- Fixed CI false-negative risk from slow macOS iOS Simulator first boot: dedicated 16-minute CoreSimulator warmup, separate seven-minute five-tab assertion/screenshot step; missing iOS 26+ runtime is a CI failure, not a silent pass.
+- Make Nexa-local backup publication transactional: copy and verify under a hidden `.creating-<UUID>` directory, then atomically rename into the visible backup list. Failed copies remove private staging and cannot masquerade as finished backups. Added a host fixture that forces a copy failure mid-operation.
+
+
 - Added non-destructive portable Nexa backup ZIP import through the iOS Files picker. The original WQFiles archive engine extracts into private staging, skips are rejected, and the SHA-256 manifest must pass before the backup becomes visible. The current imported data is not restored or overwritten.
 - Backup import publishes only completed, verified snapshots: hidden .incoming-* directories are omitted from lists. Regression checks verify hidden staging and visible final backups.
 
