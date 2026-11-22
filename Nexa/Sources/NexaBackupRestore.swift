@@ -68,8 +68,9 @@ enum NexaBackupRestore {
         var id: String { folder.standardizedFileURL.path }
     }
 
-    static func validatedRecoveryCopy(_ selected: URL) throws -> URL {
-        let fm = FileManager.default
+    /// Only a cheap, nonrecursive path/type check for synchronous UI listing.
+    /// Full recursive validation is deferred to the background export action.
+    private static func checkedRecoveryCopyRoot(_ selected: URL) throws -> URL {
         let candidate = selected.standardizedFileURL
         let parent = candidate.deletingLastPathComponent().path
         let name = candidate.lastPathComponent
@@ -91,6 +92,12 @@ enum NexaBackupRestore {
               flags.isDirectory == true, flags.isSymbolicLink != true else {
             throw RestoreError.invalidBackup
         }
+        return candidate
+    }
+
+    static func validatedRecoveryCopy(_ selected: URL) throws -> URL {
+        let candidate = try checkedRecoveryCopyRoot(selected)
+        let fm = FileManager.default
         guard let walker = fm.enumerator(at: candidate, includingPropertiesForKeys: [
             .isDirectoryKey, .isRegularFileKey, .isSymbolicLinkKey
         ]) else { throw RestoreError.invalidBackup }
@@ -126,7 +133,7 @@ enum NexaBackupRestore {
                 includingPropertiesForKeys: [.isDirectoryKey, .isSymbolicLinkKey]
             )
             for item in items {
-                guard (try? validatedRecoveryCopy(item)) != nil else { continue }
+                guard (try? checkedRecoveryCopyRoot(item)) != nil else { continue }
                 result.append(RecoveryCopy(folder: item, kind: kind))
             }
         }
