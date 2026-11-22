@@ -6,7 +6,7 @@
 
 - [x] New high-contrast midnight SwiftUI design with reusable components and reduced-transparency support
 - [x] Source-backed navigation actions in module details for partially integrated tools (no fake actions for research-only tools)
-- [ ] Confirm five-tab CI simulator screenshots on a runner with iOS 26+ runtime
+- [x] Confirm five distinct tab screenshots on iOS 26+ Simulator, with per-tab assertion and manual image review (CI 45012726433); interactive/assistive UI acceptance still pending
 - [x] Language preference: default Simplified Chinese, switch to English, persistent across launches
 - [x] User-authorized file imports, file/folder browser and sharing
 - [x] Nexa-local create/rename/duplicate/move/search and recoverable trash, with import-symlink checks (host regression added; iOS runtime test pending)
@@ -14,7 +14,7 @@
 - [x] Text and hex file preview, with WQFiles' upstream `WQCore.m/h` hex validation compiled in
 - [x] GestaltX typed offline plist editor with SHA-256 checked snapshot history, restore and stale-write rejection (host regression added; CI pending)
 - [x] Local backup manifests with SHA-256 verification
-- [x] Nexa-local backup restoration with validated staging, retained safety snapshots and interrupted-restore journal (source integration; CI/device tests pending)
+- [x] Nexa-local backup restoration with verified ZIP import/export, v2 file and empty-folder manifests (v1 compatible), retained recovery snapshots with ZIP export, and interrupted-restore journal (host CI passing; device tests pending)
 - [x] Read-only device summary, build number / capacity and conservative upstream compatibility notice
 - [x] Source credits and accurate module readiness states
 - [x] WCMigrate account identity parsing on user-imported data (on demand, no cross-app access)
@@ -23,8 +23,8 @@
 - [ ] Signed on-device build and iPhone + Watch runtime acceptance
 - [ ] Signed IPA and release artifacts
 - [x] CI simulator bundle verification and downloadable, unsigned iOS Simulator artifact (not a signed device IPA)
-- [x] Embedded NexaWatch target and bidirectional WatchConnectivity diagnostic source added (Xcode/watchOS CI pending)
-- [x] Pinned HermesEnabler 2 original watchOS BQCore engine and panels wired into NexaWatch with build/gate controls (combined CI pending)
+- [x] Embedded NexaWatch target and bidirectional WatchConnectivity diagnostic source; iPhone/Watch Simulator CI passed (physical paired Watch acceptance pending)
+- [x] Pinned HermesEnabler 2 original watchOS BQCore engine and panels wired into NexaWatch with build/gate controls (combined simulator CI passed; real-device permissions and face changes unverified)
 - [ ] Signed Watch App Group entitlement and watchOS 27+ physical-device backup/write/rollback validation
 
 ## Modules not yet integrated
@@ -33,7 +33,7 @@
 - GestaltX, Erosion, Regitela, WorstGestalt MobileGestalt write and rollback engines
 - WCMigrate cross-app transfer, account resolution, staging and transfer journals
 - WQToolkit advanced own-container maintenance features (license to review)
-- HermesEnabler's watch-face modification routines (the NexaWatch companion target and ping are now present, not yet validated)
+- HermesEnabler's real-device watch-face modification, signed entitlement support and proven device rollback (NexaWatch sources compile but are not accepted on physical hardware)
 - worse_query sandbox extension engine and its matching App Group signing configuration
 
 No unverified module should be represented as available to end users. Prefer read-only diagnostics and source-backed validation before writing system files.

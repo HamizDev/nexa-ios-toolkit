@@ -85,7 +85,7 @@
 - Added real WatchConnectivity session status monitoring on iPhone. No watchOS target or watch face enabling is included.
 - Added provenance and license references for newly integrated source files and clarified build blockers for a true single-app merge.
 
-**Not completed:** cross-app WQFiles engine, full WeChat data migration, MobileGestalt writes/rollback, and HermesEnabler watchOS integration. This branch needs Xcode compilation verification before it should be merged/released.
+**Not completed:** full cross-app WQFiles operations, WCMigrate live WeChat migration, MobileGestalt system writes and rollback, and HermesEnabler **physical Watch face/restore verification**. iPhone/Watch Simulator and host regression CI are available; real-device signing and high-risk operations are still release blockers.
 
 ## [0.0.1] — 2026-11-17 (source preview)
 
