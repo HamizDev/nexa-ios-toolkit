@@ -58,6 +58,81 @@ enum NexaBackupRestore {
         AppPaths.documents.appendingPathComponent("RestoreStaging", isDirectory: true)
     }
 
+    /// A recovery copy is raw, retained user data, NOT a verified backup.
+    /// Previous imports and rejected post-crash payloads must remain accessible
+    /// after app relaunch, without accidentally exposing arbitrary directories.
+    struct RecoveryCopy: Identifiable {
+        enum Kind { case previousImports, rejectedRestore }
+        let folder: URL
+        let kind: Kind
+        var id: String { folder.standardizedFileURL.path }
+    }
+
+    static func validatedRecoveryCopy(_ selected: URL) throws -> URL {
+        let fm = FileManager.default
+        let candidate = selected.standardizedFileURL
+        let parent = candidate.deletingLastPathComponent().path
+        let name = candidate.lastPathComponent
+        let isPrevious = parent == safetyRoot.standardizedFileURL.path
+            && UUID(uuidString: name) != nil
+        let isRejected = parent == workingRoot.standardizedFileURL.path
+            && name.hasPrefix("rejected-")
+            && UUID(uuidString: String(name.dropFirst("rejected-".count))) != nil
+        guard isPrevious || isRejected else { throw RestoreError.invalidBackup }
+
+        let parentFlags = try candidate.deletingLastPathComponent().resourceValues(
+            forKeys: [.isDirectoryKey, .isSymbolicLinkKey]
+        )
+        let flags = try candidate.resourceValues(
+            forKeys: [.isDirectoryKey, .isSymbolicLinkKey]
+        )
+        guard parentFlags.isDirectory == true,
+              parentFlags.isSymbolicLink != true,
+              flags.isDirectory == true, flags.isSymbolicLink != true else {
+            throw RestoreError.invalidBackup
+        }
+        guard let walker = fm.enumerator(at: candidate, includingPropertiesForKeys: [
+            .isDirectoryKey, .isRegularFileKey, .isSymbolicLinkKey
+        ]) else { throw RestoreError.invalidBackup }
+        while let item = walker.nextObject() as? URL {
+            let values = try item.resourceValues(forKeys: [
+                .isDirectoryKey, .isRegularFileKey, .isSymbolicLinkKey
+            ])
+            guard values.isSymbolicLink != true,
+                  values.isDirectory == true || values.isRegularFile == true else {
+                throw RestoreError.invalidBackup
+            }
+        }
+        return candidate
+    }
+
+    static func listRecoveryCopies() throws -> [RecoveryCopy] {
+        let fm = FileManager.default
+        var result: [RecoveryCopy] = []
+        for (root, kind) in [
+            (safetyRoot, RecoveryCopy.Kind.previousImports),
+            (workingRoot, RecoveryCopy.Kind.rejectedRestore)
+        ] {
+            guard fm.fileExists(atPath: root.path) else { continue }
+            let rootFlags = try root.resourceValues(forKeys: [
+                .isDirectoryKey, .isSymbolicLinkKey
+            ])
+            guard rootFlags.isDirectory == true,
+                  rootFlags.isSymbolicLink != true else {
+                throw RestoreError.invalidBackup
+            }
+            let items = try fm.contentsOfDirectory(
+                at: root,
+                includingPropertiesForKeys: [.isDirectoryKey, .isSymbolicLinkKey]
+            )
+            for item in items {
+                guard (try? validatedRecoveryCopy(item)) != nil else { continue }
+                result.append(RecoveryCopy(folder: item, kind: kind))
+            }
+        }
+        return result.sorted { $0.folder.lastPathComponent > $1.folder.lastPathComponent }
+    }
+
     private static func isValidName(_ value: String) -> Bool {
         !value.isEmpty && value != "." && value != ".." &&
         !value.contains("/") && !value.contains("\\") &&

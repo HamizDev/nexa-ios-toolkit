@@ -96,6 +96,20 @@ enum NexaZipManager {
         }
     }
 
+    /// Archives a retained pre-restore or rejected data copy, without
+    /// modifying its contents. These raw files have no backup SHA-256 manifest.
+    static func createRecoveryCopyArchive(_ selected: URL) throws -> Result {
+        let checked = try NexaBackupRestore.validatedRecoveryCopy(selected)
+        let archive = try writeImportedArchive([checked], requireComplete: true)
+        do {
+            _ = try NexaBackupRestore.validatedRecoveryCopy(checked)
+            return archive
+        } catch {
+            try? FileManager.default.removeItem(at: archive.file)
+            throw error
+        }
+    }
+
     /// Import an explicitly selected portable Nexa backup ZIP, without
     /// restoring it to the current Files workspace. The source is read-only.
     /// The caller must keep security-scoped access alive until this returns.

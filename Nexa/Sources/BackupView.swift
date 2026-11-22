@@ -14,6 +14,8 @@ struct BackupView: View {
     @State private var portableArchives: [String: URL] = [:]
     @State private var showPortableImport = false
     @State private var portableImportBusy = false
+    @State private var recoveryCopies: [NexaBackupRestore.RecoveryCopy] = []
+    @State private var recoveryExports: [String: URL] = [:]
 
     var body: some View {
         ZStack {
@@ -172,6 +174,53 @@ struct BackupView: View {
                             }
                         }
                     }
+                    if !recoveryCopies.isEmpty {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text(language.code == "en" ? "Retained recovery copies" : "保留的恢复副本")
+                                .font(.title3.weight(.semibold))
+                            Text(language.code == "en"
+                                ? "Raw previous or rejected files are retained after restart. These are not SHA-256-verified backups; inspect before restoring any contents."
+                                : "恢复前数据和失败回滚数据在重启后仍保留。这些不是经 SHA-256 清单验证的正式备份，请先检查内容再自行使用。")
+                                .font(.caption)
+                                .foregroundStyle(NexaPalette.muted)
+                            ForEach(recoveryCopies) { copy in
+                                NexaCard {
+                                    VStack(alignment: .leading, spacing: 10) {
+                                        Label(
+                                            copy.kind == .previousImports
+                                                ? (language.code == "en" ? "Before restore" : "恢复前的文件")
+                                                : (language.code == "en" ? "Rejected after recovery" : "异常回滚保留的文件"),
+                                            systemImage: copy.kind == .previousImports
+                                                ? "arrow.uturn.backward.circle" : "exclamationmark.shield"
+                                        )
+                                        .font(.subheadline.weight(.semibold))
+                                        Text(copy.folder.lastPathComponent)
+                                            .font(.caption.monospaced())
+                                            .foregroundStyle(NexaPalette.muted)
+                                            .lineLimit(2)
+                                        Button { prepareRecoveryZIP(copy) } label: {
+                                            Label(
+                                                language.code == "en" ? "Package recovery ZIP" : "打包恢复副本 ZIP",
+                                                systemImage: "archivebox"
+                                            )
+                                        }
+                                        .buttonStyle(.bordered)
+                                        .disabled(busy)
+                                        if let zip = recoveryExports[copy.id] {
+                                            ShareLink(item: zip) {
+                                                Label(
+                                                    language.code == "en" ? "Share recovery ZIP" : "分享恢复副本 ZIP",
+                                                    systemImage: "square.and.arrow.up"
+                                                )
+                                            }
+                                            .buttonStyle(.borderedProminent)
+                                            .disabled(busy)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
                 .padding(20)
             }
@@ -217,6 +266,7 @@ struct BackupView: View {
         do {
             try NexaBackupRestore.recoverIfNeeded()
             backups = try BackupManager.listBackups()
+            recoveryCopies = try NexaBackupRestore.listRecoveryCopies()
         } catch {
             message = error.localizedDescription
         }
@@ -301,6 +351,27 @@ struct BackupView: View {
                 message = language.code == "en"
                     ? "Verified ZIP ready. Share the ZIP to keep a portable copy of manifest.json and Payload."
                     : "校验后的备份 ZIP 已生成，可以分享保存，内含 manifest.json 和 Payload。"
+            } catch {
+                message = error.localizedDescription
+            }
+            busy = false
+        }
+    }
+
+    private func prepareRecoveryZIP(_ copy: NexaBackupRestore.RecoveryCopy) {
+        guard !busy else { return }
+        busy = true
+        recoveryExports[copy.id] = nil
+        Task {
+            do {
+                let selected = copy.folder
+                let result = try await Task.detached(priority: .userInitiated) {
+                    try NexaZipManager.createRecoveryCopyArchive(selected)
+                }.value
+                recoveryExports[copy.id] = result.file
+                message = language.code == "en"
+                    ? "Recovery ZIP is ready. These raw retained files have no verified backup manifest."
+                    : "恢复副本 ZIP 已生成。原始保留数据不包含经过校验的备份清单。"
             } catch {
                 message = error.localizedDescription
             }

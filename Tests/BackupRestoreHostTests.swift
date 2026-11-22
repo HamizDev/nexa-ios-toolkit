@@ -168,6 +168,14 @@ struct NexaRestoreHostTests {
         require(try Data(contentsOf: second) == Data("Original document".utf8), "Restored content mismatch")
         require(fm.fileExists(atPath: result.priorImports.appendingPathComponent("unsaved.txt").path),
                 "Previous files not retained")
+        let retained = try NexaBackupRestore.listRecoveryCopies()
+        require(retained.contains(where: {
+            $0.kind == .previousImports
+                && $0.folder.standardizedFileURL.path == result.priorImports.standardizedFileURL.path
+        }), "Previous imports should remain discoverable after app restart")
+        require(try NexaBackupRestore.validatedRecoveryCopy(result.priorImports)
+                .standardizedFileURL.path == result.priorImports.standardizedFileURL.path,
+                "Legitimate retained recovery data was rejected")
         require(try BackupManager.verifyFiles(in: imported, usingManifestAt: backup) == 2,
                 "Restored imports do not match SHA-256 manifest")
         print("PASS: verified restore, independent staging and retained prior imports")
@@ -220,6 +228,32 @@ struct NexaRestoreHostTests {
                 == Data([7, 8, 9]),
                 "Rollback unexpectedly destroyed the rejected staged data")
         print("PASS: corrupt restore rolls back and preserves rejected data for inspection")
+
+        let recoverable = try NexaBackupRestore.listRecoveryCopies()
+        require(recoverable.contains(where: {
+            $0.kind == .rejectedRestore
+                && $0.folder.standardizedFileURL.path == quarantined.standardizedFileURL.path
+        }), "Rejected payload should remain discoverable after relaunch")
+        expectError("reject arbitrary recovery folder") {
+            _ = try NexaBackupRestore.validatedRecoveryCopy(root)
+        }
+        let linkedRecovery = root.appendingPathComponent(
+            "Documents/RestoreStaging/rejected-" + UUID().uuidString
+        )
+        try fm.createSymbolicLink(at: linkedRecovery, withDestinationURL: quarantined)
+        expectError("reject linked recovery copy") {
+            _ = try NexaBackupRestore.validatedRecoveryCopy(linkedRecovery)
+        }
+        let unsafeRoot = quarantined.appendingPathComponent("unsafe-link")
+        try fm.createSymbolicLink(at: unsafeRoot, withDestinationURL: root)
+        expectError("reject nested linked recovery contents") {
+            _ = try NexaBackupRestore.validatedRecoveryCopy(quarantined)
+        }
+        try fm.removeItem(at: unsafeRoot)
+        require(try !NexaBackupRestore.listRecoveryCopies().contains(where: {
+            $0.id == linkedRecovery.standardizedFileURL.path
+        }), "Symlink alias must not appear as a recoverable copy")
+        print("PASS: recovery copies remain discoverable; linked and out-of-scope paths rejected")
 
         print("PASS: Nexa backup and restore host regression suite")
     }

@@ -2,6 +2,11 @@
 
 ## Unreleased — upstream integration branch
 
+- Added persistent recovery-copy browsing in Backups: raw pre-restore data and crash-rejected payloads can be found after app restart and individually exported as ZIP with the pinned WQFiles writer. Labels explicitly state that raw snapshots do not have an authenticated backup manifest.
+- Recovery exports reject out-of-scope directories, symlinks at the recovery root or anywhere inside it, and partial ZIPs; added host regressions for discovery, aliases, and malicious nested links.
+- Latest prior CI run 45012726433 passed host/WQFiles, iPhone, Watch and five distinct-tab UI screenshots. Manual screenshot review confirmed nonduplicated pages.
+
+
 - Fixed CI false-negative risk from slow macOS iOS Simulator first boot: dedicated 16-minute CoreSimulator warmup, separate seven-minute five-tab assertion/screenshot step; missing iOS 26+ runtime is a CI failure, not a silent pass.
 - Make Nexa-local backup publication transactional: copy and verify under a hidden `.creating-<UUID>` directory, then atomically rename into the visible backup list. Failed copies remove private staging and cannot masquerade as finished backups. Added a host fixture that forces a copy failure mid-operation.
 

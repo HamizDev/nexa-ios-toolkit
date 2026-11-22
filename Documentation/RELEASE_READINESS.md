@@ -8,7 +8,7 @@
 | WCMigrate | Pinned original progress/ETA, SQLite read-only inspector and `LoginInfo2.dat` identity parser; Nexa-only SHA-256 staging and independent file-level Merge/Replace output tools | Original `DirectMigrationService`, live WeChat app-to-app Replace/Convert/file-level Merge (upstream does not offer SQLite chat-row merge or whole-task rollback), plus real-device recovery acceptance |
 | GestaltX | Original typed plist parsing, offline imported-file editor, private SHA-256 history/restore; read-only MobileGestalt loaded-library summary | Live MobileGestalt cache edits and presets; supported-build capability gating, on-device verified system rollback |
 | HermesEnabler 2 | Original Watch BQCore engine, screens and MG resources compiled into embedded NexaWatch; connection diagnostics, watchOS/App Group consent gates and 82 bilingual fixed labels | Signed Watch device acceptance, face changes, physical-device backup and rollback, complete translated runtime messages |
-| Nexa UI | Five-tab Chinese-first/English SwiftUI UI, imported file workspace, ZIP tools, backup/restore, local migration, app Watch companion; simulator screenshots uploaded | Manual screenshot review, Dynamic Type/VoiceOver assessment, running on small/large device screens, end-to-end user acceptance |
+| Nexa UI | Five-tab Chinese-first/English SwiftUI UI, imported file workspace, ZIP tools, backup/restore, local migration, recovery-snapshot browsing/export and Watch companion; latest five-tab simulator screenshots captured and visually checked | Dynamic Type/VoiceOver assessment, running on small/large devices, end-to-end user acceptance |
 | Distribution | Xcode iOS + watchOS Simulator builds, source-pinning/provenance audit, host regression tests, unsigned ZIP preview; owner-run signed IPA archive script | Provisioned Apple Developer Team and tested iPhone+Watch IPA, signed entitlements, safe real-device release artifacts |
 
 ## Release gates (currently open)
@@ -19,6 +19,13 @@
 - [ ] **Hermes device operations**: verify original state backup and actual face changes/recovery on a provisioned Watch with supported hardware/watchOS; simulator source build alone is insufficient.
 - [ ] **UI and accessibility**: visually inspect five screenshots, navigation, full Chinese/English coverage, long strings, contrast and screen-reader support.
 - [ ] **Signing and release**: archive, install and test the same signed IPA (embedded Watch app included); verify App Groups in the signed entitlements; publish release only after the above tests pass.
+
+## Verification update (2026-11-22)
+
+- CI run [45012726433](https://github.com/HamizDev/nexa-ios-toolkit/actions/runs/45012726433) **passed all three jobs**, including five distinct tab launches and the original upstream WQFiles regression.
+- The five PNG screenshots were downloaded and manually reviewed. All tabs have their intended titles and distinct content; remaining accessibility and longer text testing is not covered.
+- Nexa-local backup creation now publishes only after complete SHA-256 validation. Incomplete staging is hidden; a failed copy cleans its staging. A new recoverable-copy list exposes retained pre-restore and rejected data after restart, with a raw ZIP export that is clearly not a verified backup.
+- Hardware signing, OS-specific system operations and actual Watch face modifications remain unverified and are **not** release-accepted.
 
 ## Current executable checks
 
@@ -39,6 +46,6 @@ Nexa now includes `NexaSafety.swift` with bilingual first-run disclosure, a perm
 ### Local Merge/Replace acceptance (development branch)
 
 - [x] Nexa-native Merge/Replace on **imported copies only**, with a visible preview, unique output directory and no mutations to either original.
-- [ ] macOS fixture suite for source precedence, target-only preservation, replace exclusion, source mutation, unsafe links and journal recovery passes on the current commit.
+- [x] macOS fixture suite for source precedence, target-only preservation, replace exclusion, source mutation, unsafe links and journal recovery passed at run 45012726433; rerun for subsequent changes.
 - [ ] Signed iPhone testing with real imported file-provider folders, storage pressure and forced app termination.
 - [ ] Full upstream `DirectMigrationService` live WeChat transfer and its device-specific authorization — **not integrated**.
