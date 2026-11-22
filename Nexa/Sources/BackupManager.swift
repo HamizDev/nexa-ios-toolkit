@@ -11,6 +11,8 @@ struct BackupManifest: Codable {
     let createdAt: Date
     let files: [FileDigest]
     let formatVersion: Int
+    // Introduced in version 2. Nil is accepted only for old v1 manifests.
+    let directories: [String]?
 }
 
 struct BackupRecord: Identifiable {
@@ -127,7 +129,10 @@ enum BackupManager {
                                            fraction: Double(index + 1) / Double(imports.count)))
             }
             let manifest = BackupManifest(
-                createdAt: Date(), files: try digests(in: payload), formatVersion: 1
+                createdAt: Date(),
+                files: try digests(in: payload),
+                formatVersion: 2,
+                directories: try directoryPaths(in: payload)
             )
             let encoder = JSONEncoder()
             encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -159,8 +164,15 @@ enum BackupManager {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
         let manifest = try decoder.decode(BackupManifest.self, from: Data(contentsOf: trustedFolder.appendingPathComponent("manifest.json")))
-        guard manifest.formatVersion == 1 else {
+        guard manifest.formatVersion == 1 || manifest.formatVersion == 2 else {
             throw BackupError.verificationFailed("不支持的备份清单版本")
+        }
+        if manifest.formatVersion == 2 {
+            guard let expected = manifest.directories,
+                  Set(expected).count == expected.count,
+                  expected == (try directoryPaths(in: payload)) else {
+                throw BackupError.verificationFailed("备份目录结构不匹配")
+            }
         }
         let current = try digests(in: payload)
         guard current.count == manifest.files.count else {
@@ -177,6 +189,41 @@ enum BackupManager {
             }
         }
         return current.count
+    }
+
+    /// V2 records all relative directory paths, including empty folders.
+    /// File checksums alone cannot tell that an empty directory disappeared.
+    private static func directoryPaths(in root: URL) throws -> [String] {
+        let fm = FileManager.default
+        let flags = try root.resourceValues(forKeys: [
+            .isDirectoryKey, .isSymbolicLinkKey
+        ])
+        guard flags.isDirectory == true, flags.isSymbolicLink != true else {
+            throw BackupError.verificationFailed("备份目录缺失或包含符号链接")
+        }
+        guard let enumerator = fm.enumerator(at: root, includingPropertiesForKeys: [
+            .isDirectoryKey, .isRegularFileKey, .isSymbolicLinkKey
+        ]) else { throw BackupError.verificationFailed("无法检查备份目录") }
+        let prefix = root.resolvingSymlinksInPath().standardizedFileURL.pathComponents
+        var directories: [String] = []
+        while let item = enumerator.nextObject() as? URL {
+            let values = try item.resourceValues(forKeys: [
+                .isDirectoryKey, .isRegularFileKey, .isSymbolicLinkKey
+            ])
+            guard values.isSymbolicLink != true else {
+                throw BackupError.symbolicLinkNotAllowed
+            }
+            if values.isDirectory == true {
+                let parts = item.resolvingSymlinksInPath().standardizedFileURL.pathComponents
+                guard parts.count > prefix.count, parts.starts(with: prefix) else {
+                    throw BackupError.verificationFailed("目录超出备份范围")
+                }
+                directories.append(parts.dropFirst(prefix.count).joined(separator: "/"))
+            } else if values.isRegularFile != true {
+                throw BackupError.verificationFailed("备份包含不支持的特殊文件")
+            }
+        }
+        return directories.sorted()
     }
 
     private static func rejectSymlinks(in root: URL) throws {

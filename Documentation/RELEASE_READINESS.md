@@ -24,7 +24,7 @@
 
 - CI run [45012726433](https://github.com/HamizDev/nexa-ios-toolkit/actions/runs/45012726433) **passed all three jobs**, including five distinct tab launches and the original upstream WQFiles regression.
 - The five PNG screenshots were downloaded and manually reviewed. All tabs have their intended titles and distinct content; remaining accessibility and longer text testing is not covered.
-- Nexa-local backup creation now publishes only after complete SHA-256 validation. Incomplete staging is hidden; a failed copy cleans its staging. A new recoverable-copy list exposes retained pre-restore and rejected data after restart, with a raw ZIP export that is clearly not a verified backup.
+- Nexa-local backup creation now publishes only after complete SHA-256 validation. The new version-2 manifest also inventories empty directories; existing version-1 backups remain readable. Incomplete staging is hidden; failed copies clean staging. A new recoverable-copy list exposes retained pre-restore and rejected data after restart, with a raw ZIP export that is clearly not a verified backup.
 - Hardware signing, OS-specific system operations and actual Watch face modifications remain unverified and are **not** release-accepted.
 
 ## Current executable checks

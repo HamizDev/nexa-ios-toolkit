@@ -2,6 +2,9 @@
 
 ## Unreleased — upstream integration branch
 
+- Extended newly created backup manifests to version 2: SHA-256 files plus an exact inventory of all folders, including empty ones. Verification rejects missing/extra folders, while valid existing version-1 backups remain readable. Added compatibility and malicious tampering host fixtures.
+
+
 - Added persistent recovery-copy browsing in Backups: raw pre-restore data and crash-rejected payloads can be found after app restart and individually exported as ZIP with the pinned WQFiles writer. Labels explicitly state that raw snapshots do not have an authenticated backup manifest.
 - Recovery exports reject out-of-scope directories, symlinks at the recovery root or anywhere inside it, and partial ZIPs; added host regressions for discovery, aliases, and malicious nested links.
 - Latest prior CI run 45012726433 passed host/WQFiles, iPhone, Watch and five distinct-tab UI screenshots. Manual screenshot review confirmed nonduplicated pages.

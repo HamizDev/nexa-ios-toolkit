@@ -50,9 +50,42 @@ struct NexaRestoreHostTests {
         let second = imported.appendingPathComponent("note.txt")
         try createFile(first, [0, 1, 2, 3, 254, 255])
         try createFile(second, Array("Original document".utf8))
+        let emptyFolder = imported.appendingPathComponent("nested/empty-folder")
+        try fm.createDirectory(at: emptyFolder, withIntermediateDirectories: true)
         let backup = try BackupManager.createBackup()
         require(try BackupManager.verify(backup) == 2, "Expected verified 2-file backup")
         print("PASS: backup and SHA-256 verification")
+
+        let manifestData = try Data(contentsOf: backup.appendingPathComponent("manifest.json"))
+        let manifest = try JSONSerialization.jsonObject(with: manifestData) as! [String: Any]
+        require(manifest["formatVersion"] as? Int == 2, "new backups must use manifest v2")
+        require((manifest["directories"] as? [String])?.contains("nested/empty-folder") == true,
+                "v2 failed to record an empty folder")
+        let withoutEmpty = AppPaths.backupFolder.appendingPathComponent("MissingEmptyDir")
+        try fm.copyItem(at: backup, to: withoutEmpty)
+        try fm.removeItem(at: withoutEmpty.appendingPathComponent("Payload/nested/empty-folder"))
+        expectError("v2 detects missing empty folder") {
+            _ = try BackupManager.verify(withoutEmpty)
+        }
+        let extraEmpty = AppPaths.backupFolder.appendingPathComponent("ExtraEmptyDir")
+        try fm.copyItem(at: backup, to: extraEmpty)
+        try fm.createDirectory(
+            at: extraEmpty.appendingPathComponent("Payload/unexpected-empty"),
+            withIntermediateDirectories: false
+        )
+        expectError("v2 detects unexpected empty folder") {
+            _ = try BackupManager.verify(extraEmpty)
+        }
+        let legacy = AppPaths.backupFolder.appendingPathComponent("LegacyManifestV1")
+        try fm.copyItem(at: backup, to: legacy)
+        var oldManifest = manifest
+        oldManifest["formatVersion"] = 1
+        oldManifest.removeValue(forKey: "directories")
+        try JSONSerialization.data(withJSONObject: oldManifest).write(
+            to: legacy.appendingPathComponent("manifest.json"), options: .atomic
+        )
+        require(try BackupManager.verify(legacy) == 2, "legacy v1 backup compatibility broken")
+        print("PASS: v2 includes empty directories and still accepts valid v1 backup manifests")
 
         // Force the copy to fail after the source snapshot was enumerated.
         // The partial backup must be cleaned up rather than listed as valid.
