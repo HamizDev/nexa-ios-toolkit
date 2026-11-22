@@ -226,7 +226,12 @@ struct BackupView: View {
             }
         }
         .navigationBarTitleDisplayMode(.inline)
-        .onAppear(perform: refresh)
+        .onAppear {
+            refresh()
+            Task.detached(priority: .utility) {
+                _ = try? NexaZipManager.discardInterruptedPortableImports()
+            }
+        }
         .fileImporter(
             isPresented: $showPortableImport,
             allowedContentTypes: [.zip]

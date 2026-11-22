@@ -115,9 +115,17 @@ enum NexaZipManager {
     /// The caller must keep security-scoped access alive until this returns.
     private static let portableImportLock = NSRecursiveLock()
 
+    static func discardInterruptedPortableImports() throws -> Int {
+        portableImportLock.lock()
+        defer { portableImportLock.unlock() }
+        return try BackupManager.discardInterruptedPortableImports()
+    }
+
     static func importPortableBackup(_ archive: URL) throws -> URL {
         portableImportLock.lock()
         defer { portableImportLock.unlock() }
+        // Clean only abandoned, UUID-named workspaces before creating a new one.
+        _ = try BackupManager.discardInterruptedPortableImports()
         let fm = FileManager.default
         let input = archive.standardizedFileURL
         let info = try input.resourceValues(forKeys: [

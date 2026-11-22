@@ -2,6 +2,9 @@
 
 ## Unreleased — upstream integration branch
 
+- Added best-effort, lock-serialized cleanup of interrupted portable-backup ZIP imports. Only UUID-named workspaces and hidden `.incoming-<UUID>` backups are removed, while symlinks and unrelated paths are skipped. Regressions cover orphan cleanup and preserved user data.
+
+
 - Extended newly created backup manifests to version 2: SHA-256 files plus an exact inventory of all folders, including empty ones. Verification rejects missing/extra folders, while valid existing version-1 backups remain readable. Added compatibility and malicious tampering host fixtures.
 
 

@@ -168,6 +168,28 @@ struct NexaRestoreHostTests {
         }), "completed imported backup was not listed")
         print("PASS: portable backup staging is hidden and publication is verified")
 
+        let orphanRoot = AppPaths.documents.appendingPathComponent("PortableBackupStaging")
+        let abandoned = orphanRoot.appendingPathComponent(UUID().uuidString)
+        try createFile(abandoned.appendingPathComponent("Unpacked/junk.bin"), [0x42])
+        let unrecognized = orphanRoot.appendingPathComponent("user-data")
+        try createFile(unrecognized.appendingPathComponent("keep.bin"), [0xAB])
+        let hiddenIncomplete = AppPaths.backupFolder.appendingPathComponent(
+            ".incoming-" + UUID().uuidString
+        )
+        try createFile(hiddenIncomplete.appendingPathComponent("Payload/unfinished"), [0x3A])
+        let symlinkedOrphan = orphanRoot.appendingPathComponent(UUID().uuidString)
+        try fm.createSymbolicLink(at: symlinkedOrphan, withDestinationURL: unrecognized)
+        require(try BackupManager.discardInterruptedPortableImports() == 2,
+                "Expected exactly one abandoned import workspace and one incomplete backup")
+        require(!fm.fileExists(atPath: abandoned.path), "Abandoned portable import was not cleaned")
+        require(!fm.fileExists(atPath: hiddenIncomplete.path), "Incomplete backup not removed")
+        require(try Data(contentsOf: unrecognized.appendingPathComponent("keep.bin")) ==
+                    Data([0xAB]), "Unrecognized user data should not be deleted")
+        require((try symlinkedOrphan.resourceValues(forKeys: [.isSymbolicLinkKey]))
+                    .isSymbolicLink == true,
+                "Orphan cleanup should skip linked roots")
+        print("PASS: abandoned ZIP-import staging cleaned without touching unrelated data")
+
         let tampered = AppPaths.backupFolder.appendingPathComponent("Tampered")
         try fm.copyItem(at: backup, to: tampered)
         try createFile(tampered.appendingPathComponent("Payload/note.txt"), [99, 99])

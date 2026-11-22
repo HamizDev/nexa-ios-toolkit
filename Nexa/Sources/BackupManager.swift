@@ -100,6 +100,47 @@ enum BackupManager {
             .map { BackupRecord(folder: $0) }
     }
 
+    /// Only discard UUID-named work directories from interrupted *portable ZIP
+    /// imports*. Never touch completed backup directories or unrelated files.
+    /// The caller serializes this with live import operations.
+    static func discardInterruptedPortableImports() throws -> Int {
+        let fm = FileManager.default
+        let stagingRoot = AppPaths.documents.appendingPathComponent(
+            "PortableBackupStaging", isDirectory: true
+        )
+        var removed = 0
+        for (root, prefix) in [
+            (stagingRoot, ""),
+            (backupFolder, ".incoming-")
+        ] {
+            guard fm.fileExists(atPath: root.path) else { continue }
+            let flags = try root.resourceValues(forKeys: [
+                .isDirectoryKey, .isSymbolicLinkKey
+            ])
+            guard flags.isDirectory == true && flags.isSymbolicLink != true else {
+                throw BackupError.verificationFailed("备份导入临时目录不安全")
+            }
+            for candidate in try fm.contentsOfDirectory(
+                at: root,
+                includingPropertiesForKeys: [.isDirectoryKey, .isSymbolicLinkKey]
+            ) {
+                let name = candidate.lastPathComponent
+                guard name.hasPrefix(prefix),
+                      UUID(uuidString: String(name.dropFirst(prefix.count))) != nil,
+                      let entry = try? candidate.resourceValues(forKeys: [
+                          .isDirectoryKey, .isSymbolicLinkKey
+                      ]),
+                      entry.isDirectory == true,
+                      entry.isSymbolicLink != true else {
+                    continue
+                }
+                try fm.removeItem(at: candidate)
+                removed += 1
+            }
+        }
+        return removed
+    }
+
     static func createBackup(onProgress: ((BackupProgress) -> Void)? = nil) throws -> URL {
         let fm = FileManager.default
         let source = AppPaths.importFolder
