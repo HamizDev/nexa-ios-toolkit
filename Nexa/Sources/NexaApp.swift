@@ -1,4 +1,5 @@
 import SwiftUI
+import SQLite3
 
 @main
 struct NexaApp: App {
@@ -24,6 +25,7 @@ struct NexaRootView: View {
     @State private var showWatchUISmoke = ProcessInfo.processInfo.arguments.contains("--nexa-watch-view")
     @State private var showOriginalHexUISmoke: NexaWQHexSelection?
     @State private var showOriginalPlistUISmoke: NexaWQPlistSelection?
+    @State private var showOriginalSQLiteUISmoke: NexaWQSQLiteSelection?
     #endif
     @AppStorage("nexa.safety.disclaimer.read.0.0.1") private var hasReadSafety = false
     @State private var showFirstLaunchSafety = false
@@ -71,7 +73,8 @@ struct NexaRootView: View {
                 // and every Release launch still present the disclosure.
                 let isScreenshotHarness = ProcessInfo.processInfo.arguments.contains {
                     $0.hasPrefix("--nexa-tab=") || $0 == "--nexa-watch-view" ||
-                    $0 == "--nexa-wqhex-smoke" || $0 == "--nexa-wqplist-smoke"
+                    $0 == "--nexa-wqhex-smoke" || $0 == "--nexa-wqplist-smoke" ||
+                    $0 == "--nexa-wqsqlite-smoke"
                 }
                 if !isScreenshotHarness { showFirstLaunchSafety = true }
                 #else
@@ -98,6 +101,10 @@ struct NexaRootView: View {
             NexaWQOriginalPlistView(file: selection.file)
                 .onAppear { recordWQNativeUITest("plist") }
         }
+        .sheet(item: $showOriginalSQLiteUISmoke) { selection in
+            NexaWQOriginalSQLiteView(file: selection.file)
+                .onAppear { recordWQNativeUITest("sqlite") }
+        }
         .onAppear {
             recordUITestTab()
             if ProcessInfo.processInfo.arguments.contains("--nexa-hermes-fixture") {
@@ -119,6 +126,8 @@ struct NexaRootView: View {
             kind = "hex"
         } else if arguments.contains("--nexa-wqplist-smoke") {
             kind = "plist"
+        } else if arguments.contains("--nexa-wqsqlite-smoke") {
+            kind = "sqlite"
         } else {
             return
         }
@@ -129,11 +138,11 @@ struct NexaRootView: View {
                 at: AppPaths.importFolder, withIntermediateDirectories: true
             )
             let filename = "WQOriginal-" + UUID().uuidString
-                + (kind == "plist" ? ".plist" : ".bin")
+                + (kind == "plist" ? ".plist" : kind == "sqlite" ? ".sqlite" : ".bin")
             let file = AppPaths.importFolder.appendingPathComponent(filename)
             if kind == "hex" {
                 try Data((0..<256).map { UInt8($0) }).write(to: file, options: .atomic)
-            } else {
+            } else if kind == "plist" {
                 let value: [String: Any] = [
                     "Sample": "Nexa imported-file original viewer",
                     "Count": 3,
@@ -143,12 +152,32 @@ struct NexaRootView: View {
                     fromPropertyList: value, format: .binary, options: 0
                 )
                 try contents.write(to: file, options: .atomic)
+            } else {
+                var database: OpaquePointer?
+                guard sqlite3_open_v2(
+                    file.path, &database, SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, nil
+                ) == SQLITE_OK, let database else {
+                    if let database { sqlite3_close(database) }
+                    throw NSError(domain: "Nexa.WQSQLiteFixture", code: 1)
+                }
+                let result = sqlite3_exec(
+                    database,
+                    "CREATE TABLE imported_notes (id INTEGER PRIMARY KEY, body TEXT);"
+                        + "INSERT INTO imported_notes (body) VALUES ('Nexa WQFiles original viewer');",
+                    nil, nil, nil
+                )
+                sqlite3_close(database)
+                guard result == SQLITE_OK else {
+                    throw NSError(domain: "Nexa.WQSQLiteFixture", code: 2)
+                }
             }
             let approved = try NexaLocalFiles.validatedImportedRegularFile(file)
             if kind == "hex" {
                 showOriginalHexUISmoke = NexaWQHexSelection(file: approved)
-            } else {
+            } else if kind == "plist" {
                 showOriginalPlistUISmoke = NexaWQPlistSelection(file: approved)
+            } else {
+                showOriginalSQLiteUISmoke = NexaWQSQLiteSelection(file: approved)
             }
         } catch {
             try? ("FAIL: " + error.localizedDescription).write(

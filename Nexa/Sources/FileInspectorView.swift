@@ -249,6 +249,7 @@ struct FileInspectorView: View {
     @State private var extractedFolder: URL?
     @State private var originalHexSelection: NexaWQHexSelection?
     @State private var originalPlistSelection: NexaWQPlistSelection?
+    @State private var originalSQLiteSelection: NexaWQSQLiteSelection?
 
     var body: some View {
         ZStack {
@@ -350,6 +351,27 @@ struct FileInspectorView: View {
                         }
                         .buttonStyle(.bordered)
                     }
+                    if wq_is_sqlite_header(preview) {
+                        Button {
+                            do {
+                                let approved = try NexaLocalFiles.validatedImportedRegularFile(file)
+                                originalSQLiteSelection = NexaWQSQLiteSelection(file: approved)
+                            } catch {
+                                archiveNotice = error.localizedDescription
+                            }
+                        } label: {
+                            Label(
+                                language.code == "en"
+                                    ? "Original WQFiles SQLite browser · read-only"
+                                    : "WQFiles 原版 SQLite 浏览器 · 只读",
+                                systemImage: "tablecells"
+                            )
+                        }
+                        .buttonStyle(.bordered)
+                        .accessibilityHint(language.code == "en"
+                            ? "The original WQFiles viewer opens an isolated SQLite snapshot."
+                            : "使用 WQFiles 原版查看器打开独立 SQLite 快照，不写回数据库。")
+                    }
                     if file.pathExtension.lowercased() == "zip" {
                         Button { extractZip() } label: {
                             Label(
@@ -386,6 +408,10 @@ struct FileInspectorView: View {
         }
         .sheet(item: $originalPlistSelection) { selection in
             NexaWQOriginalPlistView(file: selection.file)
+                .presentationDetents([.large])
+        }
+        .sheet(item: $originalSQLiteSelection) { selection in
+            NexaWQOriginalSQLiteView(file: selection.file)
                 .presentationDetents([.large])
         }
         .alert(language.code == "en" ? "Archive result" : "压缩包操作", isPresented: Binding(

@@ -30,11 +30,13 @@ After five tabs and the Hermes synthetic backup fixture, CI opens **two
 original WQFiles UIKit controllers**, each directly compiled from the pinned
 submodule, using a temporary regular file created inside Nexa Imports:
 `--nexa-wqhex-smoke` opens original paged `WQHexViewController`, and
-`--nexa-wqplist-smoke` opens original `WQPlistEditorViewController`.
-Both have `readOnly: true` and pass the same imported-file gate as the
+`--nexa-wqplist-smoke` opens original `WQPlistEditorViewController`, and
+`--nexa-wqsqlite-smoke` opens the original `WQSQLiteViewController` with an
+app-owned synthetic SQLite database.
+All three have `readOnly: true` and pass the same imported-file gate as the
 production File Inspector entry. CI checks a Debug-only on-disk
 `PASS: WQFiles native hex/plist` marker and saves screenshots
-`wq-original-hex.png` and `wq-original-plist.png`.
+`wq-original-hex.png`, `wq-original-plist.png` and `wq-original-sqlite.png`.
 The sample data is synthetic, not from a device system cache or other app.
 Screenshot approval still requires **manual visual review** of the original
 viewer's actual content, not just a generated marker.

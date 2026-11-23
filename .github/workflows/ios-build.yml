@@ -253,7 +253,7 @@ jobs:
           echo "PASS: original Hermes iPhone backup fixture and Nexa Watch companion UI"
           # Actually instantiate each pinned original WQFiles UIKit read-only
           # viewer against disposable, app-owned files and capture its UI.
-          for kind in hex plist; do
+          for kind in hex plist sqlite; do
             xcrun simctl terminate "$simulator" "$bundle" >/dev/null 2>&1 || true
             xcrun simctl launch "$simulator" "$bundle" "--nexa-wq${kind}-smoke"
             data_container="$(xcrun simctl get_app_container "$simulator" "$bundle" data)"

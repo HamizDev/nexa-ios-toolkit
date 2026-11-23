@@ -40,21 +40,26 @@ No third-party IPA or binary has been copied into Nexa. Please examine each upst
 
 Nexa directly compiles these unchanged upstream files from `ThirdParty/WQFiles`: `WQAccess.m`, `WQLaunchServices.m`, `WQScanTask.m`, with corresponding headers from the same pinned commit. A consent-gated SwiftUI read-only container browser calls `wq_list` and bounded `wq_read`. Real-device functioning depends on the installed App Group entitlement, supported OS/build and the results of an on-device grant; no such acceptance tests have been completed. License: GPL-3.0-or-later.
 
-## WQFiles original paged hex and typed-plist viewers
+## WQFiles original hex, typed-plist and SQLite viewers
 
 Nexa's iPhone target directly compiles the **unchanged pinned originals**
-`ThirdParty/WQFiles/WQHexViewer.m`, `WQPlistEditor.m`, `WQUI.m` and
-`WQTheme.m`, along with existing WQAccess/ScanTask/Localization sources.
-The SwiftUI `NexaWQHexReadOnly.swift` adapter hosts both
-`WQHexViewController(path:readOnly:)` and
-`WQPlistEditorViewController(path:readOnly:)` with **readOnly=true**.
+`ThirdParty/WQFiles/WQHexViewer.m`, `WQPlistEditor.m`,
+`WQSQLiteViewer.m`, `WQSQLiteSave.m`, `WQSharing.m`, `WQUI.m`
+and `WQTheme.m`, with existing WQAccess/ScanTask/Localization/Archive sources.
+The SwiftUI `NexaWQHexReadOnly.swift` adapter hosts the original
+`WQHexViewController`, `WQPlistEditorViewController` and
+`WQSQLiteViewController`, all explicitly constructed with **readOnly=true**.
 Only an explicitly imported regular file passing
-`NexaLocalFiles.validatedImportedRegularFile` is eligible; external paths,
-links, linked ancestors and directories are rejected.
-Neither viewer enables privileged or local file writes. Pinned original
-`tests/WQHexViewerHelpersTests.m` and
-`tests/WQPlistEditorSupportTests.m` are included in host regression.
-Source compilation and runtime UI acceptance are tracked separately in
+`NexaLocalFiles.validatedImportedRegularFile` is accepted; external paths,
+symlinks, linked ancestors and directories are rejected. The SQLite entry is
+displayed only if original `wq_is_sqlite_header` recognizes the file header.
+Original SQLite viewer works on a private database snapshot and does not
+offer save-to-App in read-only mode. The dependency compilation is not an
+endorsement of destructive upstream APIs; no external writes are exposed.
+Pinned original `tests/WQHexViewerHelpersTests.m`,
+`tests/WQPlistEditorSupportTests.m` and
+`tests/WQSQLiteSupportTests.m` are included in host regression.
+Source compilation and runtime UI acceptance are separate gates in
 [IMPLEMENTATION_BACKLOG.md](IMPLEMENTATION_BACKLOG.md).
 
 ## WCMigrate account identity parsing

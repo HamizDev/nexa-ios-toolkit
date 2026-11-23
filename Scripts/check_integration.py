@@ -30,6 +30,9 @@ required_sources = [
     "WQAccess.m",
     "WQHexViewer.m",
     "WQPlistEditor.m",
+    "WQSQLiteViewer.m",
+    "WQSQLiteSave.m",
+    "WQSharing.m",
     "WQUI.m",
     "WQTheme.m",
     "NexaWQHexReadOnly.swift",
@@ -43,12 +46,16 @@ if '#import "WQHexViewer.h"' not in (root / "Nexa/Nexa-Bridging-Header.h").read_
     errors.append("Original WQFiles hex controller is not exposed in the Swift bridge")
 if '#import "WQPlistEditor.h"' not in (root / "Nexa/Nexa-Bridging-Header.h").read_text():
     errors.append("Original WQFiles plist controller is not exposed in the Swift bridge")
+if '#import "WQSQLiteViewer.h"' not in (root / "Nexa/Nexa-Bridging-Header.h").read_text():
+    errors.append("Original WQFiles SQLite browser is not exposed in the Swift bridge")
 wq_hex_adapter = (root / "Nexa/Sources/NexaWQHexReadOnly.swift").read_text()
 if "WQHexViewController(path: file.path, readOnly: true)" not in wq_hex_adapter:
     errors.append("WQFiles original hex controller must be instantiated read-only")
 if "WQPlistEditorViewController(path: file.path, readOnly: true)" not in wq_hex_adapter:
     errors.append("WQFiles original plist controller must be instantiated read-only")
-for item in ("WQHexViewer.m", "WQPlistEditor.m", "WQUI.m", "WQTheme.m"):
+if "WQSQLiteViewController(path: file.path, readOnly: true)" not in wq_hex_adapter:
+    errors.append("WQFiles original SQLite controller must be instantiated read-only")
+for item in ("WQHexViewer.m", "WQPlistEditor.m", "WQSQLiteViewer.m", "WQSQLiteSave.m", "WQSharing.m", "WQUI.m", "WQTheme.m"):
     if f"ThirdParty/WQFiles/{item}" not in project:
         errors.append("Original WQFiles UI dependency must come from the pinned submodule: " + item)
 for item in required_sources:

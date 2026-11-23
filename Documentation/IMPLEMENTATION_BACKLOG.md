@@ -29,9 +29,9 @@ Original source: pookjw/HermesEnabler at c0ae1666cba67ab7fbae6d3e481cc2731f5550a
 Original source: kolbicz/WQFiles at fe92ae94067983b94fd927e0b4eee52e5a99a4e7 (GPL-3.0-or-later).
 
 - [x] WIRED original WQCore, WQArchive, selected-file wq_copy_to_local and gated read-only WQAccess preview; **physical container grant unverified**.
-- [x] WIRED (pending current-head CI): pinned original `WQHexViewer.m` paged hex/offset/search controller and original `WQPlistEditor.m` typed plist tree controller, plus original `WQUI.m` / `WQTheme.m` dependencies. Both Nexa adapters pass `readOnly: true` and only open validated user-imported regular files, rejecting external paths, links and linked ancestors. Original WQHexViewerHelpersTests and WQPlistEditorSupportTests now run in Nexa host fixtures.
-- [ ] Reuse original WQApps and SQLite viewer and further safe dependencies through SwiftUI wrappers. Avoid duplicating upstream native engines.
-- [ ] CI: original WQ hex/plist UIViewControllers launch against synthetic imported files and generate screenshots; review and record the current run once green.
+- [x] WIRED (pending current-head CI): original **WQHexViewer.m**, **WQPlistEditor.m**, **WQSQLiteViewer.m** with unmodified original WQUI.m/WQTheme.m, WQSQLiteSave.m and WQSharing.m dependencies. All three Nexa adapters use `readOnly: true` on validated imported regular files; SQLite UI entry relies on upstream `wq_is_sqlite_header`. No cross-App mutation/save-to-App entry is enabled. Original WQHexViewerHelpersTests, WQPlistEditorSupportTests and WQSQLiteSupportTests run as host fixtures.
+- [ ] Reuse original WQApps management/browser and other safe viewer dependencies through SwiftUI wrappers. Avoid duplicating upstream native engines.
+- [ ] CI: original WQ hex/plist/SQLite UIKit controllers launch against synthetic imported files, capture three screenshots, and pass source/host/device builds; review run before marking this completed.
 - [ ] Run original full tests/run_all_tests.sh, preserve error/cancel/recovery handling and license notes.
 - [ ] Consider original WQTrash/WQCache or write methods only with explicit scope, verified original backup, predictable restore, safe supported OS/build and actual authorized test-container device tests.
 - [ ] DEVICE: verify entitlement/grant/cache recovery, sandbox refusals and patched-build disabling on test-owned data.

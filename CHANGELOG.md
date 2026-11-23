@@ -2,6 +2,9 @@
 
 ## Unreleased — upstream integration branch
 
+- **Original WQFiles SQLite viewer:** directly compile pinned `WQSQLiteViewer.m` with original `WQSQLiteSave.m` and `WQSharing.m` dependencies, and expose the original isolated-snapshot table/row/SQL viewer only for valid Nexa-imported SQLite data. The native adapter is forced read-only; the upstream SQLite header recognizer gates the UI. Added `WQSQLiteSupportTests.m` host fixtures and a synthetic SQLite UIKit screenshot smoke, pending current CI. No save-to-other-App workflow is exposed.
+
+
 - **Original WQFiles plist tree viewer:** compile pinned `WQPlistEditor.m` unchanged and expose its typed tree with `readOnly: true` from Nexa imported files. Original `WQPlistEditorSupportTests.m` joins upstream host regressions; Nexa local editable plist/history remains separate.
 
 
