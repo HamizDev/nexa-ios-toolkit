@@ -22,6 +22,8 @@ jobs:
           persist-credentials: false
       - name: Audit project membership, licenses and upstream source pins
         run: python3 Scripts/check_integration.py
+      - name: Check Hermes original iPhone backup receiver and single WCSession delegate
+        run: python3 Scripts/check_hermes_companion_integration.py
       - name: Audit first-launch disclaimer and upstream risk notices
         run: python3 Scripts/check_safety.py
       - name: Validate signed archive script syntax (without signing credentials)
