@@ -121,6 +121,17 @@ jobs:
       - name: Targeted upstream WQFiles core, archive and access safety regressions
         timeout-minutes: 12
         run: bash Scripts/test_wqfiles_integrated.sh
+      - name: Original HermesEnabler recovery layout and verification fixtures
+        run: |
+          set -euo pipefail
+          scratch="$(mktemp -d)"
+          trap 'rm -rf "$scratch"' EXIT
+          xcrun --sdk macosx clang -std=c11 -Wall -Wextra -Werror -O2 \
+            ThirdParty/HermesEnabler/tests/BQRecoveryValidationTests.c \
+            -o "$scratch/hermes-recovery"
+          "$scratch/hermes-recovery"
+          python3 ThirdParty/HermesEnabler/tests/test_ultra_layouts.py
+          echo "PASS: Hermes pinned-original recovery and layout regressions"
 
   build:
     runs-on: macos-latest

@@ -3,8 +3,10 @@ import Combine
 import WatchConnectivity
 
 // iPhone-side WatchConnectivity diagnostic layer.
-// The full HermesEnabler watchOS app remains a separate upstream target in the workspace.
-// A paired Watch does NOT mean that its watch-face customization engine is integrated.
+// The original Hermes Watch-side engine/views are compiled into NexaWatch.
+// This phone-side monitor handles ping/status only; HermesCompanion's original
+// WCSession backup transport, SHA-256 history and restore UI are NOT yet wired.
+// A paired Watch is not evidence of a working cross-device backup/rollback.
 @MainActor
 final class NexaWatchMonitor: NSObject, ObservableObject {
     @Published private(set) var supported = false

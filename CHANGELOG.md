@@ -2,6 +2,11 @@
 
 ## Unreleased — upstream integration branch
 
+- Audited the exact pinned WQFiles/WCMigrate/GestaltX/Hermes source entry points against the Nexa build and documented the **real missing call chains** in `Documentation/UPSTREAM_REUSE_AUDIT_2026-11-23.md`. Identified that the Hermes iPhone backup receiver/history and a unified WatchConnectivity delegate are not yet integrated, despite Watch-side BQCore/UI compiling.
+- Added the upstream HermesEnabler `BQRecoveryValidationTests.c` and `test_ultra_layouts.py` as original-source provenance checks rather than replacing them with speculative tests.
+- Corrected contradictory source inventory and stale Watch monitor comments; retain all unsupported real-device workflows as not yet accepted.
+
+
 - Extended developer handoff with unsigned iPhone and Watch Release/device-SDK CI builds, separate from Simulator Debug builds. These are compile-only; a signed, provisioned device IPA is still required for release.
 - Signed IPA script now reads the actual iPhone/Watch code-signature entitlements in both Xcode archive and exported IPA and rejects mismatched Team IDs, Bundle IDs, companion mapping and App Groups. Added synthetic host regression cases that do not require signing credentials.
 

@@ -7,7 +7,7 @@
 | WQFiles | Original ZIP and hex utilities; gated experimental container listing/read preview and selected-file streaming copy to Nexa Imports | Real iOS device sandbox lease and clean recovery; authenticated safe writes across containers; full original file-manager workflows |
 | WCMigrate | Pinned original progress/ETA, SQLite read-only inspector and `LoginInfo2.dat` identity parser; Nexa-only SHA-256 staging and independent file-level Merge/Replace output tools | Original `DirectMigrationService`, live WeChat app-to-app Replace/Convert/file-level Merge (upstream does not offer SQLite chat-row merge or whole-task rollback), plus real-device recovery acceptance |
 | GestaltX | Original typed plist parsing, offline imported-file editor, private SHA-256 history/restore; read-only MobileGestalt loaded-library summary | Live MobileGestalt cache edits and presets; supported-build capability gating, on-device verified system rollback |
-| HermesEnabler 2 | Original Watch BQCore engine, screens and MG resources compiled into embedded NexaWatch; connection diagnostics, watchOS/App Group consent gates and 82 bilingual fixed labels | Signed Watch device acceptance, face changes, physical-device backup and rollback, complete translated runtime messages |
+| HermesEnabler 2 | Original Watch BQCore engine, screens and MG resources compiled into embedded NexaWatch; Nexa phone/watch ping diagnostics, watchOS/App Group consent gates and 82 bilingual fixed labels | **Original HermesCompanion iPhone backup receiver/history/restore transport absent**; signed Watch acceptance, physical face changes, backups/rollback, and complete runtime translations missing |
 | Nexa UI | Five-tab Chinese-first/English SwiftUI UI, imported file workspace, ZIP tools, backup/restore, local migration, recovery-snapshot browsing/export and Watch companion; latest five-tab simulator screenshots captured and visually checked | Dynamic Type/VoiceOver assessment, running on small/large devices, end-to-end user acceptance |
 | Distribution | Xcode iOS/watchOS Simulator builds, unsigned generic device-Release build CI, source-pinning audit, host regression tests, unsigned preview and owner-run signed IPA export script with actual signature/App Group checks | Provisioned Apple Developer Team, signed entitlements verified on owner hardware and real iPhone+Watch installation/acceptance |
 
@@ -16,9 +16,13 @@
 - [ ] **Real-device WQFiles**: verify supported iOS *build*, signed App Group, authorized test container, upstream lease, repair and no incidental private-data loss.
 - [ ] **WCMigrate live-data migration**: integrate upstream transaction engine only after safe source/target authorization, transaction durability, real app-data compatibility and recovery tests. Never treat local imported-file copying as a substitute.
 - [ ] **GestaltX device writes**: verify original-system backup, preflight, explicit consent, per-build compatibility and successful rollback on disposable test devices.
-- [ ] **Hermes device operations**: verify original state backup and actual face changes/recovery on a provisioned Watch with supported hardware/watchOS; simulator source build alone is insufficient.
+- [ ] **Hermes phone + Watch integration**: reuse original iPhone Companion backup transport/history/restore handling, unify iPhone `WCSession.delegate`, then verify original state backup and actual face changes/recovery on a provisioned Watch with supported hardware/watchOS. Simulator source build alone is insufficient.
 - [ ] **UI and accessibility**: visually inspect five screenshots, navigation, full Chinese/English coverage, long strings, contrast and screen-reader support.
 - [ ] **Signing and release**: archive, install and test the same signed IPA (embedded Watch app included); verify App Groups in the signed entitlements; publish release only after the above tests pass.
+
+## Pinned upstream reuse audit (2026-11-23)
+
+See [UPSTREAM_REUSE_AUDIT_2026-11-23.md](UPSTREAM_REUSE_AUDIT_2026-11-23.md) for actual source entry points, missing call chains and the recommended original-code reuse sequence. At pinned head `fffb48a`, CI [45155034638](https://github.com/HamizDev/nexa-ios-toolkit/actions/runs/45155034638) passed all four jobs, including unsigned iPhone and Watch Release device-SDK compilation. The original Hermes recovery/layout host fixtures were subsequently added as a separate gate; review their own run before marking them passed.
 
 ## Verification update (2026-11-22)
 
