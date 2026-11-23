@@ -12,6 +12,18 @@ On 2026-11-18 the first ZIP containing five screenshots (`44232278062`) was insp
 - If no compatible simulator is available, the UI smoke step now **fails** instead of silently skipping. A green workflow therefore requires an actual compatible simulator.
 - Earlier run `44296214503` captured distinct Home, Files and Backups screens but exceeded the original shared ten-minute budget after a six-minute first boot; Explore and Settings still required rerunning.
 
+## Original Hermes iPhone companion fixture (Debug only)
+
+After checking the five main tabs, CI now launches the same debug iPhone app
+with --nexa-watch-view and --nexa-hermes-fixture and verifies both an on-disk
+Watch-screen marker and a disposable original-Hermes backup test. The fixture
+calls the genuine upstream HermesCompanion importBackup, verifyBackup,
+exportURL and loadBackupHistory methods on synthetic MobileGestalt-shaped
+plist data, checks SHA-256, duplicate and malformed-input rejection,
+then captures watch-companion.png. This tests the iPhone receiver's local
+storage path and screen; it does **not** simulate WCSession transport or
+prove paired Watch real-device recovery.
+
 ## Human review to perform on a successful five-tab ZIP
 
 Verify that the image for each named tab actually shows its distinct UI; inspect tab selection, long Simplified Chinese/English labels, clipping on iPhone-sized screens, contrast, accessibility text sizes, overflow and empty states. Screenshot smoke only covers first-level entry and does not validate each modal, import sheet or destructive-operation flow.

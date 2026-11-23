@@ -19,6 +19,10 @@ struct NexaApp: App {
 
 struct NexaRootView: View {
     @EnvironmentObject private var language: NexaLanguage
+    #if DEBUG
+    @EnvironmentObject private var hermesCompanion: WatchConnectivityManager
+    @State private var showWatchUISmoke = ProcessInfo.processInfo.arguments.contains("--nexa-watch-view")
+    #endif
     @AppStorage("nexa.safety.disclaimer.read.0.0.1") private var hasReadSafety = false
     @State private var showFirstLaunchSafety = false
     @State private var selectedTab: String = {
@@ -64,7 +68,7 @@ struct NexaRootView: View {
                 // them with the first-run disclosure. Normal Debug launches
                 // and every Release launch still present the disclosure.
                 let isScreenshotHarness = ProcessInfo.processInfo.arguments.contains {
-                    $0.hasPrefix("--nexa-tab=")
+                    $0.hasPrefix("--nexa-tab=") || $0 == "--nexa-watch-view"
                 }
                 if !isScreenshotHarness { showFirstLaunchSafety = true }
                 #else
@@ -79,12 +83,27 @@ struct NexaRootView: View {
             .environmentObject(language)
         }
         #if DEBUG
-        .onAppear(perform: recordUITestTab)
+        .sheet(isPresented: $showWatchUISmoke) {
+            NavigationStack { WatchView() }
+                .onAppear(perform: recordWatchViewUITest)
+        }
+        .onAppear {
+            recordUITestTab()
+            if ProcessInfo.processInfo.arguments.contains("--nexa-hermes-fixture") {
+                hermesCompanion.nexaRunSyntheticBackupFixture()
+            }
+        }
         .onChange(of: selectedTab) { _, _ in recordUITestTab() }
         #endif
     }
 
     #if DEBUG
+    private func recordWatchViewUITest() {
+        guard ProcessInfo.processInfo.arguments.contains("--nexa-watch-view") else { return }
+        let marker = AppPaths.documents.appendingPathComponent(".nexa-watch-ui-current-view")
+        try? "watch-companion".write(to: marker, atomically: true, encoding: .utf8)
+    }
+
     private func recordUITestTab() {
         // A DEBUG-only handshake makes CI verify the selected tab, rather
         // than accepting five PNGs that all show the Home screen.

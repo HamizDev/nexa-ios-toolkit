@@ -230,6 +230,27 @@ jobs:
             test -s "$RUNNER_TEMP/NexaUIScreens/$tab.png"
             echo "PASS: Nexa $tab screen launched and captured"
           done
+          # Exercise the PINNED ORIGINAL Hermes iPhone companion at runtime,
+          # using synthetic, disposable data. Also inspect its Nexa-styled UI.
+          xcrun simctl terminate "$simulator" "$bundle" >/dev/null 2>&1 || true
+          xcrun simctl launch "$simulator" "$bundle" "--nexa-watch-view" "--nexa-hermes-fixture"
+          container="$(xcrun simctl get_app_container "$simulator" "$bundle" data)"
+          result_file="$container/Documents/.nexa-hermes-fixture-result"
+          watch_marker="$container/Documents/.nexa-watch-ui-current-view"
+          for attempt in $(seq 1 35); do
+            [[ -s "$result_file" && -s "$watch_marker" ]] && break
+            sleep 1
+          done
+          test -s "$result_file" || { echo "::error::Original Hermes simulator fixture never responded"; exit 1; }
+          cat "$result_file"
+          grep -q '^PASS: original Hermes' "$result_file" ||
+            { echo "::error::Original Hermes backup fixture failed"; exit 1; }
+          test "$(cat "$watch_marker")" = "watch-companion" ||
+            { echo "::error::Nexa Hermes companion screen failed to launch"; exit 1; }
+          sleep 2
+          xcrun simctl io "$simulator" screenshot "$RUNNER_TEMP/NexaUIScreens/watch-companion.png"
+          test -s "$RUNNER_TEMP/NexaUIScreens/watch-companion.png"
+          echo "PASS: original Hermes iPhone backup fixture and Nexa Watch companion UI"
           xcrun simctl shutdown "$simulator" || true
       - name: Upload iOS UI smoke screenshots
         if: always()
