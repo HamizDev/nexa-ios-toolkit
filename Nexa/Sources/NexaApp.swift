@@ -3,11 +3,14 @@ import SwiftUI
 @main
 struct NexaApp: App {
     @StateObject private var language = NexaLanguage()
+    // The original Hermes iPhone WCSession delegate lives for the entire App.
+    @StateObject private var hermesCompanion = WatchConnectivityManager()
 
     var body: some Scene {
         WindowGroup {
             NexaRootView()
                 .environmentObject(language)
+                .environmentObject(hermesCompanion)
                 .preferredColorScheme(.dark)
                 .tint(NexaPalette.violet)
         }
