@@ -40,6 +40,20 @@ No third-party IPA or binary has been copied into Nexa. Please examine each upst
 
 Nexa directly compiles these unchanged upstream files from `ThirdParty/WQFiles`: `WQAccess.m`, `WQLaunchServices.m`, `WQScanTask.m`, with corresponding headers from the same pinned commit. A consent-gated SwiftUI read-only container browser calls `wq_list` and bounded `wq_read`. Real-device functioning depends on the installed App Group entitlement, supported OS/build and the results of an on-device grant; no such acceptance tests have been completed. License: GPL-3.0-or-later.
 
+## WQFiles original paged hex viewer (directly compiled sources)
+
+Nexa's iPhone target now directly compiles the **unchanged pinned original**
+`ThirdParty/WQFiles/WQHexViewer.m`, `WQUI.m` and `WQTheme.m`, together
+with its existing WQFiles access, scan and localization sources. Its own
+`NexaWQHexReadOnly.swift` uses the upstream UIKit
+`WQHexViewController(path:readOnly:)` in read-only mode for **user-imported
+regular files only**. `NexaLocalFiles.validatedImportedRegularFile` rejects
+paths outside Imports, symbolic links, linked ancestors and directories before
+the original controller is created. No remote mutation or system access is
+added by the UI. Pinned `tests/WQHexViewerHelpersTests.m` joins the Nexa host
+regression suite for the original offset/search constraints. Compile and
+runtime tests are tracked separately in [IMPLEMENTATION_BACKLOG.md](IMPLEMENTATION_BACKLOG.md).
+
 ## WCMigrate account identity parsing
 
 `Vendor/WCMigrate/WeChatIdentityResolver.swift` copies the original parser from pinned commit `55faba721fd44e04c65be481860c9d93e12f6f61` (GPL-3.0-or-later) with only a provenance comment prepended. `NexaImportedWeChatIdentity.detect(in:)` validates a path inside Nexa's imported folder, disallows symlink traversals, caps inspected account folders and LoginInfo2.dat size, then invokes the upstream parser only on explicit user action. It only identifies a probable WeChat account identity; **it does not migrate, decrypt or restore chat data**. Synthetic host fixtures test valid and invalid parser records.

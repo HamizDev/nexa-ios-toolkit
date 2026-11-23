@@ -2,6 +2,9 @@
 
 ## Unreleased — upstream integration branch
 
+- **WQFiles original read-only viewer milestone:** directly compile the pinned original `WQHexViewer.m`, `WQUI.m` and `WQTheme.m` and wrap the upstream paged hex/offset/search UIKit viewer with a Nexa SwiftUI sheet. The original viewer is always initialized `readOnly=true`; an imported-file gate rejects external files, directories, symlinks and linked ancestors. No new write capability is enabled. Added pinned upstream WQHexViewerHelpers fixture and local sandbox denials; current CI and runtime acceptance remain separate.
+
+
 - Fixed Watch-side WCSession delegate ownership: the **unchanged original** Hermes WatchConnectivity manager stays active in the dashboard and tools; the Nexa diagnostic Watch link no longer overwrites the delegate and implements only Ping/status. This prevents the known source-level possibility of losing incoming original MG restore files while the Watch dashboard is visible. Manual refresh and foreground checks remain available; real paired-device transfer/rollback acceptance is still required.
 
 

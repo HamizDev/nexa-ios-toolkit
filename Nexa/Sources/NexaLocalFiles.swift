@@ -9,7 +9,7 @@ enum NexaLocalFiles {
     enum FileError: LocalizedError {
         case invalidName, outsideImports, symlink, notDirectory
         case alreadyExists, cannotMoveIntoSelf, missingFile
-        case invalidTrashRecord, invalidArchive, invalidImportStage
+        case invalidTrashRecord, invalidArchive, invalidImportStage, notRegularFile
 
         var errorDescription: String? {
             switch self {
@@ -22,6 +22,7 @@ enum NexaLocalFiles {
             case .missingFile: return "The source file no longer exists."
             case .invalidTrashRecord: return "This deleted item cannot be safely restored."
             case .invalidArchive: return "Choose an existing regular ZIP file inside Nexa Imports."
+            case .notRegularFile: return "Choose a non-symlinked regular file in Nexa Imports."
             case .invalidImportStage: return "Nexa's private import staging directory is not safe to use."
             }
         }
@@ -201,6 +202,22 @@ enum NexaLocalFiles {
               values.isRegularFile == true,
               values.isSymbolicLink != true else { throw FileError.invalidArchive }
         return source
+    }
+
+    /// Only the Nexa Imports subtree may be opened in original WQFiles UI.
+    /// The upstream hex implementation is always started in readOnly mode.
+    static func validatedImportedRegularFile(_ selected: URL) throws -> URL {
+        lock.lock()
+        defer { lock.unlock() }
+        let file = try item(selected)
+        let values = try file.resourceValues(forKeys: [
+            .isRegularFileKey, .isSymbolicLinkKey
+        ])
+        guard values.isRegularFile == true,
+              values.isSymbolicLink != true else {
+            throw FileError.notRegularFile
+        }
+        return file
     }
 
     /// Copy an explicitly user-selected item into private staging first.

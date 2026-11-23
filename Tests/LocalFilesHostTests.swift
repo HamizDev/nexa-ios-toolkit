@@ -110,6 +110,31 @@ struct NexaLocalFileHostTests {
         }
         print("PASS: ZIP extraction input gate rejects links, directories and outside files")
 
+        check(try NexaLocalFiles.validatedImportedRegularFile(original) ==
+              original.resolvingSymlinksInPath().standardizedFileURL,
+              "Original WQFiles hex viewer must accept a regular imported file")
+        rejects("WQ original viewer refuses external file") {
+            _ = try NexaLocalFiles.validatedImportedRegularFile(outside)
+        }
+        rejects("WQ original viewer refuses folder") {
+            _ = try NexaLocalFiles.validatedImportedRegularFile(fakeZip)
+        }
+        let hexAlias = nested.appendingPathComponent("hex-linked.bin")
+        try fm.createSymbolicLink(at: hexAlias, withDestinationURL: original)
+        rejects("WQ original viewer rejects internal symlink") {
+            _ = try NexaLocalFiles.validatedImportedRegularFile(hexAlias)
+        }
+        try fm.removeItem(at: hexAlias)
+        let parentAlias = importRoot.appendingPathComponent("hex-parent-symlink")
+        try fm.createSymbolicLink(at: parentAlias, withDestinationURL: nested)
+        rejects("WQ original viewer rejects symlinked ancestor") {
+            _ = try NexaLocalFiles.validatedImportedRegularFile(
+                parentAlias.appendingPathComponent(original.lastPathComponent)
+            )
+        }
+        try fm.removeItem(at: parentAlias)
+        print("PASS: WQFiles original hex viewer input gate rejects external and linked paths")
+
         // Imported copies are committed only after staging succeeds; no
         // security-scoped or other app container is touched by these fixtures.
         let importedCopy = try NexaLocalFiles.importSelected(outside)

@@ -27,5 +27,6 @@ run_test WQCoreTests WQCore.m tests/WQCoreTests.m
 run_test WQAccessSafetyTests tests/WQAccessSafetyTests.m
 run_test WQAccessMutationTests WQLocalization.m tests/WQAccessMutationTests.m WQCore.m
 run_test WQArchiveTests WQArchive.m WQLocalization.m tests/WQArchiveTests.m -lz
+run_test WQHexViewerHelpersTests tests/WQHexViewerHelpersTests.m
 
 echo "PASS: WQFiles source units used by Nexa"

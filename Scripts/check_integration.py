@@ -28,12 +28,24 @@ required_sources = [
     "NexaWQExplorerView.swift",
     "NexaWatchMonitor.swift",
     "WQAccess.m",
+    "WQHexViewer.m",
+    "WQUI.m",
+    "WQTheme.m",
+    "NexaWQHexReadOnly.swift",
     "WQArchive.m",
     "DatabaseInspector.swift",
     "PlistValueKind.swift",
     "GXMobileGestaltImage.m",
 ]
 errors = []
+if '#import "WQHexViewer.h"' not in (root / "Nexa/Nexa-Bridging-Header.h").read_text():
+    errors.append("Original WQFiles hex controller is not exposed in the Swift bridge")
+wq_hex_adapter = (root / "Nexa/Sources/NexaWQHexReadOnly.swift").read_text()
+if "WQHexViewController(path: file.path, readOnly: true)" not in wq_hex_adapter:
+    errors.append("WQFiles original hex controller must be instantiated read-only")
+for item in ("WQHexViewer.m", "WQUI.m", "WQTheme.m"):
+    if f"ThirdParty/WQFiles/{item}" not in project:
+        errors.append("Original WQFiles UI dependency must come from the pinned submodule: " + item)
 for item in required_sources:
     if f"{item} in Sources" not in project:
         errors.append(f"Not linked into Nexa target: {item}")

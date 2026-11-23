@@ -247,6 +247,7 @@ struct FileInspectorView: View {
     @State private var extracting = false
     @State private var archiveNotice: String?
     @State private var extractedFolder: URL?
+    @State private var originalHexSelection: NexaWQHexSelection?
 
     var body: some View {
         ZStack {
@@ -301,6 +302,25 @@ struct FileInspectorView: View {
                                 .textSelection(.enabled)
                         }
                     }
+                    Button {
+                        do {
+                            let approved = try NexaLocalFiles.validatedImportedRegularFile(file)
+                            originalHexSelection = NexaWQHexSelection(file: approved)
+                        } catch {
+                            archiveNotice = error.localizedDescription
+                        }
+                    } label: {
+                        Label(
+                            language.code == "en"
+                                ? "Original WQFiles hex viewer · read-only"
+                                : "WQFiles 原版十六进制查看器 · 只读",
+                            systemImage: "number"
+                        )
+                    }
+                    .buttonStyle(.bordered)
+                    .accessibilityHint(language.code == "en"
+                        ? "Paged browsing, offset navigation and search without modifying files."
+                        : "分页浏览、定位和搜索，不会修改文件。")
                     if file.pathExtension.lowercased() == "plist" {
                         NavigationLink {
                             NexaPlistInspectorView(file: file)
@@ -340,6 +360,10 @@ struct FileInspectorView: View {
         .navigationTitle(file.lastPathComponent)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear(perform: read)
+        .sheet(item: $originalHexSelection) { selection in
+            NexaWQOriginalHexView(file: selection.file)
+                .presentationDetents([.large])
+        }
         .alert(language.code == "en" ? "Archive result" : "压缩包操作", isPresented: Binding(
             get: { archiveNotice != nil },
             set: { if !$0 { archiveNotice = nil } }

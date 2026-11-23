@@ -38,6 +38,14 @@
     17B0E9BCA1B74316BC5C2B32 /* Nexa-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Nexa-Bridging-Header.h; sourceTree = "<group>"; };
     E80000000000000000000001 /* HermesCompanionWatchConnectivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = E80000000000000000000002 /* HermesCompanionWatchConnectivity.swift */; };
     E80000000000000000000002 /* HermesCompanionWatchConnectivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdParty/HermesEnabler/HermesCompanion/WatchConnectivity/WatchConnectivityManager.swift; sourceTree = SOURCE_ROOT; };
+    E90000000000000000000001 /* WQHexViewer.m in Sources */ = {isa = PBXBuildFile; fileRef = E90000000000000000000002 /* WQHexViewer.m */; };
+    E90000000000000000000002 /* WQHexViewer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThirdParty/WQFiles/WQHexViewer.m; sourceTree = SOURCE_ROOT; };
+    E90000000000000000000003 /* WQUI.m in Sources */ = {isa = PBXBuildFile; fileRef = E90000000000000000000004 /* WQUI.m */; };
+    E90000000000000000000004 /* WQUI.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThirdParty/WQFiles/WQUI.m; sourceTree = SOURCE_ROOT; };
+    E90000000000000000000005 /* WQTheme.m in Sources */ = {isa = PBXBuildFile; fileRef = E90000000000000000000006 /* WQTheme.m */; };
+    E90000000000000000000006 /* WQTheme.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThirdParty/WQFiles/WQTheme.m; sourceTree = SOURCE_ROOT; };
+    E90000000000000000000007 /* NexaWQHexReadOnly.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90000000000000000000008 /* NexaWQHexReadOnly.swift */; };
+    E90000000000000000000008 /* NexaWQHexReadOnly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaWQHexReadOnly.swift; sourceTree = "<group>"; };
     6D83C9BA9C0C428BA104FA01 /* NexaWatchMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D83C9BA9C0C428BA104FA00 /* NexaWatchMonitor.swift */; };
     6D83C9BA9C0C428BA104FA00 /* NexaWatchMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaWatchMonitor.swift; sourceTree = "<group>"; };
     6D83C9BA9C0C428BA104FA03 /* OperationEstimate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D83C9BA9C0C428BA104FA02 /* OperationEstimate.swift */; };
@@ -258,6 +266,10 @@
         F5A300000000000000000006 /* NexaDatabaseReportView.swift in Sources */,
         C20000000000000000000002 /* NexaWQExplorerView.swift in Sources */,
         C20000000000000000000004 /* WQAccess.m in Sources */,
+        E90000000000000000000001 /* WQHexViewer.m in Sources */,
+        E90000000000000000000003 /* WQUI.m in Sources */,
+        E90000000000000000000005 /* WQTheme.m in Sources */,
+        E90000000000000000000007 /* NexaWQHexReadOnly.swift in Sources */,
         C20000000000000000000006 /* WQLaunchServices.m in Sources */,
         C20000000000000000000008 /* WQScanTask.m in Sources */,
         C30000000000000000000002 /* NexaBackupRestore.swift in Sources */,
@@ -316,6 +328,10 @@
         F5A300000000000000000005 /* NexaDatabaseReportView.swift */,
         C20000000000000000000001 /* NexaWQExplorerView.swift */,
         C20000000000000000000003 /* WQAccess.m */,
+        E90000000000000000000002 /* WQHexViewer.m */,
+        E90000000000000000000004 /* WQUI.m */,
+        E90000000000000000000006 /* WQTheme.m */,
+        E90000000000000000000008 /* NexaWQHexReadOnly.swift */,
         C20000000000000000000005 /* WQLaunchServices.m */,
         C20000000000000000000007 /* WQScanTask.m */,
         C30000000000000000000001 /* NexaBackupRestore.swift */,

@@ -29,7 +29,8 @@ Original source: pookjw/HermesEnabler at c0ae1666cba67ab7fbae6d3e481cc2731f5550a
 Original source: kolbicz/WQFiles at fe92ae94067983b94fd927e0b4eee52e5a99a4e7 (GPL-3.0-or-later).
 
 - [x] WIRED original WQCore, WQArchive, selected-file wq_copy_to_local and gated read-only WQAccess preview; **physical container grant unverified**.
-- [ ] Reuse original read-only WQUI, WQApps, SQLite/Hex/Plist viewers and required dependencies through a SwiftUI adapter.
+- [x] WIRED (pending current-head CI): the original `WQHexViewer.m` paged/offset/search UIKit viewer plus original `WQUI.m` and `WQTheme.m` dependencies compiled directly from pinned WQFiles sources. The Nexa SwiftUI wrapper uses `readOnly: true` and only opens a validated Nexa-imported ordinary file (rejects outside paths, symlinks and linked ancestors).
+- [ ] Reuse original WQApps, SQLite/Plist viewers and further safe dependencies through SwiftUI wrappers. Avoid duplicating upstream native engines.
 - [ ] Run original tests/run_all_tests.sh, preserve error/cancel/recovery handling and license notes.
 - [ ] Consider original WQTrash/WQCache or write methods only with explicit scope, verified original backup, predictable restore, safe supported OS/build and actual authorized test-container device tests.
 - [ ] DEVICE: verify entitlement/grant/cache recovery, sandbox refusals and patched-build disabling on test-owned data.
