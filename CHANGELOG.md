@@ -2,6 +2,9 @@
 
 ## Unreleased — upstream integration branch
 
+- **Original WQFiles plist tree viewer:** compile pinned `WQPlistEditor.m` unchanged and expose its typed tree with `readOnly: true` from Nexa imported files. Original `WQPlistEditorSupportTests.m` joins upstream host regressions; Nexa local editable plist/history remains separate.
+
+
 - **WQFiles original read-only viewer milestone:** directly compile the pinned original `WQHexViewer.m`, `WQUI.m` and `WQTheme.m` and wrap the upstream paged hex/offset/search UIKit viewer with a Nexa SwiftUI sheet. The original viewer is always initialized `readOnly=true`; an imported-file gate rejects external files, directories, symlinks and linked ancestors. No new write capability is enabled. Added pinned upstream WQHexViewerHelpers fixture and local sandbox denials; current CI and runtime acceptance remain separate.
 
 

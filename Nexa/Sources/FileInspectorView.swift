@@ -248,6 +248,7 @@ struct FileInspectorView: View {
     @State private var archiveNotice: String?
     @State private var extractedFolder: URL?
     @State private var originalHexSelection: NexaWQHexSelection?
+    @State private var originalPlistSelection: NexaWQPlistSelection?
 
     var body: some View {
         ZStack {
@@ -322,6 +323,25 @@ struct FileInspectorView: View {
                         ? "Paged browsing, offset navigation and search without modifying files."
                         : "分页浏览、定位和搜索，不会修改文件。")
                     if file.pathExtension.lowercased() == "plist" {
+                        Button {
+                            do {
+                                let approved = try NexaLocalFiles.validatedImportedRegularFile(file)
+                                originalPlistSelection = NexaWQPlistSelection(file: approved)
+                            } catch {
+                                archiveNotice = error.localizedDescription
+                            }
+                        } label: {
+                            Label(
+                                language.code == "en"
+                                    ? "Original WQFiles plist tree · read-only"
+                                    : "WQFiles 原版 plist 树状查看器 · 只读",
+                                systemImage: "list.bullet.indent"
+                            )
+                        }
+                        .buttonStyle(.bordered)
+                        .accessibilityHint(language.code == "en"
+                            ? "Inspect the original upstream typed property list without modifying it."
+                            : "使用上游原版查看属性列表结构，不修改文件。")
                         NavigationLink {
                             NexaPlistInspectorView(file: file)
                         } label: {
@@ -362,6 +382,10 @@ struct FileInspectorView: View {
         .onAppear(perform: read)
         .sheet(item: $originalHexSelection) { selection in
             NexaWQOriginalHexView(file: selection.file)
+                .presentationDetents([.large])
+        }
+        .sheet(item: $originalPlistSelection) { selection in
+            NexaWQOriginalPlistView(file: selection.file)
                 .presentationDetents([.large])
         }
         .alert(language.code == "en" ? "Archive result" : "压缩包操作", isPresented: Binding(

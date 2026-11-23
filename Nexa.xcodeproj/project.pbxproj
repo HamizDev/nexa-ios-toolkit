@@ -46,6 +46,8 @@
     E90000000000000000000006 /* WQTheme.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThirdParty/WQFiles/WQTheme.m; sourceTree = SOURCE_ROOT; };
     E90000000000000000000007 /* NexaWQHexReadOnly.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90000000000000000000008 /* NexaWQHexReadOnly.swift */; };
     E90000000000000000000008 /* NexaWQHexReadOnly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaWQHexReadOnly.swift; sourceTree = "<group>"; };
+    E90000000000000000000009 /* WQPlistEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = E9000000000000000000000A /* WQPlistEditor.m */; };
+    E9000000000000000000000A /* WQPlistEditor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThirdParty/WQFiles/WQPlistEditor.m; sourceTree = SOURCE_ROOT; };
     6D83C9BA9C0C428BA104FA01 /* NexaWatchMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D83C9BA9C0C428BA104FA00 /* NexaWatchMonitor.swift */; };
     6D83C9BA9C0C428BA104FA00 /* NexaWatchMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaWatchMonitor.swift; sourceTree = "<group>"; };
     6D83C9BA9C0C428BA104FA03 /* OperationEstimate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D83C9BA9C0C428BA104FA02 /* OperationEstimate.swift */; };
@@ -270,6 +272,7 @@
         E90000000000000000000003 /* WQUI.m in Sources */,
         E90000000000000000000005 /* WQTheme.m in Sources */,
         E90000000000000000000007 /* NexaWQHexReadOnly.swift in Sources */,
+        E90000000000000000000009 /* WQPlistEditor.m in Sources */,
         C20000000000000000000006 /* WQLaunchServices.m in Sources */,
         C20000000000000000000008 /* WQScanTask.m in Sources */,
         C30000000000000000000002 /* NexaBackupRestore.swift in Sources */,
@@ -332,6 +335,7 @@
         E90000000000000000000004 /* WQUI.m */,
         E90000000000000000000006 /* WQTheme.m */,
         E90000000000000000000008 /* NexaWQHexReadOnly.swift */,
+        E9000000000000000000000A /* WQPlistEditor.m */,
         C20000000000000000000005 /* WQLaunchServices.m */,
         C20000000000000000000007 /* WQScanTask.m */,
         C30000000000000000000001 /* NexaBackupRestore.swift */,
