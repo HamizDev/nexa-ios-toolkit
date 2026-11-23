@@ -9,6 +9,8 @@ fail() { printf 'ERROR: %s\n' "$*" >&2; exit 1; }
 command -v xcodebuild >/dev/null || fail "Xcode command-line tools are unavailable."
 command -v codesign >/dev/null || fail "macOS codesign is unavailable."
 command -v plutil >/dev/null || fail "macOS plutil is unavailable."
+command -v ditto >/dev/null || fail "macOS ditto is unavailable."
+command -v python3 >/dev/null || fail "Python 3 is required to validate the signed entitlements."
 
 : "${NEXA_TEAM_ID:?Set your 10-character Apple Developer Team ID}"
 : "${NEXA_BUNDLE_ID:?Set your unique iPhone bundle identifier}"
@@ -68,6 +70,33 @@ watch="$app/Watch/NexaWatch.app"
 [[ -d "$app" && -d "$watch" ]] || fail "The archive does not include the embedded Watch app."
 codesign --verify --deep --strict "$app" || fail "Signed iPhone/Watch bundle verification failed."
 
+# Read entitlements from actual codesign signatures, not Info.plist alone.
+validate_signed_pair() {
+  local target_app="$1"
+  local stage="$2"
+  local target_watch="$target_app/Watch/NexaWatch.app"
+  [[ -d "$target_app" && -d "$target_watch" ]] || fail "$stage: missing embedded Watch app."
+  codesign --verify --strict "$target_app" || fail "$stage: invalid iPhone signature."
+  codesign --verify --strict "$target_watch" || fail "$stage: invalid Watch signature."
+  local phone_rights="$out/$stage-phone-entitlements.plist"
+  local watch_rights="$out/$stage-watch-entitlements.plist"
+  codesign --display --entitlements - "$target_app" > "$phone_rights" ||
+    fail "$stage: failed to read iPhone signature entitlements."
+  codesign --display --entitlements - "$target_watch" > "$watch_rights" ||
+    fail "$stage: failed to read Watch signature entitlements."
+  python3 "$root/Scripts/validate_signed_bundle.py" \
+    --phone-info "$target_app/Info.plist" \
+    --watch-info "$target_watch/Info.plist" \
+    --phone-entitlements "$phone_rights" \
+    --watch-entitlements "$watch_rights" \
+    --phone-bundle "$NEXA_BUNDLE_ID" \
+    --phone-group "$NEXA_PHONE_APP_GROUP" \
+    --watch-group "$NEXA_WATCH_APP_GROUP" \
+    --team "$NEXA_TEAM_ID" ||
+      fail "$stage: signed entitlements or application identity mismatch."
+}
+validate_signed_pair "$app" archive
+
 echo "Exporting owner-signed debugging IPA..."
 xcodebuild -exportArchive \
   -archivePath "$archive" \
@@ -79,6 +108,11 @@ ipa="$(find "$export_dir" -maxdepth 1 -type f -name '*.ipa' -print -quit)"
 [[ -n "$ipa" && -s "$ipa" ]] || fail "A signed IPA was not produced."
 unzip -Z1 "$ipa" | grep 'Payload/Nexa.app/Watch/NexaWatch.app/' >/dev/null ||
   fail "The exported IPA has no embedded Watch app."
-echo "PASS: signed archive exported; embedded Watch app verified."
+verification="$out/ExportVerification"
+[[ ! -e "$verification" ]] || fail "Export verification directory already exists."
+mkdir -p "$verification"
+ditto -x -k "$ipa" "$verification"
+validate_signed_pair "$verification/Payload/Nexa.app" exported
+echo "PASS: signed archive AND exported IPA include verified iPhone/Watch App Groups."
 echo "IPA: $ipa"
 echo "WARNING: archive and signing checks do not validate WQFiles, MobileGestalt writes, or Watch face changes on a real device."
