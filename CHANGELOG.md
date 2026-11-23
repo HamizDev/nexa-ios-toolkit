@@ -2,6 +2,10 @@
 
 ## Unreleased — upstream integration branch
 
+- **WQFiles original app metadata catalog:** added explicit-consent, device/build/App Group-gated read-only catalog using the pinned original `WQLaunchServices` parser and `WQAppsSupportBundleIDValid` (no improvised private-database decoder). Only a user-selected record opens the existing read-only WQAccess explorer, which requires fresh independent consent. Original `WQApps.m` full manager was intentionally excluded because its UI exposes restore/clear/delete actions with no read-only switch.
+- Added original upstream WQAppsSupport and LaunchServices host fixtures, a full original WQFiles host-suite CI gate and a Simulator unavailable-state screenshot for the catalog. Real-device sandbox access and any destructive actions remain unverified.
+
+
 - **Original WQFiles SQLite viewer:** directly compile pinned `WQSQLiteViewer.m` with original `WQSQLiteSave.m` and `WQSharing.m` dependencies, and expose the original isolated-snapshot table/row/SQL viewer only for valid Nexa-imported SQLite data. The native adapter is forced read-only; the upstream SQLite header recognizer gates the UI. Added `WQSQLiteSupportTests.m` host fixtures and a synthetic SQLite UIKit screenshot smoke, pending current CI. No save-to-other-App workflow is exposed. All four CI jobs and nine actual screenshots passed at run 45223067042 (SHA 866fc23d), including manual confirmation of original Hex/plist/SQLite content.
 
 

@@ -4,7 +4,7 @@
 
 | Area | Real, currently wired to Nexa | Missing / not accepted |
 | --- | --- | --- |
-| WQFiles | Original ZIP/core hex; newly wired original WQHexViewer.m, WQPlistEditor.m and WQSQLiteViewer.m with original UI/SQLite snapshot dependencies, forced read-only for Nexa-imported regular files; gated experimental container listing/read preview and streamed import | Hex/plist/SQLite original native viewers have passed simulator runtime/screenshots at CI 45223067042; real-device sandbox lease, backups/rollback, authenticated cross-container changes, and remaining original app browser/cache workflows are still missing |
+| WQFiles | Original ZIP/core hex; newly wired original WQHexViewer.m, WQPlistEditor.m and WQSQLiteViewer.m with original UI/SQLite snapshot dependencies, forced read-only for Nexa-imported regular files; gated experimental container listing/read preview and streamed import | Hex/plist/SQLite original native viewers have passed simulator runtime/screenshots at CI 45223067042; new LaunchServices App metadata catalog must pass current CI and real-device permissions; complete upstream WQApps manager, real sandbox lease, backup/rollback, authenticated cross-container writes and cache workflows remain missing |
 | WCMigrate | Pinned original progress/ETA, SQLite read-only inspector and `LoginInfo2.dat` identity parser; Nexa-only SHA-256 staging and independent file-level Merge/Replace output tools | Original `DirectMigrationService`, live WeChat app-to-app Replace/Convert/file-level Merge (upstream does not offer SQLite chat-row merge or whole-task rollback), plus real-device recovery acceptance |
 | GestaltX | Original typed plist parsing, offline imported-file editor, private SHA-256 history/restore; read-only MobileGestalt loaded-library summary | Live MobileGestalt cache edits and presets; supported-build capability gating, on-device verified system rollback |
 | HermesEnabler 2 | Original Watch BQCore and UI plus **original iPhone HermesCompanion WatchConnectivity receiver**, SHA-256 backup history, plist import/export and queued transfer-to-Watch, with one iPhone delegate and Nexa Ping adapter | Actual paired Watch backup receiving, Watch delegate handoff, restore/rollback, physical face effects, signed App Groups and complete translations remain unverified |
@@ -23,6 +23,13 @@
 ## Hermes upstream iPhone companion milestone (2026-11-23)
 
 The iPhone target directly references the **unchanged pinned HermesCompanion WatchConnectivityManager.swift**, and Nexa initializes that manager for the whole app lifetime as the only phone WCSession delegate. The Watch page calls its original backup receiving/history, verification, plist import/export and transfer-to-Watch APIs. The former Nexa-only delegate was replaced by an optional Ping adapter. This is a **source-wired milestone**, not proven real Watch backup transfer, import confirmation or recovery. Track remaining evidence in [IMPLEMENTATION_BACKLOG.md](IMPLEMENTATION_BACKLOG.md).
+
+## WQFiles read-only App catalog source milestone (2026-11-24)
+
+- Original `WQApps.m` was audited: its UI includes backups, restore and clearing operations and lacks a global read-only constructor. Nexa does **not** expose the full original controller.
+- Instead the catalog invokes the original `WQLaunchServices` store parser/name resolution and original inline `WQAppsSupport` Bundle ID validation, with user acknowledgment and exact-device/build/App Group gate. Any selected container uses a separately consent-gated existing read-only explorer.
+- Original WQAppsSupport and LaunchServices fixture tests plus the upstream full host regression script are added as CI gates. Simulator UI shows a disabled state, not a fake App list.
+- No real-device app-container enumeration, authorization, backup/restore or destructive App management is accepted.
 
 ## WQFiles original local-file viewer acceptance (2026-11-24)
 

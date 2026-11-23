@@ -30,5 +30,7 @@ run_test WQArchiveTests WQArchive.m WQLocalization.m tests/WQArchiveTests.m -lz
 run_test WQHexViewerHelpersTests tests/WQHexViewerHelpersTests.m
 run_test WQPlistEditorSupportTests tests/WQPlistEditorSupportTests.m
 run_test WQSQLiteSupportTests WQLocalization.m tests/WQSQLiteSupportTests.m -lsqlite3
+run_test WQAppsSupportTests tests/WQAppsSupportTests.m
+run_test WQLaunchServicesTests -DWQ_LS_TESTING WQLaunchServices.m WQLocalization.m tests/WQLaunchServicesTests.m
 
 echo "PASS: WQFiles source units used by Nexa"

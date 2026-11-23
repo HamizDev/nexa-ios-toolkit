@@ -45,6 +45,12 @@ viewer's actual content, not just a generated marker.
 
 Run [45223067042](https://github.com/HamizDev/nexa-ios-toolkit/actions/runs/45223067042) at SHA `866fc23d` passed all four jobs. Screenshots for the five main tabs, Hermes phone companion and original WQFiles Hex/plist/SQLite viewers were manually inspected. The upstream Hex viewer shows the actual 00..FF test-byte grid and ASCII gutter; the upstream plist viewer shows typed Count, Flags and Sample values; the original SQLite viewer shows `imported_notes` with one row and its read-only snapshot notice. This visual check is **not** Dynamic Type/VoiceOver, real device hardware or remote container privilege acceptance.
 
+## WQFiles original LaunchServices App catalog (Debug gating)
+
+CI launches `--nexa-wqapps-smoke` and captures `wq-app-catalog.png` after the nine existing screens. On iOS Simulator, this page **must** display that the feature is unavailable without a supported physical device and its signed App Group. The app writes a Debug-only marker that fails if `NexaContainerAccess.ready` unexpectedly becomes true. This is an unavailable-state UI check; **it cannot prove real-device LaunchServices listing or sandbox grants**.
+
+The original pinned WQApps manager contains destructive paths without a general `readOnly` switch. Nexa intentionally does **not** embed that controller. Its App catalog uses the existing upstream `WQLaunchServices` parser, the upstream `WQAppsSupport` bundle ID validator, and separately asks for user consent before read-only listing, and again before opening a selected container.
+
 ## Human review to perform on a successful five-tab ZIP
 
 Verify that the image for each named tab actually shows its distinct UI; inspect tab selection, long Simplified Chinese/English labels, clipping on iPhone-sized screens, contrast, accessibility text sizes, overflow and empty states. Screenshot smoke only covers first-level entry and does not validate each modal, import sheet or destructive-operation flow.

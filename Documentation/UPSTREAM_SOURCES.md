@@ -62,6 +62,33 @@ Pinned original `tests/WQHexViewerHelpersTests.m`,
 Source compilation and runtime UI acceptance are separate gates in
 [IMPLEMENTATION_BACKLOG.md](IMPLEMENTATION_BACKLOG.md).
 
+## WQFiles original LaunchServices-based App metadata catalog
+
+The new Nexa `NexaWQAppCatalogView.swift` calls the unchanged pinned
+`WQLaunchServices.m` (already in the Nexa target) and original inline
+`WQAppsSupportBundleIDValid` from the pinned `WQAppsSupport.h`. It
+uses original `wq_load_display_names`, `wq_ls_container_paths`,
+`wq_bundle_id_for_container` and `wq_display_name` for an explicitly
+requested, bounded **metadata** list; never manually re-parses the database,
+scans whole app containers, or exposes app-data writes.
+
+Both `NexaContainerAccess.ready` (reported OS/build and signed App Group)
+and an explicit user-owned-data consent are required **before loading**. On
+a selected entry, `NexaWQExplorerView(initialPath:)` requires a separate
+consent toggle before any permitted, read-only folder operation.
+A LaunchServices record is not proof of access rights. No device grants or
+actual private container access have yet passed physical tests.
+
+**Why the original WQAppsViewController is not used:** pinned `WQApps.m`
+provides App backup, restore, data clearing and deletion without a global
+read-only entry point. Exposing that controller in Nexa would surface
+high-risk mutations without established backups/rollback and real-device
+authorization. The safe original components are reused, but the complete
+original App manager remains a separate unchecked release gate.
+This milestone adds pinned `WQAppsSupportTests.m`,
+`WQLaunchServicesTests.m` and attempts the upstream full host suite
+in CI. Source and device acceptance are distinct.
+
 ## WCMigrate account identity parsing
 
 `Vendor/WCMigrate/WeChatIdentityResolver.swift` copies the original parser from pinned commit `55faba721fd44e04c65be481860c9d93e12f6f61` (GPL-3.0-or-later) with only a provenance comment prepended. `NexaImportedWeChatIdentity.detect(in:)` validates a path inside Nexa's imported folder, disallows symlink traversals, caps inspected account folders and LoginInfo2.dat size, then invokes the upstream parser only on explicit user action. It only identifies a probable WeChat account identity; **it does not migrate, decrypt or restore chat data**. Synthetic host fixtures test valid and invalid parser records.

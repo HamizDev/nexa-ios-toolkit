@@ -54,7 +54,13 @@ struct NexaWQExplorerView: View {
     @EnvironmentObject private var language: NexaLanguage
 
     @State private var agreed = false
-    @State private var currentPath = "/var/mobile/Containers/Data/Application"
+    @State private var currentPath: String
+
+    // A catalog selection pre-fills the path but never carries the required
+    // user authorization; the explorer demands a separate explicit toggle.
+    init(initialPath: String = "/var/mobile/Containers/Data/Application") {
+        _currentPath = State(initialValue: initialPath)
+    }
     @State private var items: [String] = []
     @State private var busy = false
     @State private var message: String?

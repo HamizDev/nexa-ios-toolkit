@@ -27,6 +27,7 @@ required_sources = [
     "NexaDatabaseReportView.swift",
     "NexaWQExplorerView.swift",
     "NexaWatchMonitor.swift",
+    "NexaWQAppCatalogView.swift",
     "WQAccess.m",
     "WQHexViewer.m",
     "WQPlistEditor.m",
@@ -42,6 +43,27 @@ required_sources = [
     "GXMobileGestaltImage.m",
 ]
 errors = []
+catalog = (root / "Nexa/Sources/NexaWQAppCatalogView.swift").read_text()
+explorer = (root / "Nexa/Sources/NexaWQExplorerView.swift").read_text()
+file_view = (root / "Nexa/Sources/FilesView.swift").read_text()
+for original_api in ("wq_load_display_names()", "wq_ls_container_paths(nil)",
+                     "wq_bundle_id_for_container(", "wq_display_name(",
+                     "WQAppsSupportBundleIDValid("):
+    if original_api not in catalog:
+        errors.append("WQApps catalog not using original upstream API: " + original_api)
+for gate in ("NexaContainerAccess.ready", "agreed", "NexaContainerAccess.valid(",
+             "NexaWQExplorerView(initialPath:"):
+    if gate not in catalog:
+        errors.append("WQApps catalog read-only or consent gate missing: " + gate)
+for forbidden in ("wq_write(", "wq_delete(", "wq_purge_contents(", "wq_make_app_backup("):
+    if forbidden in catalog:
+        errors.append("Read-only WQApps catalog contains mutation API " + forbidden)
+if "init(initialPath: String" not in explorer or "private var agreed = false" not in explorer:
+    errors.append("WQApps catalog must never carry consent into the remote explorer")
+if "NexaWQAppCatalogView()" not in file_view:
+    errors.append("WQApps app catalog not reachable from Nexa's file workspace")
+if '#import "WQAppsSupport.h"' not in (root / "Nexa/Nexa-Bridging-Header.h").read_text():
+    errors.append("Original WQApps support validation missing from bridging header")
 if '#import "WQHexViewer.h"' not in (root / "Nexa/Nexa-Bridging-Header.h").read_text():
     errors.append("Original WQFiles hex controller is not exposed in the Swift bridge")
 if '#import "WQPlistEditor.h"' not in (root / "Nexa/Nexa-Bridging-Header.h").read_text():

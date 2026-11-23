@@ -23,6 +23,7 @@ struct NexaRootView: View {
     #if DEBUG
     @EnvironmentObject private var hermesCompanion: WatchConnectivityManager
     @State private var showWatchUISmoke = ProcessInfo.processInfo.arguments.contains("--nexa-watch-view")
+    @State private var showAppCatalogSmoke = ProcessInfo.processInfo.arguments.contains("--nexa-wqapps-smoke")
     @State private var showOriginalHexUISmoke: NexaWQHexSelection?
     @State private var showOriginalPlistUISmoke: NexaWQPlistSelection?
     @State private var showOriginalSQLiteUISmoke: NexaWQSQLiteSelection?
@@ -74,7 +75,7 @@ struct NexaRootView: View {
                 let isScreenshotHarness = ProcessInfo.processInfo.arguments.contains {
                     $0.hasPrefix("--nexa-tab=") || $0 == "--nexa-watch-view" ||
                     $0 == "--nexa-wqhex-smoke" || $0 == "--nexa-wqplist-smoke" ||
-                    $0 == "--nexa-wqsqlite-smoke"
+                    $0 == "--nexa-wqsqlite-smoke" || $0 == "--nexa-wqapps-smoke"
                 }
                 if !isScreenshotHarness { showFirstLaunchSafety = true }
                 #else
@@ -92,6 +93,10 @@ struct NexaRootView: View {
         .sheet(isPresented: $showWatchUISmoke) {
             NavigationStack { WatchView() }
                 .onAppear(perform: recordWatchViewUITest)
+        }
+        .sheet(isPresented: $showAppCatalogSmoke) {
+            NavigationStack { NexaWQAppCatalogView() }
+                .onAppear(perform: recordAppCatalogUITest)
         }
         .sheet(item: $showOriginalHexUISmoke) { selection in
             NexaWQOriginalHexView(file: selection.file)
@@ -117,6 +122,15 @@ struct NexaRootView: View {
     }
 
     #if DEBUG
+    /// The simulator must show a gated, unavailable catalog. It cannot
+    /// obtain or imply a real iPhone App Group sandbox extension.
+    private func recordAppCatalogUITest() {
+        guard ProcessInfo.processInfo.arguments.contains("--nexa-wqapps-smoke") else { return }
+        let marker = AppPaths.documents.appendingPathComponent(".nexa-wqapps-ui-result")
+        let result = NexaContainerAccess.ready ? "FAIL: catalog gate open on simulator" : "PASS: app catalog gated"
+        try? result.write(to: marker, atomically: true, encoding: .utf8)
+    }
+
     /// Synthetic import-owned fixtures only. Test arguments are ignored by
     /// Release, and no external container or privileged write is touched.
     private func prepareWQNativeUITestIfNeeded() {

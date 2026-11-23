@@ -123,6 +123,11 @@ jobs:
       - name: Targeted upstream WQFiles core, archive and access safety regressions
         timeout-minutes: 12
         run: bash Scripts/test_wqfiles_integrated.sh
+      - name: Full pinned WQFiles host regression suite (no redundant iOS SDK link)
+        timeout-minutes: 18
+        run: |
+          set -euo pipefail
+          WQ_SKIP_IOS_CHECK=1 WQ_TEST_TIMEOUT=300 bash ThirdParty/WQFiles/tests/run_all_tests.sh
       - name: Original HermesEnabler recovery layout and verification fixtures
         run: |
           set -euo pipefail
@@ -276,6 +281,22 @@ jobs:
             test -s "$RUNNER_TEMP/NexaUIScreens/wq-original-$kind.png"
             echo "PASS: original WQFiles $kind read-only viewer launched and captured"
           done
+          # The upstream app catalog is device-gated. Verify it remains
+          # unavailable on Simulator and still renders its risk notice.
+          xcrun simctl terminate "$simulator" "$bundle" >/dev/null 2>&1 || true
+          xcrun simctl launch "$simulator" "$bundle" "--nexa-wqapps-smoke"
+          data_container="$(xcrun simctl get_app_container "$simulator" "$bundle" data)"
+          marker="$data_container/Documents/.nexa-wqapps-ui-result"
+          for attempt in $(seq 1 20); do
+            [[ -s "$marker" ]] && break
+            sleep 1
+          done
+          test "$(cat "$marker" 2>/dev/null || true)" = "PASS: app catalog gated" ||
+            { echo "::error::WQFiles app catalog is not gated on Simulator"; exit 1; }
+          sleep 2
+          xcrun simctl io "$simulator" screenshot "$RUNNER_TEMP/NexaUIScreens/wq-app-catalog.png"
+          test -s "$RUNNER_TEMP/NexaUIScreens/wq-app-catalog.png"
+          echo "PASS: WQFiles original LaunchServices catalog remains gated on Simulator"
           xcrun simctl shutdown "$simulator" || true
       - name: Upload iOS UI smoke screenshots
         if: always()

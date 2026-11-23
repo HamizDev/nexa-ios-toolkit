@@ -54,6 +54,8 @@
     E9000000000000000000000E /* WQSQLiteSave.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThirdParty/WQFiles/WQSQLiteSave.m; sourceTree = SOURCE_ROOT; };
     E9000000000000000000000F /* WQSharing.m in Sources */ = {isa = PBXBuildFile; fileRef = E90000000000000000000010 /* WQSharing.m */; };
     E90000000000000000000010 /* WQSharing.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThirdParty/WQFiles/WQSharing.m; sourceTree = SOURCE_ROOT; };
+    EA0000000000000000000001 /* NexaWQAppCatalogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA0000000000000000000002 /* NexaWQAppCatalogView.swift */; };
+    EA0000000000000000000002 /* NexaWQAppCatalogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaWQAppCatalogView.swift; sourceTree = "<group>"; };
     6D83C9BA9C0C428BA104FA01 /* NexaWatchMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D83C9BA9C0C428BA104FA00 /* NexaWatchMonitor.swift */; };
     6D83C9BA9C0C428BA104FA00 /* NexaWatchMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaWatchMonitor.swift; sourceTree = "<group>"; };
     6D83C9BA9C0C428BA104FA03 /* OperationEstimate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D83C9BA9C0C428BA104FA02 /* OperationEstimate.swift */; };
@@ -282,6 +284,7 @@
         E9000000000000000000000B /* WQSQLiteViewer.m in Sources */,
         E9000000000000000000000D /* WQSQLiteSave.m in Sources */,
         E9000000000000000000000F /* WQSharing.m in Sources */,
+        EA0000000000000000000001 /* NexaWQAppCatalogView.swift in Sources */,
         C20000000000000000000006 /* WQLaunchServices.m in Sources */,
         C20000000000000000000008 /* WQScanTask.m in Sources */,
         C30000000000000000000002 /* NexaBackupRestore.swift in Sources */,
@@ -348,6 +351,7 @@
         E9000000000000000000000C /* WQSQLiteViewer.m */,
         E9000000000000000000000E /* WQSQLiteSave.m */,
         E90000000000000000000010 /* WQSharing.m */,
+        EA0000000000000000000002 /* NexaWQAppCatalogView.swift */,
         C20000000000000000000005 /* WQLaunchServices.m */,
         C20000000000000000000007 /* WQScanTask.m */,
         C30000000000000000000001 /* NexaBackupRestore.swift */,

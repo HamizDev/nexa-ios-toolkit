@@ -6,4 +6,5 @@
 #import "WQPlistEditor.h"  // Pinned original read-only plist editor
 #import "WQSQLiteViewer.h"  // Pinned original read-only SQLite browser
 #import "WQAccess.h"
+#import "WQAppsSupport.h"  // Original upstream bundle identifier safety checks
 #import "GXMobileGestaltImage.h"

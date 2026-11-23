@@ -70,6 +70,20 @@ struct FilesView: View {
                         clearLabel: language.code == "en" ? "Clear search" : "清除搜索"
                     )
                     NavigationLink {
+                        NexaWQAppCatalogView()
+                    } label: {
+                        HStack {
+                            Image(systemName: "apps.iphone")
+                            Text(language.code == "en"
+                                 ? "Experimental app catalog · read-only"
+                                 : "实验性应用目录 · 只读")
+                                .font(.subheadline.weight(.semibold))
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                        }
+                    }
+                    .buttonStyle(.bordered)
+                    NavigationLink {
                         NexaWQExplorerView()
                     } label: {
                         HStack {
