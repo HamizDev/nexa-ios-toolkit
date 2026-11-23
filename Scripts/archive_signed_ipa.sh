@@ -80,9 +80,9 @@ validate_signed_pair() {
   codesign --verify --strict "$target_watch" || fail "$stage: invalid Watch signature."
   local phone_rights="$out/$stage-phone-entitlements.plist"
   local watch_rights="$out/$stage-watch-entitlements.plist"
-  codesign --display --entitlements - "$target_app" > "$phone_rights" ||
+  codesign --display --entitlements - --xml "$target_app" > "$phone_rights" ||
     fail "$stage: failed to read iPhone signature entitlements."
-  codesign --display --entitlements - "$target_watch" > "$watch_rights" ||
+  codesign --display --entitlements - --xml "$target_watch" > "$watch_rights" ||
     fail "$stage: failed to read Watch signature entitlements."
   python3 "$root/Scripts/validate_signed_bundle.py" \
     --phone-info "$target_app/Info.plist" \
