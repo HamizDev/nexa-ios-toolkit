@@ -19,6 +19,10 @@ Original source references:
 - [GestaltX GestaltDocument / GestaltFileStore](https://github.com/huamidev/GestaltX/blob/311f78999d9f5f062f7e3b4c6374684782be5382/GestaltX/GestaltDocument.swift) and [GestaltManager](https://github.com/huamidev/GestaltX/blob/311f78999d9f5f062f7e3b4c6374684782be5382/GestaltX/GestaltManager.swift)
 - [Hermes Watch BQCore API](https://github.com/pookjw/HermesEnabler/blob/c0ae1666cba67ab7fbae6d3e481cc2731f5550a1/HermesEnabler2/BQCore.h) and [original iPhone companion receiver](https://github.com/pookjw/HermesEnabler/blob/c0ae1666cba67ab7fbae6d3e481cc2731f5550a1/HermesCompanion/WatchConnectivity/WatchConnectivityManager.swift)
 
+## Source-integration update
+
+The original pinned Hermes iPhone companion manager has now been added directly to Nexa's phone Xcode target and is instantiated for the whole app lifetime. Nexa's prior Ping-only delegate was replaced by a thin optional callback extension; the phone page now calls upstream history, import, verification, export and transfer-to-Watch methods. This closes the **source-level** missing receiver from the baseline audit below but does not prove paired real-device transport or rollback. A Debug-only iOS Simulator fixture now exercises the original import and checksum code; CI acceptance must be verified separately. The current outstanding list is [IMPLEMENTATION_BACKLOG.md](IMPLEMENTATION_BACKLOG.md).
+
 ## Verified concrete interoperability gap: Hermes backup handoff
 
 `NexaWatch/NexaWatchApp.swift` opens upstream Hermes `ContentView`, whose watch-side `WatchConnectivityManager` uses `WCSession.default` for original MobileGestalt backups and `transferFile`. By contrast, the Nexa iPhone `Nexa/Sources/NexaWatchMonitor.swift` has pairing/ping handlers only; it **does not implement `session(_:didReceive: WCSessionFile)` or `session(_:didReceiveApplicationContext:)`**. Therefore a compiled Watch feature screen is **not** proof that original backups reach the iPhone, are recorded or can be sent back for recovery.

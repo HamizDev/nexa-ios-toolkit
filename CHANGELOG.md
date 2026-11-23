@@ -2,6 +2,11 @@
 
 ## Unreleased — upstream integration branch
 
+- **Hermes original iPhone backup integration:** the original upstream iPhone receiver is now compiled and reused, rather than replaced. It remains alive throughout Nexa's lifecycle, with one WCSession delegate; the original SHA-256 backup/history/import/export/Watch transfer functions are reachable from the polished Nexa iPhone Watch page. Baseline source, iPhone/Watch Simulator and unsigned device Release CI passed at 45175725443; physical Watch transfer/rollback is not tested.
+- Added a Debug-only iOS Simulator runtime fixture that calls the original Hermes backup import, hash verification, export, duplicate/malformed rejection and history reload, plus a nested Watch-companion screenshot. CI acceptance of the added runtime fixture remains pending.
+- Recorded four modules' unfinished original source integrations and device-gated acceptance tasks in Documentation/IMPLEMENTATION_BACKLOG.md.
+
+
 - Audited the exact pinned WQFiles/WCMigrate/GestaltX/Hermes source entry points against the Nexa build and documented the **real missing call chains** in `Documentation/UPSTREAM_REUSE_AUDIT_2026-11-23.md`. Identified that the Hermes iPhone backup receiver/history and a unified WatchConnectivity delegate are not yet integrated, despite Watch-side BQCore/UI compiling.
 - Added the upstream HermesEnabler `BQRecoveryValidationTests.c` and `test_ultra_layouts.py` as original-source provenance checks rather than replacing them with speculative tests.
 - Corrected contradictory source inventory and stale Watch monitor comments; retain all unsupported real-device workflows as not yet accepted.

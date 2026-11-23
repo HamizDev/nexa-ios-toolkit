@@ -18,7 +18,7 @@ Nexa 是一个面向 iOS 文件、备份、设备诊断和开源系统研究的�
 | 文件检查器 | UTF-8 文本预览、只读十六进制预览和字节验证；**直接编译并调用 WQFiles 原始的 `WQCore.m/h`** |
 | 备份 / Backups | 创建和导入／导出便携备份 ZIP；v2 SHA-256 清单校验文件与空文件夹（兼容旧 v1）；**恢复到 Nexa 导入文件区（保留旧数据并记录中断恢复日志）**；重启后可以查看／打包恢复前和异常回滚的数据（原始恢复副本不属于经清单校验的正式备份）；基于 WCMigrate 原始 SQLite 诊断代码检查已校验备份副本 |
 | 设备 / Device | 公开 API 显示设备名称、系统、Build、地区、内存、存储；上游报告范围的保守提示 |
-| Apple Watch | **真实 watchOS Target 已加入 Nexa 工程**，支持手机/手表双向连接检测；**已链接 HermesEnabler 上游原版 Watch 功能源码**，但需要实际 Watch App Group 签名与特定 watchOS 版本，系统修改尚未经过真机验证 |
+| Apple Watch | **真实 watchOS Target 已加入 Nexa 工程**；Watch 端直接编译 Hermes 原版 BQCore 与界面，iPhone 端直接编译原版 HermesCompanion WatchConnectivity 管理器，提供 SHA-256 备份历史、plist 导入／分享、校验和排队发送到 Watch 的 UI。真实备份传输、App Group 权限和系统恢复仍需真机验收 |
 | 上游项目 | 按“部分代码已接入 / 研究中 / 未移植”展示准确状态、来源与功能边界 |
 
 仅对**用户明确导入**的文件操作。不会自动访问微信、其他 App 私有容器或系统配置缓存。
@@ -62,7 +62,7 @@ Nexa 是一个面向 iOS 文件、备份、设备诊断和开源系统研究的�
 
 - 默认不收集个人信息，没有联网上传或分析服务。
 - 复制导入数据而非直接修改外部文件；备份含 SHA-256 校验清单。
-- WCMigrate 原版跨应用聊天数据迁移及 GestaltX 原版系统缓存写入尚未接入；**HermesEnabler 的原版 Watch 写入界面已编译入 NexaWatch，且符合系统版本、App Group 和用户确认条件时可能执行实验性系统操作**，但其 iPhone 端原版 MobileGestalt 备份接收、备份库及恢复传输尚未接入，因此绝不可视为经过真机验收的稳定功能。
+- WCMigrate 原版跨应用聊天数据迁移及 GestaltX 原版系统缓存写入尚未接入；**HermesEnabler 的原版 Watch 写入界面已编译入 NexaWatch，且符合系统版本、App Group 和用户确认条件时可能执行实验性系统操作**，其 iPhone 端现已直接接入原版 MobileGestalt 备份接收、SHA-256 历史及恢复候选传输，但实际配对通信、原始备份保全和回滚尚未在真机验证，因此绝不可视为经过真机验收的稳定功能。
 - 对未来高风险操作应先进行签名、版本、备份、差异预览和失败恢复验证。
 
 ## 📄 开源许可 / Licensing
@@ -143,6 +143,8 @@ Nexa 0.0.1 的基础深色 SwiftUI 设计已继续优化：卡片描边与透明
 具体参数及真机验收清单见 [Documentation/SIGNING.md](Documentation/SIGNING.md)。**目前还没有用你的证书执行过签名，更没有经过真机功能验收**；仅添加归档脚本不代表 IPA 已经制作成功。
 
 ## Release status
+
+分阶段未完成事项和真机验收条件已固化在 [IMPLEMENTATION_BACKLOG.md](Documentation/IMPLEMENTATION_BACKLOG.md)，实现一个功能就更新一次，不再仅靠聊天记录保存进度。
 
 当前仍处于 **0.0.1 开发预览**：五个主页面已在 iOS 模拟器中逐页启动并截图，已有便携 ZIP 备份、恢复副本导出、文件管理、本地迁移和离线 plist 历史等可操作功能；准确的上游逐文件复用表见 [2026-11-23 源码审计](Documentation/UPSTREAM_REUSE_AUDIT_2026-11-23.md)。但四个上游 App 的私有系统能力**尚未全部实现或完成真机验证**。详细缺口、验收条件和当前交付范围见 [0.0.1 发布准备清单](Documentation/RELEASE_READINESS.md)。
 

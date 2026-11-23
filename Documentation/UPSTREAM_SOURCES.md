@@ -52,6 +52,10 @@ The unmodified `ThirdParty/GestaltX/GestaltX/GXMobileGestaltImage.m/h` files fro
 
 The embedded NexaWatch target directly compiles the pinned original `ThirdParty/HermesEnabler/HermesEnabler2/BQCore.m`, `BQRecoveryValidation.h`, feature SwiftUI views and original WatchConnectivity manager. Both MGDefaults and MGOffsets resources are included; original upstream `@main` is intentionally excluded. NexaWatch's entry requires a provisioned Watch App Group, an explicit warning acknowledgement and watchOS 27.0–27.2 on real hardware. 82 matching Chinese/English Watch translation keys are bundled. License MIT; original source remains unchanged. No real-watch write or rollback verification has been completed.
 
+## Hermes original iPhone companion source integration
+
+The iPhone Nexa target now builds the **unchanged, pinned original** ThirdParty/HermesEnabler/HermesCompanion/WatchConnectivity/WatchConnectivityManager.swift. It owns WatchConnectivity file reception, SHA-256 backup manifests/history, imported plist validation, export and queued transfer-to-Watch. The original backend is created once at app startup; a thin Nexa Ping extension does not replace its WCSession delegate. iPhone simulator source compilation is separate from actual signed Watch backup delivery and rollback acceptance. See [IMPLEMENTATION_BACKLOG.md](IMPLEMENTATION_BACKLOG.md).
+
 ## WQFiles selected-file read-only export
 
 `NexaWQFileExport.swift` invokes pinned upstream `wq_copy_to_local` and `wq_file_version` directly from the unchanged WQAccess Objective-C implementation. It streams a single user-selected, readable regular file into a uniquely named Nexa Imports copy, then verifies the remote file's version did not change. The UI requires explicit user authorization, signed App Group, supported OS/build gate and an individual preview/selection. It never overwrites, deletes, renames or modifies the remote file. `NexaWQImportName.swift` and its host tests reject traversal and unsafe local naming. **True availability remains device and entitlement dependent.** License GPL-3.0-or-later.

@@ -13,7 +13,8 @@ Original source: pookjw/HermesEnabler at c0ae1666cba67ab7fbae6d3e481cc2731f5550a
 - [x] WIRED original Watch core/UI in the NexaWatch target; watchOS/App Group/consent gates.
 - [x] WIRED original iPhone HermesCompanion/WatchConnectivity/WatchConnectivityManager.swift directly from pinned submodule. It owns file receiving, SHA-256 backup manifest/history, backup import/export and sending to Watch.
 - [x] One original app-scoped iPhone WCSession delegate, with thin Nexa Ping response extension; iPhone Watch screen calls original backup manager API.
-- [ ] CI: new current-head code passes all iPhone/Watch Simulator, unsigned device SDK, source tests and Hermes original recovery fixtures; record the run once green.
+- [x] CI: original Hermes companion source wiring passed all four jobs in run 45175725443 (iPhone/Watch Simulator, unsigned device SDK, source and original recovery fixtures).
+- [ ] CI: newest Debug-only synthetic Hermes import/export/invalid-backup roundtrip and Watch page screenshot passes (current-head run pending).
 - [ ] DEVICE: original Watch backup reaches iPhone even if Watch screen is closed and persists across phone relaunch with matching SHA-256.
 - [ ] DEVICE: opening and closing original Hermes Watch tools does not lose WCSession file transfer, status events or Nexa Ping.
 - [ ] DEVICE: iPhone sends an original-hash-verified backup as a queued candidate; Watch rejects malformed/mismatched ones; Watch import requires confirmation.
