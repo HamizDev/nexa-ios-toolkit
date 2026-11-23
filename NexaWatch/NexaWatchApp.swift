@@ -21,6 +21,7 @@ struct NexaWatchApp: App {
 
 struct NexaWatchDashboard: View {
     @EnvironmentObject private var link: NexaWatchLink
+    @Environment(\.scenePhase) private var scenePhase
     @AppStorage("nexa.language") private var language = "zh"
     @AppStorage("nexa.hermes.consent") private var hermesConsent = false
 
@@ -39,13 +40,18 @@ struct NexaWatchDashboard: View {
                     .foregroundStyle(.secondary)
                 statusCard
                 Button {
+                    link.reactivate()
+                } label: {
+                    Label(en ? "Refresh link" : "刷新连接", systemImage: "arrow.clockwise")
+                }
+                .buttonStyle(.bordered)
+                Button {
                     link.pingPhone()
                 } label: {
                     Label(en ? "Test iPhone link" : "测试 iPhone 连接", systemImage: "arrow.left.arrow.right")
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.purple)
-                .disabled(!link.isReachable)
                 Picker(en ? "Language" : "语言", selection: $language) {
                     Text("中文").tag("zh")
                     Text("English").tag("en")
@@ -103,6 +109,9 @@ struct NexaWatchDashboard: View {
             .padding(.horizontal, 8)
         }
         .onAppear { link.reactivate() }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { link.reactivate() }
+        }
     }
 
     private var statusCard: some View {
@@ -125,23 +134,25 @@ struct NexaWatchDashboard: View {
     }
 }
 
+// Nexa only reads reachability and sends diagnostic pings. The ORIGINAL
+// HermesEnabler WatchConnectivityManager stays the sole Watch delegate for
+// original MobileGestalt backups, transfers and external restore candidates.
 @MainActor
-final class NexaWatchLink: NSObject, ObservableObject, WCSessionDelegate {
+final class NexaWatchLink: NSObject, ObservableObject {
     @Published private(set) var isReachable = false
     @Published private(set) var response: String?
 
     override init() {
         super.init()
-        guard WCSession.isSupported() else { return }
-        WCSession.default.delegate = self
-        WCSession.default.activate()
-        refresh()
+        reactivate()
     }
 
     func reactivate() {
-        guard WCSession.isSupported() else { return }
-        WCSession.default.delegate = self
-        WCSession.default.activate()
+        guard WCSession.isSupported() else {
+            isReachable = false
+            return
+        }
+        WatchConnectivityManager.shared.activate()
         refresh()
     }
 
@@ -150,6 +161,7 @@ final class NexaWatchLink: NSObject, ObservableObject, WCSessionDelegate {
     }
 
     func pingPhone() {
+        refresh()
         guard WCSession.isSupported(), WCSession.default.isReachable else {
             response = "iPhone unavailable"
             return
@@ -170,23 +182,21 @@ final class NexaWatchLink: NSObject, ObservableObject, WCSessionDelegate {
             }
         )
     }
+}
 
-    nonisolated func session(_ session: WCSession,
-                             activationDidCompleteWith state: WCSessionActivationState,
-                             error: Error?) {
-        Task { @MainActor [weak self] in
-            self?.response = error?.localizedDescription
-            self?.refresh()
+// Optional Ping response implemented as a thin extension of the unchanged
+// upstream Hermes WatchConnectivityManager. WCSession.default.delegate
+// is never reassigned to NexaWatchLink, including while on the dashboard.
+extension WatchConnectivityManager {
+    nonisolated func session(
+        _ session: WCSession,
+        didReceiveMessage message: [String: Any],
+        replyHandler: @escaping ([String: Any]) -> Void
+    ) {
+        if message["event"] as? String == "nexa.ping" {
+            replyHandler(["status": "Nexa Watch 0.0.1", "event": "nexa.pong"])
+        } else {
+            replyHandler(["status": "Unsupported message"])
         }
-    }
-
-    nonisolated func sessionReachabilityDidChange(_ session: WCSession) {
-        Task { @MainActor [weak self] in self?.refresh() }
-    }
-
-    nonisolated func session(_ session: WCSession, didReceiveMessage message: [String: Any],
-                             replyHandler: @escaping ([String: Any]) -> Void) {
-        replyHandler(["status": "Nexa Watch 0.0.1", "event": "nexa.pong"])
-        Task { @MainActor [weak self] in self?.refresh() }
     }
 }

@@ -16,6 +16,7 @@ Original source: pookjw/HermesEnabler at c0ae1666cba67ab7fbae6d3e481cc2731f5550a
 - [x] CI: original Hermes companion source wiring passed all four jobs in run 45175725443 (iPhone/Watch Simulator, unsigned device SDK, source and original recovery fixtures).
 - [ ] CI: newest Debug-only synthetic Hermes import/export/invalid-backup roundtrip and Watch page screenshot passes (current-head run pending).
 - [ ] DEVICE: original Watch backup reaches iPhone even if Watch screen is closed and persists across phone relaunch with matching SHA-256.
+- [x] WIRED Watch-side single-delegate routing: the original Hermes manager remains WCSession delegate on both dashboard and original tools; Nexa Watch link sends Ping/refresh without replacing the delegate.
 - [ ] DEVICE: opening and closing original Hermes Watch tools does not lose WCSession file transfer, status events or Nexa Ping.
 - [ ] DEVICE: iPhone sends an original-hash-verified backup as a queued candidate; Watch rejects malformed/mismatched ones; Watch import requires confirmation.
 - [ ] DEVICE: verify restoration of original MobileGestalt snapshot on disposable paired hardware before considering any system write accepted.

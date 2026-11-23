@@ -2,6 +2,9 @@
 
 ## Unreleased — upstream integration branch
 
+- Fixed Watch-side WCSession delegate ownership: the **unchanged original** Hermes WatchConnectivity manager stays active in the dashboard and tools; the Nexa diagnostic Watch link no longer overwrites the delegate and implements only Ping/status. This prevents the known source-level possibility of losing incoming original MG restore files while the Watch dashboard is visible. Manual refresh and foreground checks remain available; real paired-device transfer/rollback acceptance is still required.
+
+
 - **Hermes original iPhone backup integration:** the original upstream iPhone receiver is now compiled and reused, rather than replaced. It remains alive throughout Nexa's lifecycle, with one WCSession delegate; the original SHA-256 backup/history/import/export/Watch transfer functions are reachable from the polished Nexa iPhone Watch page. Baseline source, iPhone/Watch Simulator and unsigned device Release CI passed at 45175725443; physical Watch transfer/rollback is not tested.
 - Added a Debug-only iOS Simulator runtime fixture that calls the original Hermes backup import, hash verification, export, duplicate/malformed rejection and history reload, plus a nested Watch-companion screenshot. CI acceptance of the added runtime fixture remains pending.
 - Recorded four modules' unfinished original source integrations and device-gated acceptance tasks in Documentation/IMPLEMENTATION_BACKLOG.md.

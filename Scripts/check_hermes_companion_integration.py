@@ -7,6 +7,7 @@ project = (base / "Nexa.xcodeproj/project.pbxproj").read_text()
 app = (base / "Nexa/Sources/NexaApp.swift").read_text()
 adapter = (base / "Nexa/Sources/NexaWatchMonitor.swift").read_text()
 ui = (base / "Nexa/Sources/WatchView.swift").read_text()
+watch = (base / "NexaWatch/NexaWatchApp.swift").read_text()
 upstream = base / "ThirdParty/HermesEnabler/HermesCompanion/WatchConnectivity/WatchConnectivityManager.swift"
 
 checks = {
@@ -28,6 +29,13 @@ checks = {
     "original Watch transfer called from UI": "companion.transferBackupToWatch(" in ui,
     "Nexa dashboard Ping adapter": "didReceiveMessage message:" in adapter
         and "nexa.pong" in adapter,
+    "original Hermes Watch manager owns Watch session on all screens":
+        "WatchConnectivityManager.shared.activate()" in watch
+        and "WCSession.default.delegate = self" not in watch
+        and "NexaWatchLink: NSObject, ObservableObject {" in watch,
+    "original Hermes Watch manager responds to Nexa Ping":
+        "extension WatchConnectivityManager {" in watch
+        and "nexa.pong" in watch,
 }
 if upstream.is_file():
     code = upstream.read_text()
