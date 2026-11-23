@@ -9,7 +9,7 @@
 | GestaltX | Original typed plist parsing, offline imported-file editor, private SHA-256 history/restore; read-only MobileGestalt loaded-library summary | Live MobileGestalt cache edits and presets; supported-build capability gating, on-device verified system rollback |
 | HermesEnabler 2 | Original Watch BQCore engine, screens and MG resources compiled into embedded NexaWatch; connection diagnostics, watchOS/App Group consent gates and 82 bilingual fixed labels | Signed Watch device acceptance, face changes, physical-device backup and rollback, complete translated runtime messages |
 | Nexa UI | Five-tab Chinese-first/English SwiftUI UI, imported file workspace, ZIP tools, backup/restore, local migration, recovery-snapshot browsing/export and Watch companion; latest five-tab simulator screenshots captured and visually checked | Dynamic Type/VoiceOver assessment, running on small/large devices, end-to-end user acceptance |
-| Distribution | Xcode iOS + watchOS Simulator builds, source-pinning/provenance audit, host regression tests, unsigned ZIP preview; owner-run signed IPA archive script | Provisioned Apple Developer Team and tested iPhone+Watch IPA, signed entitlements, safe real-device release artifacts |
+| Distribution | Xcode iOS/watchOS Simulator builds, unsigned generic device-Release build CI, source-pinning audit, host regression tests, unsigned preview and owner-run signed IPA export script with actual signature/App Group checks | Provisioned Apple Developer Team, signed entitlements verified on owner hardware and real iPhone+Watch installation/acceptance |
 
 ## Release gates (currently open)
 

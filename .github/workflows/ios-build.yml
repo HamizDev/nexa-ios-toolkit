@@ -26,6 +26,8 @@ jobs:
         run: python3 Scripts/check_safety.py
       - name: Validate signed archive script syntax (without signing credentials)
         run: bash -n Scripts/archive_signed_ipa.sh
+      - name: Test signed iPhone and Watch App Group validation without certificates
+        run: python3 Tests/SignedEntitlementsHostTests.py
       - name: Compile and test Nexa journaled backup/restore on a disposable host root
         run: |
           set -euo pipefail
@@ -225,6 +227,44 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+
+  device-build:
+    runs-on: macos-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout pinned device sources
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - name: Compile iPhone Release for unsigned generic device
+        run: |
+          set -euo pipefail
+          xcodebuild \
+            -project Nexa.xcodeproj \
+            -scheme Nexa \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath "$RUNNER_TEMP/NexaDeviceDerived" \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+          app="$RUNNER_TEMP/NexaDeviceDerived/Build/Products/Release-iphoneos/Nexa.app"
+          test -f "$app/Nexa"
+          test -f "$app/Watch/NexaWatch.app/NexaWatch"
+      - name: Compile Watch Release for unsigned generic device
+        run: |
+          set -euo pipefail
+          xcodebuild \
+            -project Nexa.xcodeproj \
+            -target NexaWatch \
+            -configuration Release \
+            -sdk watchos \
+            -destination 'generic/platform=watchOS' \
+            CODE_SIGNING_ALLOWED=NO \
+            build
 
   watch-build:
     runs-on: macos-latest

@@ -2,6 +2,10 @@
 
 ## Unreleased — upstream integration branch
 
+- Extended developer handoff with unsigned iPhone and Watch Release/device-SDK CI builds, separate from Simulator Debug builds. These are compile-only; a signed, provisioned device IPA is still required for release.
+- Signed IPA script now reads the actual iPhone/Watch code-signature entitlements in both Xcode archive and exported IPA and rejects mismatched Team IDs, Bundle IDs, companion mapping and App Groups. Added synthetic host regression cases that do not require signing credentials.
+
+
 - Reject symlinked Nexa backup roots for listing, creation and verification; incomplete backup staging is cleaned only for UUID-shaped folders and never follows linked aliases. Added disposable host adversarial fixtures.
 - Verify original imported data against the completed backup manifest before publishing a snapshot, so concurrent source-file changes abort and clean the backup rather than silently preserving stale/inconsistent data.
 

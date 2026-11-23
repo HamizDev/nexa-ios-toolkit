@@ -21,7 +21,9 @@ export NEXA_BUILD_DIR="$HOME/NexaBuilds/0.0.1-$(date +%Y%m%d%H%M%S)"
 bash Scripts/archive_signed_ipa.sh
 ```
 
-The script checks identifiers, archives the iPhone + embedded Watch targets with the chosen development team, verifies the Watch app is present, exports an Xcode `debugging` IPA and checks the IPA contains `Payload/Nexa.app/Watch/NexaWatch.app`. It **fails closed** if signing, provisioning, archiving or export fails. Use a fresh output directory each time.
+The script checks identifiers, archives the iPhone + embedded Watch targets with the chosen development team, verifies the Watch app, and exports an Xcode `debugging` IPA. It then **reads the actual code-signature entitlements of both iPhone and Watch**, validating the Team ID, both Bundle IDs, companion mapping, and required App Groups, **first in the archive and again in the exported IPA**. It **fails closed** if signing, provisioning, archiving, exported entitlement verification or packaging fails. Use a fresh output directory each time.
+
+To exercise the entitlement verifier using disposable sample plists (no actual certificates required), run `python3 Tests/SignedEntitlementsHostTests.py`. CI additionally compiles **unsigned generic device Release builds** of the iPhone and watchOS targets; these prove device SDK compilation only and cannot replace owner-provisioned signed IPA tests.
 
 The local private build directory contains the signed IPA and Xcode archive. Neither signing certificates nor App Store Connect API keys are required in this repository. Do not upload signing secrets or personal provisioning material to public GitHub Actions.
 
