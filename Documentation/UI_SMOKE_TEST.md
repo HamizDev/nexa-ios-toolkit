@@ -41,6 +41,10 @@ The sample data is synthetic, not from a device system cache or other app.
 Screenshot approval still requires **manual visual review** of the original
 viewer's actual content, not just a generated marker.
 
+## Confirmed nine-screen WQFiles run (2026-11-24)
+
+Run [45223067042](https://github.com/HamizDev/nexa-ios-toolkit/actions/runs/45223067042) at SHA `866fc23d` passed all four jobs. Screenshots for the five main tabs, Hermes phone companion and original WQFiles Hex/plist/SQLite viewers were manually inspected. The upstream Hex viewer shows the actual 00..FF test-byte grid and ASCII gutter; the upstream plist viewer shows typed Count, Flags and Sample values; the original SQLite viewer shows `imported_notes` with one row and its read-only snapshot notice. This visual check is **not** Dynamic Type/VoiceOver, real device hardware or remote container privilege acceptance.
+
 ## Human review to perform on a successful five-tab ZIP
 
 Verify that the image for each named tab actually shows its distinct UI; inspect tab selection, long Simplified Chinese/English labels, clipping on iPhone-sized screens, contrast, accessibility text sizes, overflow and empty states. Screenshot smoke only covers first-level entry and does not validate each modal, import sheet or destructive-operation flow.

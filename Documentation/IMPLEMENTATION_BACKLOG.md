@@ -1,7 +1,7 @@
 # Nexa 0.0.1 — upstream implementation backlog
 
 **Branch:** feature/nexa-0.0.1-unified · Draft PR #3  
-**Last updated:** 2026-11-23. Update after each feature milestone.
+**Last updated:** 2026-11-24. Update after each feature milestone.
 
 **Progress types:** PINNED upstream source, WIRED callable Nexa workflow, CI pass at current head, DEVICE signed hardware acceptance. These are separate milestones. A compiled source does not prove a privileged function is safe or usable.
 
@@ -29,9 +29,9 @@ Original source: pookjw/HermesEnabler at c0ae1666cba67ab7fbae6d3e481cc2731f5550a
 Original source: kolbicz/WQFiles at fe92ae94067983b94fd927e0b4eee52e5a99a4e7 (GPL-3.0-or-later).
 
 - [x] WIRED original WQCore, WQArchive, selected-file wq_copy_to_local and gated read-only WQAccess preview; **physical container grant unverified**.
-- [x] WIRED (pending current-head CI): original **WQHexViewer.m**, **WQPlistEditor.m**, **WQSQLiteViewer.m** with unmodified original WQUI.m/WQTheme.m, WQSQLiteSave.m and WQSharing.m dependencies. All three Nexa adapters use `readOnly: true` on validated imported regular files; SQLite UI entry relies on upstream `wq_is_sqlite_header`. No cross-App mutation/save-to-App entry is enabled. Original WQHexViewerHelpersTests, WQPlistEditorSupportTests and WQSQLiteSupportTests run as host fixtures.
+- [x] WIRED + CI [45223067042](https://github.com/HamizDev/nexa-ios-toolkit/actions/runs/45223067042): original WQHexViewer.m, WQPlistEditor.m and WQSQLiteViewer.m plus WQUI/WQTheme/WQSQLiteSave/WQSharing dependencies compile unchanged from pinned source. All three Nexa wrappers force readOnly=true and only accept imported regular files. Original header/offset, plist type and SQLite support fixtures pass. This is **local file viewing only**.
 - [ ] Reuse original WQApps management/browser and other safe viewer dependencies through SwiftUI wrappers. Avoid duplicating upstream native engines.
-- [ ] CI: original WQ hex/plist/SQLite UIKit controllers launch against synthetic imported files, capture three screenshots, and pass source/host/device builds; review run before marking this completed.
+- [x] CI + manual screenshot review at code SHA 866fc23d / run 45223067042: original Hex viewer displays 00..FF byte/ASCII columns, original plist viewer displays synthetic Count/Flags/Sample with read-only note, and original SQLite viewer shows imported_notes table with one row and explicit read-only snapshot notice. Nine distinct screenshots captured; no physical-device validation.
 - [ ] Run original full tests/run_all_tests.sh, preserve error/cancel/recovery handling and license notes.
 - [ ] Consider original WQTrash/WQCache or write methods only with explicit scope, verified original backup, predictable restore, safe supported OS/build and actual authorized test-container device tests.
 - [ ] DEVICE: verify entitlement/grant/cache recovery, sandbox refusals and patched-build disabling on test-owned data.
@@ -59,7 +59,7 @@ Original source: GestaltX at 311f78999d9f5f062f7e3b4c6374684782be5382 (GPL-3.0-o
 
 - [x] First-launch bilingual disclaimer, module-specific warnings, source/license inventory and Nexa-local SHA-256 backup/restore.
 - [x] Earlier baseline CI run 45155034638 passes provenance, Watch, iPhone and unsigned device Release builds.
-- [ ] Current-head CI green including original Hermes companion + static single-delegate check.
+- [x] Feature-code SHA 866fc23d / CI 45223067042 passed all four jobs: host+upstream regression, iPhone/Watch Simulator builds, unsigned iPhone/Watch device Release builds, and nine-page UI smoke. This documents that code commit; subsequent documentation commits have independent workflow runs.
 - [ ] Manual Chinese/English, Dynamic Type, VoiceOver, iPad and watchOS confirmation/error dialogs.
 - [ ] Signed device IPA with verified original iPhone/Watch App Group entitlements and real paired-device logs (no secrets).
 - [ ] Release 0.0.1 only for the clearly accepted scope. Keep incomplete privileged modules labeled experimental/unverified.
