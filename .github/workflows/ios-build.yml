@@ -251,6 +251,31 @@ jobs:
           xcrun simctl io "$simulator" screenshot "$RUNNER_TEMP/NexaUIScreens/watch-companion.png"
           test -s "$RUNNER_TEMP/NexaUIScreens/watch-companion.png"
           echo "PASS: original Hermes iPhone backup fixture and Nexa Watch companion UI"
+          # Actually instantiate each pinned original WQFiles UIKit read-only
+          # viewer against disposable, app-owned files and capture its UI.
+          for kind in hex plist; do
+            xcrun simctl terminate "$simulator" "$bundle" >/dev/null 2>&1 || true
+            xcrun simctl launch "$simulator" "$bundle" "--nexa-wq${kind}-smoke"
+            data_container="$(xcrun simctl get_app_container "$simulator" "$bundle" data)"
+            marker="$data_container/Documents/.nexa-wq-native-ui-result"
+            matched=0
+            for attempt in $(seq 1 30); do
+              if [[ "$(cat "$marker" 2>/dev/null || true)" == "PASS: WQFiles native $kind" ]]; then
+                matched=1
+                break
+              fi
+              sleep 1
+            done
+            if [[ "$matched" != 1 ]]; then
+              echo "::error::Original WQFiles $kind viewer failed to launch"
+              cat "$marker" 2>/dev/null || true
+              exit 1
+            fi
+            sleep 2
+            xcrun simctl io "$simulator" screenshot "$RUNNER_TEMP/NexaUIScreens/wq-original-$kind.png"
+            test -s "$RUNNER_TEMP/NexaUIScreens/wq-original-$kind.png"
+            echo "PASS: original WQFiles $kind read-only viewer launched and captured"
+          done
           xcrun simctl shutdown "$simulator" || true
       - name: Upload iOS UI smoke screenshots
         if: always()
