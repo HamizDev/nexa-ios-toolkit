@@ -107,6 +107,38 @@ struct NexaRestoreHostTests {
                 "failed backup changed unrelated source files")
         print("PASS: failed backup copy cleans up hidden staging without publication")
 
+        let beforeSourceMutation = try BackupManager.listBackups().map(\.name)
+        expectError("concurrent source mutation aborts backup") {
+            _ = try BackupManager.createBackup(onProgress: { progress in
+                // Mutation after the final copy simulates a second editor.
+                if progress.fraction == 1 {
+                    try! createFile(second, Array("Changed while archiving".utf8))
+                }
+            })
+        }
+        require(try BackupManager.listBackups().map(\.name) == beforeSourceMutation,
+                "A backup with stale originals was published")
+        try createFile(second, Array("Original document".utf8))
+        let abandonedBackup = AppPaths.backupFolder.appendingPathComponent(
+            ".creating-" + UUID().uuidString
+        )
+        try createFile(abandonedBackup.appendingPathComponent("Payload/partial"), [0xF1])
+        let unrelatedBackup = AppPaths.backupFolder.appendingPathComponent(".creating-private-not-a-UUID")
+        try createFile(unrelatedBackup.appendingPathComponent("keep"), [0xF2])
+        let linkBackup = AppPaths.backupFolder.appendingPathComponent(
+            ".creating-" + UUID().uuidString
+        )
+        try fm.createSymbolicLink(at: linkBackup, withDestinationURL: unrelatedBackup)
+        require(try BackupManager.discardInterruptedBackups() == 1,
+                "Exactly one interrupted backup should be discarded")
+        require(!fm.fileExists(atPath: abandonedBackup.path),
+                "Interrupted backup data was not cleaned")
+        require(try Data(contentsOf: unrelatedBackup.appendingPathComponent("keep")) == Data([0xF2]),
+                "Unrelated backup files must not be deleted")
+        require((try linkBackup.resourceValues(forKeys: [.isSymbolicLinkKey]))
+                .isSymbolicLink == true, "Cleanup should not traverse backup links")
+        print("PASS: concurrent source changes rejected and orphan backups cleaned safely")
+
         let missingPayload = AppPaths.backupFolder.appendingPathComponent("MissingPayload")
         try fm.copyItem(at: backup, to: missingPayload)
         try fm.removeItem(at: missingPayload.appendingPathComponent("Payload"))
@@ -309,6 +341,26 @@ struct NexaRestoreHostTests {
             $0.id == linkedRecovery.standardizedFileURL.path
         }), "Symlink alias must not appear as a recoverable copy")
         print("PASS: recovery copies remain discoverable; linked and out-of-scope paths rejected")
+
+        // A linked Backups root must never redirect verification, copy or
+        // listing into another location, even when child folders look valid.
+        let relocated = root.appendingPathComponent("RelocatedBackups")
+        try fm.moveItem(at: AppPaths.backupFolder, to: relocated)
+        try fm.createSymbolicLink(at: AppPaths.backupFolder, withDestinationURL: relocated)
+        expectError("symlinked Backups root listing") {
+            _ = try BackupManager.listBackups()
+        }
+        expectError("symlinked Backups root creation") {
+            _ = try BackupManager.createBackup()
+        }
+        expectError("symlinked Backups root verification") {
+            _ = try BackupManager.verify(backup)
+        }
+        require(try fm.contentsOfDirectory(atPath: relocated.path).contains(backup.lastPathComponent),
+                "Linked-root rejection unexpectedly removed completed backups")
+        try fm.removeItem(at: AppPaths.backupFolder)
+        try fm.moveItem(at: relocated, to: AppPaths.backupFolder)
+        print("PASS: linked backup roots rejected without modifying external data")
 
         print("PASS: Nexa backup and restore host regression suite")
     }

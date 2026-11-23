@@ -36,6 +36,26 @@ enum BackupManager {
     }
 
     static var backupFolder: URL { AppPaths.backupFolder }
+    private static let backupWorkLock = NSRecursiveLock()
+
+    /// Backups must remain inside the app-owned real Documents/Backups folder.
+    /// FileManager.createDirectory and contentsOfDirectory can otherwise follow
+    /// a symlink at the root, even when an individual backup is not a symlink.
+    private static func checkedBackupRoot(createIfMissing: Bool) throws -> URL {
+        let root = backupFolder.standardizedFileURL
+        let fm = FileManager.default
+        if createIfMissing {
+            try fm.createDirectory(at: root, withIntermediateDirectories: true)
+        }
+        let properties = try root.resourceValues(forKeys: [
+            .isDirectoryKey, .isSymbolicLinkKey
+        ])
+        guard properties.isDirectory == true,
+              properties.isSymbolicLink != true else {
+            throw BackupError.verificationFailed("Nexa 备份根目录无效或为符号链接")
+        }
+        return root
+    }
 
     /// Restrict backup access to one direct child of Nexa's backup root.
     /// A valid archive always has exactly one manifest and one directory payload;
@@ -43,8 +63,8 @@ enum BackupManager {
     static func validatedBackupFolder(_ selected: URL) throws -> URL {
         let fm = FileManager.default
         let candidate = selected.standardizedFileURL
-        let trusted = backupFolder.standardizedFileURL
-        guard candidate.deletingLastPathComponent() == trusted,
+        let trusted = try checkedBackupRoot(createIfMissing: false)
+        guard candidate.deletingLastPathComponent().path == trusted.path,
               !candidate.lastPathComponent.isEmpty,
               candidate.lastPathComponent != ".",
               candidate.lastPathComponent != ".." else {
@@ -81,9 +101,9 @@ enum BackupManager {
 
     static func listBackups() throws -> [BackupRecord] {
         let fm = FileManager.default
-        try fm.createDirectory(at: backupFolder, withIntermediateDirectories: true)
+        let root = try checkedBackupRoot(createIfMissing: true)
         return try fm.contentsOfDirectory(
-            at: backupFolder,
+            at: root,
             includingPropertiesForKeys: [.isDirectoryKey, .isSymbolicLinkKey]
         )
             .filter {
@@ -98,6 +118,37 @@ enum BackupManager {
             }
             .sorted { $0.lastPathComponent > $1.lastPathComponent }
             .map { BackupRecord(folder: $0) }
+    }
+
+    /// Drop only our abandoned, UUID-named, hidden backup workspaces. Completed
+    /// backups and unrelated names are never removed. Serializing this with
+    /// createBackup prevents a startup cleanup from racing an active backup.
+    static func discardInterruptedBackups() throws -> Int {
+        backupWorkLock.lock()
+        defer { backupWorkLock.unlock() }
+        let fm = FileManager.default
+        guard fm.fileExists(atPath: backupFolder.path) else { return 0 }
+        let root = try checkedBackupRoot(createIfMissing: false)
+        var removed = 0
+        for folder in try fm.contentsOfDirectory(
+            at: root,
+            includingPropertiesForKeys: [.isDirectoryKey, .isSymbolicLinkKey]
+        ) {
+            let name = folder.lastPathComponent
+            let prefix = ".creating-"
+            guard name.hasPrefix(prefix),
+                  UUID(uuidString: String(name.dropFirst(prefix.count))) != nil,
+                  let flags = try? folder.resourceValues(forKeys: [
+                      .isDirectoryKey, .isSymbolicLinkKey
+                  ]),
+                  flags.isDirectory == true,
+                  flags.isSymbolicLink != true else {
+                continue
+            }
+            try fm.removeItem(at: folder)
+            removed += 1
+        }
+        return removed
     }
 
     /// Only discard UUID-named work directories from interrupted *portable ZIP
@@ -142,13 +193,16 @@ enum BackupManager {
     }
 
     static func createBackup(onProgress: ((BackupProgress) -> Void)? = nil) throws -> URL {
+        backupWorkLock.lock()
+        defer { backupWorkLock.unlock() }
         let fm = FileManager.default
         let source = AppPaths.importFolder
         try fm.createDirectory(at: source, withIntermediateDirectories: true)
         let imports = try fm.contentsOfDirectory(at: source, includingPropertiesForKeys: nil)
         guard !imports.isEmpty else { throw BackupError.emptySource }
         try rejectSymlinks(in: source)
-        try fm.createDirectory(at: backupFolder, withIntermediateDirectories: true)
+        _ = try checkedBackupRoot(createIfMissing: true)
+        _ = try discardInterruptedBackups()
         // Incomplete snapshots remain hidden from the backup picker. A
         // same-volume rename publishes the verified snapshot in one step.
         let transaction = UUID().uuidString
@@ -181,8 +235,10 @@ enum BackupManager {
             try encoder.encode(manifest).write(
                 to: working.appendingPathComponent("manifest.json"), options: .atomic
             )
-            // Keep a partial or unverifiable backup out of the visible list.
+            // Verify both sides: a snapshot is not safe if the imported
+            // originals changed during the lengthy folder copy.
             _ = try verify(working)
+            _ = try verifyFiles(in: source, usingManifestAt: working)
             guard !fm.fileExists(atPath: published.path) else {
                 throw BackupError.verificationFailed("备份目录名称已存在")
             }

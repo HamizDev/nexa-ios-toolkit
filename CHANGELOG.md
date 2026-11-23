@@ -2,6 +2,10 @@
 
 ## Unreleased — upstream integration branch
 
+- Reject symlinked Nexa backup roots for listing, creation and verification; incomplete backup staging is cleaned only for UUID-shaped folders and never follows linked aliases. Added disposable host adversarial fixtures.
+- Verify original imported data against the completed backup manifest before publishing a snapshot, so concurrent source-file changes abort and clean the backup rather than silently preserving stale/inconsistent data.
+
+
 - Added best-effort, lock-serialized cleanup of interrupted portable-backup ZIP imports. Only UUID-named workspaces and hidden `.incoming-<UUID>` backups are removed, while symlinks and unrelated paths are skipped. Regressions cover orphan cleanup and preserved user data.
 
 

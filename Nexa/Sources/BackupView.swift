@@ -229,6 +229,7 @@ struct BackupView: View {
         .onAppear {
             refresh()
             Task.detached(priority: .utility) {
+                _ = try? BackupManager.discardInterruptedBackups()
                 _ = try? NexaZipManager.discardInterruptedPortableImports()
             }
         }
