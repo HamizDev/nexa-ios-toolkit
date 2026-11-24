@@ -4,6 +4,11 @@
   classes = {};
   objectVersion = 56;
   objects = {
+    EB0000000000000000000001 /* XCLocalSwiftPackageReference WCMigrate */ = {isa = XCLocalSwiftPackageReference; relativePath = ThirdParty/WCMigrate; };
+    EB0000000000000000000002 /* TransferCore */ = {isa = XCSwiftPackageProductDependency; package = EB0000000000000000000001 /* XCLocalSwiftPackageReference WCMigrate */; productName = TransferCore; };
+    EB0000000000000000000003 /* TransferCore in Frameworks */ = {isa = PBXBuildFile; productRef = EB0000000000000000000002 /* TransferCore */; };
+    EB0000000000000000000004 /* NexaWCMigratePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB0000000000000000000005 /* NexaWCMigratePreview.swift */; };
+    EB0000000000000000000005 /* NexaWCMigratePreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaWCMigratePreview.swift; sourceTree = "<group>"; };
     1D08BCB5D1BE8E02D7DC284B /* AppPaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E72F08454CF343A06FF1D2C /* AppPaths.swift */; };
     3E72F08454CF343A06FF1D2C /* AppPaths.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/AppPaths.swift; sourceTree = "<group>"; };
     099133132358868E863B4F9A /* BackupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 333E00E297BB7F802BD30620 /* BackupManager.swift */; };
@@ -240,7 +245,7 @@
     F70000000000000000000004 /* NexaImportCombineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70000000000000000000003 /* NexaImportCombineView.swift */; };
     F70000000000000000000003 /* NexaImportCombineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaImportCombineView.swift; sourceTree = "<group>"; };
     964BD5656C7A016EF0C9ADA7 /* Nexa.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nexa.app; sourceTree = BUILT_PRODUCTS_DIR; };
-    EC981767C62EA833B107403F /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+    EC981767C62EA833B107403F /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (EB0000000000000000000003 /* TransferCore in Frameworks */, ); runOnlyForDeploymentPostprocessing = 0; };
     984AA73C6A3518E356174B49 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
     A3E0018A89AAE54963D28A13 /* Sources */ = {
       isa = PBXSourcesBuildPhase;
@@ -295,6 +300,7 @@
         F20000000000000000000004 /* NexaFileOperationsUI.swift in Sources */,
         F30000000000000000000002 /* NexaImportMigration.swift in Sources */,
         F30000000000000000000004 /* NexaMigrationView.swift in Sources */,
+        EB0000000000000000000004 /* NexaWCMigratePreview.swift in Sources */,
         F40000000000000000000002 /* NexaPlistHistory.swift in Sources */,
         F40000000000000000000004 /* NexaPlistHistoryView.swift in Sources */,
         F50000000000000000000002 /* NexaWQImportName.swift in Sources */,
@@ -363,6 +369,7 @@
         F20000000000000000000003 /* NexaFileOperationsUI.swift */,
         F30000000000000000000001 /* NexaImportMigration.swift */,
         F30000000000000000000003 /* NexaMigrationView.swift */,
+        EB0000000000000000000005 /* NexaWCMigratePreview.swift */,
         F40000000000000000000001 /* NexaPlistHistory.swift */,
         F40000000000000000000003 /* NexaPlistHistoryView.swift */,
         F50000000000000000000001 /* NexaWQImportName.swift */,
@@ -383,6 +390,7 @@
       buildRules = ();
       dependencies = (B0000000000000000000000D /* PBXTargetDependency */, );
       name = Nexa;
+      packageProductDependencies = (EB0000000000000000000002 /* TransferCore */, );
       productReference = 964BD5656C7A016EF0C9ADA7;
       productName = Nexa;
       productType = "com.apple.product-type.application";
@@ -401,6 +409,7 @@
       knownRegions = (zh-Hans, en, Base);
       mainGroup = 3C9D7F1ECE6B1C2C05B9A223;
       productRefGroup = 8A226E0C47ACC7183C1F4F91;
+      packageReferences = (EB0000000000000000000001 /* XCLocalSwiftPackageReference WCMigrate */, );
       projectDirPath = "";
       projectRoot = "";
       targets = (F762108CA727F0BCD961FC74, B00000000000000000000007 /* NexaWatch */);

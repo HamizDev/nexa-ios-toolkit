@@ -89,6 +89,28 @@ This milestone adds pinned `WQAppsSupportTests.m`,
 `WQLaunchServicesTests.m` and attempts the upstream full host suite
 in CI. Source and device acceptance are distinct.
 
+## WCMigrate original TransferCore package (local read-only preview)
+
+The iPhone target references the local pinned submodule
+`ThirdParty/WCMigrate/Package.swift` and links its original `TransferCore`
+product. The existing Nexa progress/database adapters remain separate;
+original package models are qualified with the TransferCore module name.
+`NexaWCMigratePreview.swift` calls the original
+`DirectMigrationService.preview`, `AppInstance`, `DirectoryMapping`
+and `TransferMode`, without copying or modifying upstream migration
+code. Inputs are distinct, validated top-level imported folders,
+with fixed Documents/Library mappings and source-preserving Replace/Merge
+preview. The access callback is explicitly a no-op. Neither migration
+execution nor resume nor the private container-access bridge is exposed.
+
+A separate macOS CI job invokes the original DirectMigrationTests,
+RecoveryTests, DataStagingTests, FileOperationTests and MoveMigrationTests.
+A Debug-only simulator fixture calls the actual original preview and checks
+synthetic source/target contents remain unchanged, counts and sizes,
+and same-root/outside-import/symlink rejection. These new gates await CI.
+Original migration writes to other applications are not implemented or
+validated. This is a read-only planning milestone, not full migration.
+
 ## WCMigrate account identity parsing
 
 `Vendor/WCMigrate/WeChatIdentityResolver.swift` copies the original parser from pinned commit `55faba721fd44e04c65be481860c9d93e12f6f61` (GPL-3.0-or-later) with only a provenance comment prepended. `NexaImportedWeChatIdentity.detect(in:)` validates a path inside Nexa's imported folder, disallows symlink traversals, caps inspected account folders and LoginInfo2.dat size, then invokes the upstream parser only on explicit user action. It only identifies a probable WeChat account identity; **it does not migrate, decrypt or restore chat data**. Synthetic host fixtures test valid and invalid parser records.

@@ -2,6 +2,10 @@
 
 ## Unreleased — upstream integration branch
 
+- **WCMigrate original TransferCore preview:** reference the unchanged pinned WCMigrate local Swift package and call its original DirectMigrationService.preview from a new bilingual screen for two validated local imported snapshots. Replace/Merge preview uses fixed Documents/Library mappings, keepSource=true and a no-op access callback; no execution, resume or live container-access bridge is exposed. Add original upstream migration/recovery/staging/file-operation tests in separate macOS CI and a Debug-only original-preview synthetic fixture verifying counts, unchanged bytes and rejected invalid paths. New CI pending.
+- **CI reliability:** prior original WQFiles full suite timed out at the two-worker checkpoint fixture and the growing UI suite hit its seven-minute shared budget. Move the unchanged upstream suite to a dedicated four-core Intel runner with active-CPU preflight and complete logs, and split the simulator work into installation/warmup and individual feature checks with fresh marker files. Preserve all tests; await new CI before claiming recovery.
+
+
 - **WQFiles original app metadata catalog:** added explicit-consent, device/build/App Group-gated read-only catalog using the pinned original `WQLaunchServices` parser and `WQAppsSupportBundleIDValid` (no improvised private-database decoder). Only a user-selected record opens the existing read-only WQAccess explorer, which requires fresh independent consent. Original `WQApps.m` full manager was intentionally excluded because its UI exposes restore/clear/delete actions with no read-only switch.
 - Added original upstream WQAppsSupport and LaunchServices host fixtures, a full original WQFiles host-suite CI gate and a Simulator unavailable-state screenshot for the catalog. Real-device sandbox access and any destructive actions remain unverified.
 

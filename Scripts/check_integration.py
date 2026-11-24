@@ -12,6 +12,7 @@ required_sources = [
     "NexaLocalFiles.swift",
     "NexaImportMigration.swift",
     "NexaMigrationView.swift",
+    "NexaWCMigratePreview.swift",
     "NexaPlistHistory.swift",
     "NexaPlistHistoryView.swift",
     "NexaWQImportName.swift",
@@ -43,6 +44,19 @@ required_sources = [
     "GXMobileGestaltImage.m",
 ]
 errors = []
+preview = (root / "Nexa/Sources/NexaWCMigratePreview.swift").read_text()
+for fragment in ("import TransferCore", "TransferCore.DirectMigrationService(",
+                 "service.preview(", "keepSource: true",
+                 "NexaLocalFiles.validatedArchiveFolder(", "NexaWCMigratePreviewView"):
+    if fragment not in preview:
+        errors.append("Original WCMigrate local preview missing: " + fragment)
+for fragment in ("XCLocalSwiftPackageReference", "relativePath = ThirdParty/WCMigrate;",
+                 "productName = TransferCore;", "TransferCore in Frameworks"):
+    if fragment not in project:
+        errors.append("Original pinned TransferCore package dependency missing: " + fragment)
+for fragment in ("XCTContainerBridge", ".migrate(", ".resume(", "wq_grant("):
+    if fragment in preview:
+        errors.append("Read-only imported WCMigrate preview contains disallowed action: " + fragment)
 catalog = (root / "Nexa/Sources/NexaWQAppCatalogView.swift").read_text()
 explorer = (root / "Nexa/Sources/NexaWQExplorerView.swift").read_text()
 file_view = (root / "Nexa/Sources/FilesView.swift").read_text()

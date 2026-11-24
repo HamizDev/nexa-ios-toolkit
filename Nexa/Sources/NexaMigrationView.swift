@@ -42,6 +42,28 @@ struct NexaMigrationView: View {
                         }
                     }
                     NavigationLink {
+                        NexaWCMigratePreviewView()
+                    } label: {
+                        NexaCard {
+                            HStack(spacing: 12) {
+                                Image(systemName: "list.bullet.clipboard")
+                                    .font(.title2)
+                                    .foregroundStyle(NexaPalette.mint)
+                                VStack(alignment: .leading, spacing: 5) {
+                                    Text(en ? "Original WCMigrate preview" : "WCMigrate 原版迁移预检")
+                                        .font(.headline)
+                                    Text(en ? "Compare imported snapshots with the original TransferCore. No writes." : "使用原版 TransferCore 比较已导入快照，不执行迁移。")
+                                        .font(.caption)
+                                        .foregroundStyle(NexaPalette.muted)
+                                }
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundStyle(NexaPalette.muted)
+                            }
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    NavigationLink {
                         NexaImportCombineView()
                     } label: {
                         NexaCard {

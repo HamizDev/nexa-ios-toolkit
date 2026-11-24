@@ -24,6 +24,7 @@ struct NexaRootView: View {
     @EnvironmentObject private var hermesCompanion: WatchConnectivityManager
     @State private var showWatchUISmoke = ProcessInfo.processInfo.arguments.contains("--nexa-watch-view")
     @State private var showAppCatalogSmoke = ProcessInfo.processInfo.arguments.contains("--nexa-wqapps-smoke")
+    @State private var showWCMigratePreviewSmoke = ProcessInfo.processInfo.arguments.contains("--nexa-wcmigrate-preview-smoke")
     @State private var showOriginalHexUISmoke: NexaWQHexSelection?
     @State private var showOriginalPlistUISmoke: NexaWQPlistSelection?
     @State private var showOriginalSQLiteUISmoke: NexaWQSQLiteSelection?
@@ -75,7 +76,8 @@ struct NexaRootView: View {
                 let isScreenshotHarness = ProcessInfo.processInfo.arguments.contains {
                     $0.hasPrefix("--nexa-tab=") || $0 == "--nexa-watch-view" ||
                     $0 == "--nexa-wqhex-smoke" || $0 == "--nexa-wqplist-smoke" ||
-                    $0 == "--nexa-wqsqlite-smoke" || $0 == "--nexa-wqapps-smoke"
+                    $0 == "--nexa-wqsqlite-smoke" || $0 == "--nexa-wqapps-smoke" ||
+                    $0 == "--nexa-wcmigrate-preview-smoke"
                 }
                 if !isScreenshotHarness { showFirstLaunchSafety = true }
                 #else
@@ -97,6 +99,9 @@ struct NexaRootView: View {
         .sheet(isPresented: $showAppCatalogSmoke) {
             NavigationStack { NexaWQAppCatalogView() }
                 .onAppear(perform: recordAppCatalogUITest)
+        }
+        .sheet(isPresented: $showWCMigratePreviewSmoke) {
+            NavigationStack { NexaWCMigratePreviewView() }
         }
         .sheet(item: $showOriginalHexUISmoke) { selection in
             NexaWQOriginalHexView(file: selection.file)

@@ -8,7 +8,7 @@ On 2026-11-18 the first ZIP containing five screenshots (`44232278062`) was insp
 
 - The iOS Target Debug build explicitly sets `SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)"`; Release never enables this.
 - `NexaRootView` accepts only `home/files/backups/explore/settings` test arguments **in Debug**, and it writes its actual current selection to `Documents/.nexa-ui-smoke-current-tab` when a test argument is present.
-- GitHub Actions boots an iOS 26+ simulator in a dedicated 16-minute step, separating slow first-run CoreSimulator migrations from the seven-minute five-tab screenshot budget. It starts the app for each tab, checks the acknowledged tab through `simctl get_app_container`, and **fails** if the tab differs.
+- GitHub Actions boots an iOS 26+ simulator in a dedicated 16-minute step. Installation and first launch, five main tabs, Hermes backup fixture, three native WQFiles viewers, App catalog gating, and original WCMigrate preview now have independent step budgets. Every later launch removes its old marker first; CI **fails** if the expected fresh marker is missing. Run 45230325746 previously captured seven screenshots before hitting the old shared seven-minute budget; the new split awaits validation.
 - If no compatible simulator is available, the UI smoke step now **fails** instead of silently skipping. A green workflow therefore requires an actual compatible simulator.
 - Earlier run `44296214503` captured distinct Home, Files and Backups screens but exceeded the original shared ten-minute budget after a six-minute first boot; Explore and Settings still required rerunning.
 
@@ -50,6 +50,19 @@ Run [45223067042](https://github.com/HamizDev/nexa-ios-toolkit/actions/runs/4522
 CI launches `--nexa-wqapps-smoke` and captures `wq-app-catalog.png` after the nine existing screens. On iOS Simulator, this page **must** display that the feature is unavailable without a supported physical device and its signed App Group. The app writes a Debug-only marker that fails if `NexaContainerAccess.ready` unexpectedly becomes true. This is an unavailable-state UI check; **it cannot prove real-device LaunchServices listing or sandbox grants**.
 
 The original pinned WQApps manager contains destructive paths without a general `readOnly` switch. Nexa intentionally does **not** embed that controller. Its App catalog uses the existing upstream `WQLaunchServices` parser, the upstream `WQAppsSupport` bundle ID validator, and separately asks for user consent before read-only listing, and again before opening a selected container.
+
+## Original WCMigrate local preview (Debug Simulator only)
+
+The `--nexa-wcmigrate-preview-smoke` fixture creates two disposable
+Nexa-imported sample folders. The real pinned TransferCore preview is
+called in Replace and Merge modes (keepSource=true). It must report two
+source files (nine bytes, largest five bytes) and one target file;
+their exact original bytes must remain unchanged, with no new copied
+file. Same-root, outside Imports and nested symbolic-link selections
+must all be rejected. Only then does the fresh PASS marker permit a
+`wcmigrate-preview.png` screenshot. This exercises original preview
+code only, not the original execution/resume API or a third-party app.
+No real-device privilege is inferred from this test.
 
 ## Human review to perform on a successful five-tab ZIP
 
