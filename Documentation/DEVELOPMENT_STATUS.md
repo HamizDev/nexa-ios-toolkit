@@ -36,6 +36,7 @@ Baseline: `4c3d03ea5e8b95c3c7b54cdf4451fa8b06d8c871` on main.
 - History shows the manifest timestamp, declared file count, logical file lengths and session verification status. Size totals exclude unreadable packages and are not physical allocated disk usage.
 - Added off-main-thread library refresh and confirmed deletion scoped to the backup folder. The source external folder is never modified. Restore remains non-overwriting.
 - `Scripts/test-backup-packages.sh` compiled and passed on Linux Swift 6.2.1: package metadata, logical sizes, verification-before-publication boundary, cleanup, v1 compatibility, malformed package rejection and scoped deletion. This fixture tests the verifier callback boundary, not SHA-256 itself.
+- Extended the macOS CryptoKit integration fixture with a known SHA-256 answer, valid imported-folder round trip, same-length tamper rejection, failure cleanup and deletion scope. It has not been run here because the Linux Swift toolchain lacks CryptoKit. Unified the restore/delete confirmation dialog to avoid competing presentations.
 - CryptoKit, iOS folder picker/sharing, UI and actual device integration remain unverified. Folder import is supported in source; ZIP backup transport is not yet implemented.
 
 ## Remaining acceptance

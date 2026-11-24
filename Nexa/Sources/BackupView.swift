@@ -6,8 +6,11 @@ struct BackupView: View {
     @State private var backups: [BackupRecord] = []
     @State private var busy = false
     @State private var creating = false
-    @State private var pendingRestore: BackupRecord?
-    @State private var pendingDelete: BackupRecord?
+    private enum PendingAction {
+        case restore(BackupRecord)
+        case delete(BackupRecord)
+    }
+    @State private var pendingAction: PendingAction?
     @State private var importSheet = false
     @State private var message: String?
     @State private var progressFraction: Double = 0
@@ -112,27 +115,31 @@ struct BackupView: View {
             case .failure(let error): message = error.localizedDescription
             }
         }
-        .confirmationDialog(language.t("backup.restore.confirm"), isPresented: Binding(
-            get: { pendingRestore != nil },
-            set: { if !$0 { pendingRestore = nil } }
-        ), titleVisibility: .visible, presenting: pendingRestore) { record in
-            Button(language.t("backup.restore")) { restore(record) }
-            Button(language.t("common.cancel"), role: .cancel) { pendingRestore = nil }
-        } message: { _ in
-            Text(language.t("backup.restore.detail"))
-        }
-        .confirmationDialog(en ? "Delete this backup?" : "删除此备份？", isPresented: Binding(
-            get: { pendingDelete != nil },
-            set: { if !$0 { pendingDelete = nil } }
-        ), titleVisibility: .visible, presenting: pendingDelete) { record in
-            Button(en ? "Permanently delete" : "永久删除", role: .destructive) {
-                pendingDelete = nil
-                delete(record)
+        .confirmationDialog(actionTitle, isPresented: Binding(
+            get: { pendingAction != nil },
+            set: { if !$0 { pendingAction = nil } }
+        ), titleVisibility: .visible, presenting: pendingAction) { action in
+            switch action {
+            case .restore(let record):
+                Button(language.t("backup.restore")) {
+                    pendingAction = nil
+                    restore(record)
+                }
+            case .delete(let record):
+                Button(en ? "Permanently delete" : "永久删除", role: .destructive) {
+                    pendingAction = nil
+                    delete(record)
+                }
             }
-            Button(language.t("common.cancel"), role: .cancel) { pendingDelete = nil }
-        } message: { _ in
-            Text(en ? "Only this local backup is removed. Imported files and external copies are kept." :
-                 "仅永久删除此本地备份，不会删除已导入文件或外部副本。")
+            Button(language.t("common.cancel"), role: .cancel) { pendingAction = nil }
+        } message: { action in
+            switch action {
+            case .restore:
+                Text(language.t("backup.restore.detail"))
+            case .delete:
+                Text(en ? "Only this local backup is removed. Imported files and external copies are kept." :
+                     "仅永久删除此本地备份，不会删除已导入文件或外部副本。")
+            }
         }
         .alert(language.t("backup.result"), isPresented: Binding(
             get: { message != nil },
@@ -140,6 +147,14 @@ struct BackupView: View {
         )) {
             Button(language.t("common.confirm"), role: .cancel) { message = nil }
         } message: { Text(message ?? "") }
+    }
+
+    private var actionTitle: String {
+        switch pendingAction {
+        case .restore?: return language.t("backup.restore.confirm")
+        case .delete?: return en ? "Delete this backup?" : "删除此备份？"
+        case nil: return ""
+        }
     }
 
     private func backupCard(_ record: BackupRecord) -> some View {
@@ -185,10 +200,10 @@ struct BackupView: View {
     }
 
     @ViewBuilder private func restoreAndDelete(_ record: BackupRecord) -> some View {
-        Button { pendingRestore = record } label: { Label(language.t("backup.restore"), systemImage: "arrow.uturn.backward.circle") }
+        Button { pendingAction = .restore(record) } label: { Label(language.t("backup.restore"), systemImage: "arrow.uturn.backward.circle") }
             .buttonStyle(.bordered)
             .disabled(busy || record.manifest == nil)
-        Button(role: .destructive) { pendingDelete = record } label: {
+        Button(role: .destructive) { pendingAction = .delete(record) } label: {
             Label(en ? "Delete backup" : "删除备份", systemImage: "trash")
         }
         .buttonStyle(.bordered)
@@ -271,7 +286,6 @@ struct BackupView: View {
     }
 
     private func restore(_ backup: BackupRecord) {
-        pendingRestore = nil
         guard !busy else { return }
         busy = true
         Task {
