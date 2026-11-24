@@ -1,56 +1,49 @@
 import Foundation
 import Combine
 
-struct ImportedEntry: Identifiable {
-    var id: String { url.path }
-    let url: URL
-    let isDirectory: Bool
-    var name: String { url.lastPathComponent }
-}
-
 @MainActor
 final class FilesStore: ObservableObject {
     @Published private(set) var entries: [ImportedEntry] = []
+    @Published private(set) var archives: [ImportedEntry] = []
     @Published var errorMessage: String?
+    @Published private(set) var busy = false
 
     static var importFolder: URL { AppPaths.importFolder }
 
     init() { refresh() }
 
     func refresh() {
-        do {
-            try FileManager.default.createDirectory(at: Self.importFolder, withIntermediateDirectories: true)
-            let urls = try FileManager.default.contentsOfDirectory(
-                at: Self.importFolder,
-                includingPropertiesForKeys: [.isDirectoryKey, .isSymbolicLinkKey],
-                options: [.skipsHiddenFiles]
-            )
-            entries = urls
-                .filter { (try? $0.resourceValues(forKeys: [.isSymbolicLinkKey]).isSymbolicLink) != true }
-                .sorted { $0.lastPathComponent.localizedStandardCompare($1.lastPathComponent) == .orderedAscending }
-                .map { url in
-                    let values = try? url.resourceValues(forKeys: [.isDirectoryKey])
-                    return ImportedEntry(url: url, isDirectory: values?.isDirectory ?? false)
-                }
-        } catch { errorMessage = error.localizedDescription }
+        do { entries = try NexaFileLibrary.list(root: Self.importFolder) }
+        catch { entries = []; errorMessage = error.localizedDescription }
+        do { archives = try NexaFileLibrary.list(root: AppPaths.archiveFolder, archivesOnly: true) }
+        catch { archives = []; errorMessage = error.localizedDescription }
     }
 
-    func importURLs(_ urls: [URL]) {
-        for url in urls {
-            let access = url.startAccessingSecurityScopedResource()
-            defer { if access { url.stopAccessingSecurityScopedResource() } }
-            do {
-                let destination = Self.importFolder
-                    .appendingPathComponent(String(UUID().uuidString.prefix(8)) + "_" + url.lastPathComponent)
-                try FileManager.default.copyItem(at: url, to: destination)
-            } catch { errorMessage = "Import \(url.lastPathComponent): \(error.localizedDescription)" }
-        }
-        refresh()
+    func importURLs(_ urls: [URL]) async {
+        guard !busy else { return }
+        busy = true
+        defer { busy = false; refresh() }
+        let root = Self.importFolder
+        let failures = await Task.detached(priority: .userInitiated) {
+            var failures: [String] = []
+            for url in urls {
+                let access = url.startAccessingSecurityScopedResource()
+                defer { if access { url.stopAccessingSecurityScopedResource() } }
+                do { _ = try NexaFileLibrary.copyImport(url, root: root) }
+                catch { failures.append(url.lastPathComponent + ": " + error.localizedDescription) }
+            }
+            return failures
+        }.value
+        if !failures.isEmpty { errorMessage = failures.joined(separator: "\n") }
     }
 
-    func remove(_ entry: ImportedEntry) {
-        do { try FileManager.default.removeItem(at: entry.url) }
-        catch { errorMessage = error.localizedDescription }
-        refresh()
+    func remove(_ urls: [URL], archivesOnly: Bool) async throws -> NexaFileLibrary.Removal {
+        guard !busy else { throw NexaFileLibrary.Failure.invalidItem }
+        busy = true
+        defer { busy = false; refresh() }
+        let root = archivesOnly ? AppPaths.archiveFolder : Self.importFolder
+        return try await Task.detached(priority: .userInitiated) {
+            try NexaFileLibrary.remove(urls, root: root, archivesOnly: archivesOnly)
+        }.value
     }
 }

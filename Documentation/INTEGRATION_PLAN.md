@@ -60,3 +60,10 @@ No unverified module should be represented as available to end users. Prefer rea
 - [ ] Record actual model / iOS build and failure logs
 
 Source details: [UPSTREAM_SOURCES.md](UPSTREAM_SOURCES.md).
+
+## File library follow-up
+
+- [x] Root file sorting and multi-selection, confirmed batch deletion, archive listing and selected ZIP creation wired at source level.
+- [x] Foundation file-library regression runner passed on Linux Swift.
+- [ ] Test real upstream ZIP writing/extraction and selected-item archive contents on iOS; test UI selection, filtering and deletion confirmation.
+- [ ] Test large imports, low space, app interruptions and concurrent operations.

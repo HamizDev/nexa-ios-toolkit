@@ -14,6 +14,8 @@
     CF1EB445374AB1DBF6B3183D /* DeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/DeviceView.swift; sourceTree = "<group>"; };
     CC7DEDC8E1B0C761C4E9979E /* FilesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BBD9DE7CB1C4FAF63E0C1E0 /* FilesStore.swift */; };
     4BBD9DE7CB1C4FAF63E0C1E0 /* FilesStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/FilesStore.swift; sourceTree = "<group>"; };
+    F5A400000000000000000001 /* NexaFileLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaFileLibrary.swift; sourceTree = "<group>"; };
+    F5A400000000000000000002 /* NexaFileLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A400000000000000000001 /* NexaFileLibrary.swift */; };
     FF9E95EDDAE646C274A5D287 /* FilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CFD0982CC571DB3E0D00203 /* FilesView.swift */; };
     3CFD0982CC571DB3E0D00203 /* FilesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/FilesView.swift; sourceTree = "<group>"; };
     A949A2C6639D028C458FBEDF /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085AA118715DF8E44A2D9D49 /* HomeView.swift */; };
@@ -70,6 +72,7 @@
         7F7E25383B25585D32ADB956 /* BackupView.swift in Sources */,
         5B9880EE40FF9C88441BE56E /* DeviceView.swift in Sources */,
         CC7DEDC8E1B0C761C4E9979E /* FilesStore.swift in Sources */,
+        F5A400000000000000000002 /* NexaFileLibrary.swift in Sources */,
         FF9E95EDDAE646C274A5D287 /* FilesView.swift in Sources */,
         A949A2C6639D028C458FBEDF /* HomeView.swift in Sources */,
         9EC7CC9C3E9C7DC2B49A66BE /* ModuleCatalog.swift in Sources */,
@@ -102,6 +105,7 @@
         6739543836353519EBC814F0 /* BackupView.swift */,
         CF1EB445374AB1DBF6B3183D /* DeviceView.swift */,
         4BBD9DE7CB1C4FAF63E0C1E0 /* FilesStore.swift */,
+        F5A400000000000000000001 /* NexaFileLibrary.swift */,
         3CFD0982CC571DB3E0D00203 /* FilesView.swift */,
         085AA118715DF8E44A2D9D49 /* HomeView.swift */,
         87410939A88823AE92339ED3 /* ModuleCatalog.swift */,

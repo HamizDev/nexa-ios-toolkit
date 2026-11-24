@@ -2,6 +2,8 @@
 
 ## Unreleased — upstream integration branch
 
+- Added root file sorting, metadata, selection and confirmed batch removal, selected-item ZIP creation, persistent archive history/share/delete, staged imports and staged ZIP publication/extraction. Original WQFiles ZIP implementation stays unchanged. Foundation file-library fixtures passed on Linux Swift; ZIP bridge and iOS interface still require Xcode testing.
+
 - Added per-file offline plist version history, reversible byte-exact restoration, stale-edit rejection and import-boundary validation while preserving the original GestaltX parser. The Foundation regression runner passed on Linux Swift; iOS UI/build acceptance remains pending.
 - Added file-name search for root and nested imported folders, explicit directory read errors, and import-boundary checks for file previews.
 

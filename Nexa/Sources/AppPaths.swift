@@ -9,6 +9,10 @@ enum AppPaths {
         documents.appendingPathComponent("Imports", isDirectory: true)
     }
 
+    static var archiveFolder: URL {
+        documents.appendingPathComponent("Archives", isDirectory: true)
+    }
+
     static var backupFolder: URL {
         documents.appendingPathComponent("Backups", isDirectory: true)
     }
