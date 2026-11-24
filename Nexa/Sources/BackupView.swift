@@ -4,6 +4,8 @@ struct BackupView: View {
     @EnvironmentObject private var language: NexaLanguage
     @State private var backups: [BackupRecord] = []
     @State private var busy = false
+    @State private var creating = false
+    @State private var pendingRestore: BackupRecord?
     @State private var message: String?
     @State private var progressFraction: Double = 0
     @State private var estimate = OperationEstimate()
@@ -22,11 +24,11 @@ struct BackupView: View {
                                 .font(.footnote).foregroundStyle(NexaPalette.muted)
                         }
                     }
-                    NexaActionButton(title: language.t(busy ? "backup.creating" : "backup.create"), symbol: "externaldrive.badge.plus") {
+                    NexaActionButton(title: language.t(creating ? "backup.creating" : "backup.create"), symbol: "externaldrive.badge.plus") {
                         createBackup()
                     }
                     .disabled(busy)
-                    if busy {
+                    if creating {
                         NexaCard {
                             VStack(alignment: .leading, spacing: 8) {
                                 ProgressView(value: progressFraction)
@@ -42,6 +44,9 @@ struct BackupView: View {
                                     .font(.caption2).foregroundStyle(NexaPalette.muted)
                             }
                         }
+                    }
+                    if busy && !creating {
+                        ProgressView().tint(NexaPalette.mint)
                     }
                     Text(language.t("backup.list")).font(.title3.weight(.semibold))
                     if backups.isEmpty {
@@ -75,6 +80,11 @@ struct BackupView: View {
                                         .buttonStyle(.bordered)
                                     }
                                     .disabled(busy)
+                                    Button { pendingRestore = record } label: {
+                                        Label(language.t("backup.restore"), systemImage: "arrow.uturn.backward.circle")
+                                    }
+                                    .buttonStyle(.bordered)
+                                    .disabled(busy)
                                 }
                             }
                         }
@@ -85,7 +95,16 @@ struct BackupView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .onAppear(perform: refresh)
-        .alert(language.t("backup.error"), isPresented: Binding(
+        .confirmationDialog(language.t("backup.restore.confirm"), isPresented: Binding(
+            get: { pendingRestore != nil },
+            set: { if !$0 { pendingRestore = nil } }
+        ), titleVisibility: .visible, presenting: pendingRestore) { record in
+            Button(language.t("backup.restore")) { restore(record) }
+            Button(language.t("common.cancel"), role: .cancel) { pendingRestore = nil }
+        } message: { _ in
+            Text(language.t("backup.restore.detail"))
+        }
+        .alert(language.t("backup.result"), isPresented: Binding(
             get: { message != nil },
             set: { if !$0 { message = nil } }
         )) {
@@ -95,11 +114,12 @@ struct BackupView: View {
 
     private func refresh() {
         do { backups = try BackupManager.listBackups() }
-        catch { message = error.localizedDescription }
+        catch { message = errorText(error) }
     }
 
     private func createBackup() {
         busy = true
+        creating = true
         progressFraction = 0
         estimate.reset()
         Task {
@@ -107,6 +127,7 @@ struct BackupView: View {
                 _ = try await Task.detached(priority: .userInitiated) {
                     try BackupManager.createBackup(onProgress: { progress in
                         Task { @MainActor in
+                            guard creating else { return }
                             progressFraction = progress.fraction ?? 0
                             estimate.update(progress)
                         }
@@ -114,7 +135,8 @@ struct BackupView: View {
                 }.value
                 message = language.t("backup.success")
                 refresh()
-            } catch { message = error.localizedDescription }
+            } catch { message = errorText(error) }
+            creating = false
             busy = false
         }
     }
@@ -127,8 +149,26 @@ struct BackupView: View {
                     try BackupManager.verify(backup.folder)
                 }.value
                 message = String(format: language.t("backup.ok"), count)
-            } catch { message = error.localizedDescription }
+            } catch { message = errorText(error) }
             busy = false
         }
+    }
+
+    private func restore(_ backup: BackupRecord) {
+        pendingRestore = nil
+        busy = true
+        Task {
+            do {
+                let restored = try await Task.detached(priority: .userInitiated) {
+                    try BackupManager.restore(backup.folder)
+                }.value
+                message = language.t("backup.restore.success") + restored.lastPathComponent
+            } catch { message = errorText(error) }
+            busy = false
+        }
+    }
+
+    private func errorText(_ error: Error) -> String {
+        (error as? BackupManager.BackupError)?.message(in: language.code) ?? error.localizedDescription
     }
 }

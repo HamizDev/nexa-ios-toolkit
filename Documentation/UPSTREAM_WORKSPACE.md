@@ -29,10 +29,11 @@ Do not assume a workspace reference embeds another App target or grants its capa
 
 ## Working functional integration in Nexa
 
-- WQFiles' `WQCore.m/h`: read-only hex parsing on imported files.
-- [Next] WCMigrate's standalone progress estimator and app-local staging (no third-party private container access).
-- [Next] GestaltX's OS version helper (read-only gating; no system modifications).
-- [Next] Apple Watch connectivity status (no watch-face modification).
+- WQFiles' `WQCore.m/h` and `WQArchive.m/h`: hex validation and ZIP creation/extraction on imported files.
+- WCMigrate's standalone progress estimator and model are wired to Nexa's local backup flow; Nexa's own v2 manifest and verified restore do not implement chat migration.
+- GestaltX's OS version helper and value parser support read-only version gating and imported plist editing (no system modifications).
+- Apple Watch connectivity status (public API; no watch-face modification).
+- These are source-level integrations, with macOS Xcode/device testing still pending.
 
 ## Build blockers for an actual unified IPA
 

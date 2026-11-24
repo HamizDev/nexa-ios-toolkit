@@ -2,6 +2,9 @@
 
 ## Unreleased — upstream integration branch
 
+- Added verified local backup restoration into a new import directory, staged copy publication, v2 directory inventories (v1 remains readable), duplicate-manifest rejection, and bilingual restore confirmation. WCMigrate's original progress model remains in use; restore is Nexa-specific, not upstream chat migration.
+- Added macOS command-line backup regression fixtures and reconciled module status labels. Xcode/device acceptance remains pending.
+
 - Compiled the original WQFiles ZIP archive engine and its localization helpers with zlib; added archive creation and safe extraction for imported files.
 
 - Added offline user-imported plist inspection and editing using GestaltX's original value parser; each local edit creates an app-private backup of the imported copy.

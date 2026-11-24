@@ -9,6 +9,9 @@
 - [x] User-authorized file imports, file/folder browser and sharing
 - [x] Text and hex file preview, with WQFiles' upstream `WQCore.m/h` hex validation compiled in
 - [x] Local backup manifests with SHA-256 verification
+- [x] Source implementation: staged local backup and verified non-overwriting restore (v1/v2 manifests; v2 covers empty directories)
+- [x] Source implementation: WQFiles original ZIP writer/extractor, GestaltX imported-plist parser, WCMigrate progress/ETA and WatchConnectivity diagnostics
+- [x] Regression fixture source for backup integrity and restoration (execution pending on macOS)
 - [x] Read-only device summary, build number / capacity and conservative upstream compatibility notice
 - [x] Source credits and accurate module readiness states
 - [ ] Xcode and device compilation acceptance
@@ -48,7 +51,7 @@ No unverified module should be represented as available to end users. Prefer rea
 - [ ] Build with current Xcode and iOS 26 SDK for a simulator and device
 - [ ] Verify zh default and in-app en switching on fresh install
 - [ ] Verify file import, folder navigation, hex validation and share sheet
-- [ ] Verify backup consistency, hash tamper detection and space exhaustion handling
+- [ ] Run `Scripts/test-backups.sh` on macOS; verify backup consistency, legacy manifests, hash tampering, duplicate entries, missing directories, missing payloads, symlinks, non-overwriting restoration and space exhaustion handling
 - [ ] Inspect Objective-C bridging headers and GPL source attribution
 - [ ] Review accessibility contrast, Dynamic Type and iPad layouts
 - [ ] Verify all nonintegrated tools remain inactive and clearly labeled
