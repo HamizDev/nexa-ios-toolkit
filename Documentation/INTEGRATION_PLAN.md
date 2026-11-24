@@ -67,3 +67,10 @@ Source details: [UPSTREAM_SOURCES.md](UPSTREAM_SOURCES.md).
 - [x] Foundation file-library regression runner passed on Linux Swift.
 - [ ] Test real upstream ZIP writing/extraction and selected-item archive contents on iOS; test UI selection, filtering and deletion confirmation.
 - [ ] Test large imports, low space, app interruptions and concurrent operations.
+
+## Backup library follow-up
+
+- [x] Source-level verified Nexa backup-folder import, staged publication, history metadata, logical-byte summary and confirmed deletion.
+- [x] Foundation backup-package regression runner passed on Linux Swift (verification-boundary fixture; no CryptoKit claims).
+- [ ] Run the macOS CryptoKit integration fixtures, including valid and tampered imported backups; test folder picking/sharing with local and iCloud providers.
+- [ ] ZIP-based portable backup package import/export remains separate work; current import requires a folder.

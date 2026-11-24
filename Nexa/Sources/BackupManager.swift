@@ -1,26 +1,6 @@
 import Foundation
 import CryptoKit
 
-struct FileDigest: Codable, Equatable {
-    let relativePath: String
-    let byteCount: Int64
-    let sha256: String
-}
-
-struct BackupManifest: Codable {
-    let createdAt: Date
-    let files: [FileDigest]
-    let formatVersion: Int
-    // Version 1 did not record directories, including empty ones.
-    let directories: [String]?
-}
-
-struct BackupRecord: Identifiable {
-    let folder: URL
-    var id: String { folder.path }
-    var name: String { folder.lastPathComponent }
-}
-
 enum BackupManager {
     enum BackupError: LocalizedError {
         case emptySource
@@ -56,23 +36,21 @@ enum BackupManager {
         let directories: [String]
     }
 
-    private static let manifestLimit = 32 * 1024 * 1024
+    private static let manifestLimit = BackupPackageLibrary.manifestLimit
     static var backupFolder: URL { AppPaths.backupFolder }
 
     static func listBackups() throws -> [BackupRecord] {
-        let fm = FileManager.default
-        try fm.createDirectory(at: backupFolder, withIntermediateDirectories: true)
-        try requireDirectory(backupFolder)
-        return try fm.contentsOfDirectory(
-            at: backupFolder, includingPropertiesForKeys: [.isDirectoryKey, .isSymbolicLinkKey],
-            options: [.skipsHiddenFiles]
-        )
-        .filter { url in
-            guard let flags = try? url.resourceValues(forKeys: [.isDirectoryKey, .isSymbolicLinkKey]) else { return false }
-            return flags.isDirectory == true && flags.isSymbolicLink != true
+        try BackupPackageLibrary.list(root: backupFolder)
+    }
+
+    static func importBackup(_ folder: URL, destinationRoot: URL = AppPaths.backupFolder) throws -> URL {
+        try BackupPackageLibrary.importFolder(folder, root: destinationRoot) { candidate, staging in
+            _ = try verify(candidate, backupRoot: staging)
         }
-        .sorted { $0.lastPathComponent > $1.lastPathComponent }
-        .map { BackupRecord(folder: $0) }
+    }
+
+    static func removeBackup(_ folder: URL, backupRoot: URL = AppPaths.backupFolder) throws {
+        try BackupPackageLibrary.remove(folder, root: backupRoot)
     }
 
     static func createBackup(
@@ -148,27 +126,9 @@ enum BackupManager {
     }
 
     private static func verifiedInventory(at folder: URL, backupRoot: URL) throws -> Inventory {
-        try requireDirectory(backupRoot)
-        guard folder.standardizedFileURL.deletingLastPathComponent().path == backupRoot.standardizedFileURL.path,
-              !folder.lastPathComponent.hasPrefix(".") else {
-            throw BackupError.invalidItem(folder.lastPathComponent)
-        }
-        try requireDirectory(folder)
-        let manifestURL = folder.appendingPathComponent("manifest.json")
-        let flags = try manifestURL.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey, .fileSizeKey])
-        guard flags.isSymbolicLink != true, flags.isRegularFile == true,
-              let size = flags.fileSize, size <= manifestLimit else { throw BackupError.invalidManifest }
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-        let manifest = try decoder.decode(BackupManifest.self, from: Data(contentsOf: manifestURL))
-        guard manifest.formatVersion == 1 || manifest.formatVersion == 2 else {
-            throw BackupError.unsupportedVersion(manifest.formatVersion)
-        }
-        // Never construct paths from untrusted manifest strings or trap on duplicate dictionary keys.
-        guard Set(manifest.files.map(\.relativePath)).count == manifest.files.count else {
-            throw BackupError.invalidManifest
-        }
-        let current = try inventory(in: folder.appendingPathComponent("Payload", isDirectory: true))
+        let checked = try BackupPackageLibrary.checkedFolder(folder, root: backupRoot)
+        let manifest = try BackupPackageLibrary.manifest(in: checked)
+        let current = try inventory(in: checked.appendingPathComponent("Payload", isDirectory: true))
         guard current.files == manifest.files.sorted(by: { $0.relativePath < $1.relativePath }) else {
             throw BackupError.verificationFailed("File names, lengths or SHA-256")
         }

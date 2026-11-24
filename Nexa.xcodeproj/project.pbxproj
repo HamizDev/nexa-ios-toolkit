@@ -8,6 +8,8 @@
     3E72F08454CF343A06FF1D2C /* AppPaths.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/AppPaths.swift; sourceTree = "<group>"; };
     099133132358868E863B4F9A /* BackupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 333E00E297BB7F802BD30620 /* BackupManager.swift */; };
     333E00E297BB7F802BD30620 /* BackupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/BackupManager.swift; sourceTree = "<group>"; };
+    F5A500000000000000000001 /* BackupPackageLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/BackupPackageLibrary.swift; sourceTree = "<group>"; };
+    F5A500000000000000000002 /* BackupPackageLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A500000000000000000001 /* BackupPackageLibrary.swift */; };
     7F7E25383B25585D32ADB956 /* BackupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6739543836353519EBC814F0 /* BackupView.swift */; };
     6739543836353519EBC814F0 /* BackupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/BackupView.swift; sourceTree = "<group>"; };
     5B9880EE40FF9C88441BE56E /* DeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF1EB445374AB1DBF6B3183D /* DeviceView.swift */; };
@@ -69,6 +71,7 @@
       files = (
         1D08BCB5D1BE8E02D7DC284B /* AppPaths.swift in Sources */,
         099133132358868E863B4F9A /* BackupManager.swift in Sources */,
+        F5A500000000000000000002 /* BackupPackageLibrary.swift in Sources */,
         7F7E25383B25585D32ADB956 /* BackupView.swift in Sources */,
         5B9880EE40FF9C88441BE56E /* DeviceView.swift in Sources */,
         CC7DEDC8E1B0C761C4E9979E /* FilesStore.swift in Sources */,
@@ -102,6 +105,7 @@
       children = (
         3E72F08454CF343A06FF1D2C /* AppPaths.swift */,
         333E00E297BB7F802BD30620 /* BackupManager.swift */,
+        F5A500000000000000000001 /* BackupPackageLibrary.swift */,
         6739543836353519EBC814F0 /* BackupView.swift */,
         CF1EB445374AB1DBF6B3183D /* DeviceView.swift */,
         4BBD9DE7CB1C4FAF63E0C1E0 /* FilesStore.swift */,

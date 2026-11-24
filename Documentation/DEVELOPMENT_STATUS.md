@@ -29,6 +29,15 @@ Baseline: `4c3d03ea5e8b95c3c7b54cdf4451fa8b06d8c871` on main.
 - `Scripts/test-file-library.sh` compiled and passed the exact Foundation fixture on Linux Swift: sorting, metadata, hidden/symlink filtering, full batch preflight, staged import, batch removal and archive isolation.
 - Actual Objective-C ZIP calls, SwiftUI compilation and device tests remain pending. The batch removal is not transactional after successful preflight; per-item failures are reported.
 
+## 2026-11-24 follow-up — backup library
+
+- Added local backup directory import via the system folder picker, with security-scoped coordinated reading, hidden staging and a full existing BackupManager SHA-256 verification callback before publication.
+- Both v1 and v2 manifests remain readable. Packages must contain exactly manifest.json and Payload; unreadable or structurally invalid local folders are identified and can be deleted with confirmation.
+- History shows the manifest timestamp, declared file count, logical file lengths and session verification status. Size totals exclude unreadable packages and are not physical allocated disk usage.
+- Added off-main-thread library refresh and confirmed deletion scoped to the backup folder. The source external folder is never modified. Restore remains non-overwriting.
+- `Scripts/test-backup-packages.sh` compiled and passed on Linux Swift 6.2.1: package metadata, logical sizes, verification-before-publication boundary, cleanup, v1 compatibility, malformed package rejection and scoped deletion. This fixture tests the verifier callback boundary, not SHA-256 itself.
+- CryptoKit, iOS folder picker/sharing, UI and actual device integration remain unverified. Folder import is supported in source; ZIP backup transport is not yet implemented.
+
 ## Remaining acceptance
 
 - [ ] Execute the backup regression fixtures on macOS.
