@@ -12,6 +12,8 @@
 - [x] Source implementation: staged local backup and verified non-overwriting restore (v1/v2 manifests; v2 covers empty directories)
 - [x] Source implementation: WQFiles original ZIP writer/extractor, GestaltX imported-plist parser, WCMigrate progress/ETA and WatchConnectivity diagnostics
 - [x] Regression fixture source for backup integrity and restoration (execution pending on macOS)
+- [x] Offline plist history and byte-exact restoration core; Foundation regression runner passed on Linux Swift
+- [ ] Verify plist history UI, XML/binary editing and restore on simulator/device
 - [x] Read-only device summary, build number / capacity and conservative upstream compatibility notice
 - [x] Source credits and accurate module readiness states
 - [ ] Xcode and device compilation acceptance

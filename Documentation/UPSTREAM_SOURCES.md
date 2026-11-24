@@ -35,3 +35,7 @@ No third-party IPA or binary has been copied into Nexa. Please examine each upst
 ## Offline plist editing (GestaltX excerpt)
 
 `Vendor/GestaltX/PlistValueKind.swift` preserves an exact excerpt of `GestaltDocument.swift` (`GestaltFailure` and `PlistValueKind`), from the same pinned SHA. It is compiled into Nexa's `NexaPlistInspectorView` for type detection, safe input parsing, and local plist serialization. Changes are limited to files that the user explicitly imported, with a backup of the imported copy taken before each write. This **does not** write to system MobileGestalt or access other app containers.
+
+## Nexa-owned version history
+
+`NexaPlistHistory.swift` adds per-imported-file snapshots and restoration; it is Nexa glue, not copied upstream system-write code. `Vendor/GestaltX/PlistValueKind.swift` is unchanged. The independent Foundation regression runner passed on Linux Swift. iOS UI validation remains pending.

@@ -2,6 +2,9 @@
 
 ## Unreleased — upstream integration branch
 
+- Added per-file offline plist version history, reversible byte-exact restoration, stale-edit rejection and import-boundary validation while preserving the original GestaltX parser. The Foundation regression runner passed on Linux Swift; iOS UI/build acceptance remains pending.
+- Added file-name search for root and nested imported folders, explicit directory read errors, and import-boundary checks for file previews.
+
 - Added verified local backup restoration into a new import directory, staged copy publication, v2 directory inventories (v1 remains readable), duplicate-manifest rejection, and bilingual restore confirmation. WCMigrate's original progress model remains in use; restore is Nexa-specific, not upstream chat migration.
 - Added macOS command-line backup regression fixtures and reconciled module status labels. Xcode/device acceptance remains pending.
 

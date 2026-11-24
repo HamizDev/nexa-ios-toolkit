@@ -48,6 +48,8 @@
     0AA7CD1285B14C72A104E332 /* PlistValueKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/GestaltX/PlistValueKind.swift; sourceTree = SOURCE_ROOT; };
     84E9004A7ED94971A8302126 /* NexaPlistInspectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C786E1AA03ED432DB9530311 /* NexaPlistInspectorView.swift */; };
     C786E1AA03ED432DB9530311 /* NexaPlistInspectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaPlistInspectorView.swift; sourceTree = "<group>"; };
+    F5A300000000000000000002 /* NexaPlistHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A300000000000000000001 /* NexaPlistHistory.swift */; };
+    F5A300000000000000000001 /* NexaPlistHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaPlistHistory.swift; sourceTree = "<group>"; };
     F5A200000000000000000002 /* NexaZipManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A200000000000000000001 /* NexaZipManager.swift */; };
     F5A200000000000000000001 /* NexaZipManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaZipManager.swift; sourceTree = "<group>"; };
     F5A200000000000000000003 /* WQArchive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Vendor/WQFiles/WQArchive.h; sourceTree = SOURCE_ROOT; };
@@ -84,6 +86,7 @@
         6D83C9BA9C0C428BA104FA07 /* VersionSupport.swift in Sources */,
         D9D789ABF81948798B31C01F /* PlistValueKind.swift in Sources */,
         84E9004A7ED94971A8302126 /* NexaPlistInspectorView.swift in Sources */,
+        F5A300000000000000000002 /* NexaPlistHistory.swift in Sources */,
         F5A200000000000000000002 /* NexaZipManager.swift in Sources */,
         F5A200000000000000000005 /* WQArchive.m in Sources */,
         F5A200000000000000000008 /* WQLocalization.m in Sources */,
@@ -117,6 +120,7 @@
         6D83C9BA9C0C428BA104FA06 /* VersionSupport.swift */,
         0AA7CD1285B14C72A104E332 /* PlistValueKind.swift */,
         C786E1AA03ED432DB9530311 /* NexaPlistInspectorView.swift */,
+        F5A300000000000000000001 /* NexaPlistHistory.swift */,
         F5A200000000000000000001 /* NexaZipManager.swift */,
         F5A200000000000000000003 /* WQArchive.h */,
         F5A200000000000000000004 /* WQArchive.m */,

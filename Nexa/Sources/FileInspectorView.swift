@@ -5,13 +5,28 @@ struct LocalFolderView: View {
     @EnvironmentObject private var language: NexaLanguage
     let folder: URL
     @State private var children: [URL] = []
+    @State private var search = ""
+    @State private var folderError: String?
+
+    private var visibleChildren: [URL] {
+        let query = search.trimmingCharacters(in: .whitespacesAndNewlines)
+        return query.isEmpty ? children : children.filter { $0.lastPathComponent.localizedStandardContains(query) }
+    }
 
     var body: some View {
         ZStack {
             NexaBackground()
             ScrollView {
                 VStack(spacing: 10) {
-                    ForEach(children, id: \.path) { url in
+                    TextField(language.code == "en" ? "Search file names" : "搜索文件名", text: $search)
+                        .textFieldStyle(.roundedBorder)
+                    if let folderError {
+                        Text(folderError).foregroundStyle(.red)
+                    } else if visibleChildren.isEmpty {
+                        Text(language.code == "en" ? "No matching files." : "没有匹配的文件。")
+                            .foregroundStyle(NexaPalette.muted)
+                    }
+                    ForEach(visibleChildren, id: \.path) { url in
                         NavigationLink(destination: isFolder(url) ? AnyView(LocalFolderView(folder: url)) : AnyView(FileInspectorView(file: url))) {
                             NexaCard {
                                 HStack {
@@ -34,9 +49,19 @@ struct LocalFolderView: View {
         }
         .navigationTitle(folder.lastPathComponent)
         .onAppear {
-            children = ((try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: [.isSymbolicLinkKey])) ?? [])
-                .filter { (try? $0.resourceValues(forKeys: [.isSymbolicLinkKey]).isSymbolicLink) != true }
-                .sorted { $0.lastPathComponent.localizedStandardCompare($1.lastPathComponent) == .orderedAscending }
+            do {
+                let checked = try NexaLocalFiles.checked(folder, inside: AppPaths.importFolder, directory: true)
+                children = try FileManager.default.contentsOfDirectory(at: checked, includingPropertiesForKeys: [.isSymbolicLinkKey, .isDirectoryKey, .isRegularFileKey])
+                    .filter { url in
+                        guard let flags = try? url.resourceValues(forKeys: [.isSymbolicLinkKey, .isDirectoryKey, .isRegularFileKey]) else { return false }
+                        return flags.isSymbolicLink != true && (flags.isDirectory == true || flags.isRegularFile == true)
+                    }
+                    .sorted { $0.lastPathComponent.localizedStandardCompare($1.lastPathComponent) == .orderedAscending }
+                folderError = nil
+            } catch {
+                children = []
+                folderError = (error as? NexaPlistHistory.Failure)?.message(in: language.code) ?? error.localizedDescription
+            }
         }
     }
 
@@ -172,9 +197,14 @@ struct FileInspectorView: View {
 
     private func read() {
         do {
-            let handle = try FileHandle(forReadingFrom: file)
+            let checked = try NexaLocalFiles.checked(file, inside: AppPaths.importFolder)
+            let handle = try FileHandle(forReadingFrom: checked)
             defer { try? handle.close() }
             preview = try handle.read(upToCount: 256) ?? Data()
-        } catch { readError = error.localizedDescription }
+            readError = nil
+        } catch {
+            preview = Data()
+            readError = (error as? NexaPlistHistory.Failure)?.message(in: language.code) ?? error.localizedDescription
+        }
     }
 }

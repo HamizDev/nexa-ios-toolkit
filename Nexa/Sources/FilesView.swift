@@ -8,6 +8,12 @@ struct FilesView: View {
     @State private var archiveURL: URL?
     @State private var archiveBusy = false
     @State private var archiveNotice: String?
+    @State private var search = ""
+
+    private var visibleEntries: [ImportedEntry] {
+        let query = search.trimmingCharacters(in: .whitespacesAndNewlines)
+        return query.isEmpty ? store.entries : store.entries.filter { $0.name.localizedStandardContains(query) }
+    }
 
     var body: some View {
         ZStack {
@@ -48,6 +54,10 @@ struct FilesView: View {
                             .font(.footnote)
                             .foregroundStyle(NexaPalette.muted)
                     }
+                    if !store.entries.isEmpty {
+                        TextField(language.code == "en" ? "Search file names" : "搜索文件名", text: $search)
+                            .textFieldStyle(.roundedBorder)
+                    }
                     if store.entries.isEmpty {
                         NexaCard {
                             VStack(spacing: 12) {
@@ -63,10 +73,15 @@ struct FilesView: View {
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 24)
                         }
+                    } else if visibleEntries.isEmpty {
+                        NexaCard {
+                            Text(language.code == "en" ? "No matching files." : "没有匹配的文件。")
+                                .foregroundStyle(NexaPalette.muted)
+                        }
                     } else {
                         NexaCard {
                             VStack(spacing: 0) {
-                                ForEach(Array(store.entries.enumerated()), id: \.element.id) { index, entry in
+                                ForEach(Array(visibleEntries.enumerated()), id: \.element.id) { index, entry in
                                     HStack(spacing: 11) {
                                         NavigationLink(destination: entry.isDirectory ? AnyView(LocalFolderView(folder: entry.url)) : AnyView(FileInspectorView(file: entry.url))) {
                                             HStack(spacing: 11) {
@@ -93,7 +108,7 @@ struct FilesView: View {
                                         ShareLink(item: entry.url) { Label(language.t("common.share"), systemImage: "square.and.arrow.up") }
                                         Button(role: .destructive) { store.remove(entry) } label: { Label(language.t("files.delete"), systemImage: "trash") }
                                     }
-                                    if index + 1 < store.entries.count { Divider().overlay(.white.opacity(0.07)) }
+                                    if index + 1 < visibleEntries.count { Divider().overlay(.white.opacity(0.07)) }
                                 }
                             }
                         }

@@ -12,6 +12,14 @@ Baseline: `4c3d03ea5e8b95c3c7b54cdf4451fa8b06d8c871` on main.
 - Corrected stale module labels and workspace status. The in-app disclaimer remains under Settings.
 - Added `Scripts/test-backups.sh` and fixture source. Run with macOS Xcode command-line tools; the tests have not been executed in this increment.
 
+## 2026-11-24 follow-up — offline plist history
+
+- Added a Nexa-owned Foundation history store for explicitly imported plist copies; original GestaltX parser stays unchanged.
+- Snapshots store the previous bytes and record source-relative path, timestamp, reason and size in app-private Application Support. Each restoration preserves the preceding version. No legacy association is inferred: old unlabelled PlistEditBackups remain untouched.
+- Reject out-of-root and symbolic-link paths, oversized/invalid dictionary plists, stale edits, mismatched records and truncated snapshots. Snapshots are local history, not cryptographically authenticated archives.
+- Added bilingual history UI, confirmation, reload action and error display; added local name search in root and nested file browsers and explicit directory/read errors.
+- Linux Swift regression runner compiled and passed on the exact history core and fixture source; iOS SwiftUI and Xcode integration have not been compiled or tested.
+
 ## Remaining acceptance
 
 - [ ] Execute the backup regression fixtures on macOS.
