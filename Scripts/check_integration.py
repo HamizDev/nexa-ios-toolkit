@@ -50,7 +50,7 @@ for fragment in ("import TransferCore", "TransferCore.DirectMigrationService(",
                  "NexaLocalFiles.validatedArchiveFolder(", "NexaWCMigratePreviewView"):
     if fragment not in preview:
         errors.append("Original WCMigrate local preview missing: " + fragment)
-for fragment in ("XCLocalSwiftPackageReference", "relativePath = ThirdParty/WCMigrate;",
+for fragment in ("XCLocalSwiftPackageReference", "relativePath = Packages/NexaTransferCore;",
                  "productName = TransferCore;", "TransferCore in Frameworks"):
     if fragment not in project:
         errors.append("Original pinned TransferCore package dependency missing: " + fragment)

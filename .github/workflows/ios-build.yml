@@ -22,6 +22,8 @@ jobs:
           persist-credentials: false
       - name: Audit project membership, licenses and upstream source pins
         run: python3 Scripts/check_integration.py
+      - name: Verify TransferCore package against the exact pinned originals
+        run: python3 Scripts/check_transfercore.py
       - name: Check Hermes original iPhone backup receiver and single WCSession delegate
         run: python3 Scripts/check_hermes_companion_integration.py
       - name: Audit first-launch disclaimer and upstream risk notices
@@ -172,7 +174,7 @@ jobs:
 
   wcmigrate-upstream-tests:
     runs-on: macos-latest
-    timeout-minutes: 35
+    timeout-minutes: 45
     permissions:
       contents: read
     steps:
@@ -181,13 +183,49 @@ jobs:
         with:
           submodules: recursive
           persist-credentials: false
-      - name: Original migration, staging, file-operation and recovery fixtures
-        timeout-minutes: 30
+      - name: Audit package source copies and narrow compatibility delta
+        run: python3 Scripts/check_transfercore.py
+      - name: Original migration, staging and file-operation fixtures on compatibility package
+        timeout-minutes: 20
         run: |
           set -euo pipefail
-          cd ThirdParty/WCMigrate
+          cd Packages/NexaTransferCore
+          sdk="$(xcrun --sdk macosx --show-sdk-path)"
+          mkdir -p "$RUNNER_TEMP/TransferCoreLogs"
+          result=0
+          for suite in DirectMigrationTests DataStagingTests FileOperationTests MoveMigrationTests NexaLocalCopyCompatibilityTests; do
+            swift test --sdk "$sdk" --filter "$suite" 2>&1 | tee "$RUNNER_TEMP/TransferCoreLogs/$suite.log" || result=1
+          done
+          exit "$result"
+      - name: Original recovery fixtures except separately isolated deep-tree test
+        if: success() || failure()
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          cd Packages/NexaTransferCore
+          mkdir -p "$RUNNER_TEMP/TransferCoreLogs"
           swift test --sdk "$(xcrun --sdk macosx --show-sdk-path)" \
-            --filter 'DirectMigrationTests|RecoveryTests|DataStagingTests|FileOperationTests|MoveMigrationTests'
+            --filter RecoveryTests \
+            --skip RecoveryTests/testDeepTreeStopsWithDiagnosticInsteadOfUnboundedRecursion \
+            2>&1 | tee "$RUNNER_TEMP/TransferCoreLogs/recovery.log"
+      - name: Original deep-tree recovery fixture (Debug, required)
+        if: success() || failure()
+        timeout-minutes: 8
+        run: |
+          set -euo pipefail
+          cd Packages/NexaTransferCore
+          mkdir -p "$RUNNER_TEMP/TransferCoreLogs"
+          swift test --sdk "$(xcrun --sdk macosx --show-sdk-path)" \
+            --filter RecoveryTests/testDeepTreeStopsWithDiagnosticInsteadOfUnboundedRecursion \
+            2>&1 | tee "$RUNNER_TEMP/TransferCoreLogs/deep-tree-debug.log"
+      - name: Upload TransferCore test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: WCMigrate-core-logs-${{ github.run_id }}
+          path: ${{ runner.temp }}/TransferCoreLogs/*.log
+          if-no-files-found: warn
+          retention-days: 7
 
   build:
     runs-on: macos-latest

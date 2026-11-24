@@ -89,27 +89,34 @@ This milestone adds pinned `WQAppsSupportTests.m`,
 `WQLaunchServicesTests.m` and attempts the upstream full host suite
 in CI. Source and device acceptance are distinct.
 
-## WCMigrate original TransferCore package (local read-only preview)
+## WCMigrate TransferCore iOS compatibility package (local read-only preview)
 
-The iPhone target references the local pinned submodule
-`ThirdParty/WCMigrate/Package.swift` and links its original `TransferCore`
-product. The existing Nexa progress/database adapters remain separate;
-original package models are qualified with the TransferCore module name.
-`NexaWCMigratePreview.swift` calls the original
-`DirectMigrationService.preview`, `AppInstance`, `DirectoryMapping`
-and `TransferMode`, without copying or modifying upstream migration
-code. Inputs are distinct, validated top-level imported folders,
-with fixed Documents/Library mappings and source-preserving Replace/Merge
-preview. The access callback is explicitly a no-op. Neither migration
-execution nor resume nor the private container-access bridge is exposed.
+Upstream run 45298981054 established that the original host-only manifest
+declares macOS but no iOS platform, causing Swift concurrency availability
+errors in both iPhone builds. The original app's project.yml declares
+iOS 17.0. Nexa now references `Packages/NexaTransferCore`, an explicitly
+documented local package with that iOS floor (Nexa remains iOS 26).
+All 16 original Swift Core files and both CSupport files are retained,
+as are the GPL license and five original test suites. Original
+`ThirdParty/WCMigrate` stays pinned and unmodified.
 
-A separate macOS CI job invokes the original DirectMigrationTests,
-RecoveryTests, DataStagingTests, FileOperationTests and MoveMigrationTests.
-A Debug-only simulator fixture calls the actual original preview and checks
-synthetic source/target contents remain unchanged, counts and sizes,
-and same-root/outside-import/symlink rejection. These new gates await CI.
-Original migration writes to other applications are not implemented or
-validated. This is a read-only planning milestone, not full migration.
+The only Core source delta is the `createParents` parent comparison in
+`DirectMigrationService.swift`: canonical path-string equality accounts
+for equivalent directory URL representations without relaxing the strict
+descendant boundary. This is a candidate fix for the original staging
+invalidPath failures, not an accepted result. `Scripts/check_transfercore.py`
+enforces byte identity for all other Core/CSupport files and original
+tests, and checks the exact permitted delta.
+
+The production adapter still only calls `DirectMigrationService.preview`
+with source-preserving Replace/Merge on two user-imported Nexa folders.
+It applies a 32-level local input bound while the original Debug deep-tree
+crash is investigated. No private container bridge, execution or resume UI
+is exposed. CI runs original suites independently, includes the isolated
+required deep-tree test, and adds a new test of original Replace/Merge on
+disposable copies with verified unchanged originals and persistent receipts.
+See [IMPLEMENTATION_BACKLOG.md](IMPLEMENTATION_BACKLOG.md) for actual CI
+evidence and unresolved failures.
 
 ## WCMigrate account identity parsing
 

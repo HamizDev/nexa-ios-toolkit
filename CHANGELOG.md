@@ -2,6 +2,11 @@
 
 ## Unreleased — upstream integration branch
 
+- WQFiles original full host suite now **passed** at 45298981054 on the four-core Intel runner without dropping any requested host fixture.
+- WCMigrate compatibility: replace direct macOS-only package reference with an iOS/macOS local package preserving the pinned original Core/CSupport, five original test suites and license. Add exact byte-provenance checking and a narrow canonical parent path equality correction; preserve all other original algorithms. Run each original suite and isolate the required crashing Debug deep-tree test; add an original Replace/Merge disposable-copy test verifying original inputs and durable receipts. Temporarily restrict production local preview depth to 32; no execution UI until tests pass.
+- Record the previous iPhone package-platform compile failures, four original staging invalidPath failures and deep-tree signal-10 crash. New compatibility build and tests pending.
+
+
 - **WCMigrate original TransferCore preview:** reference the unchanged pinned WCMigrate local Swift package and call its original DirectMigrationService.preview from a new bilingual screen for two validated local imported snapshots. Replace/Merge preview uses fixed Documents/Library mappings, keepSource=true and a no-op access callback; no execution, resume or live container-access bridge is exposed. Add original upstream migration/recovery/staging/file-operation tests in separate macOS CI and a Debug-only original-preview synthetic fixture verifying counts, unchanged bytes and rejected invalid paths. New CI pending.
 - **CI reliability:** prior original WQFiles full suite timed out at the two-worker checkpoint fixture and the growing UI suite hit its seven-minute shared budget. Move the unchanged upstream suite to a dedicated four-core Intel runner with active-CPU preflight and complete logs, and split the simulator work into installation/warmup and individual feature checks with fresh marker files. Preserve all tests; await new CI before claiming recovery.
 

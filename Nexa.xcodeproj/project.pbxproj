@@ -4,7 +4,7 @@
   classes = {};
   objectVersion = 56;
   objects = {
-    EB0000000000000000000001 /* XCLocalSwiftPackageReference WCMigrate */ = {isa = XCLocalSwiftPackageReference; relativePath = ThirdParty/WCMigrate; };
+    EB0000000000000000000001 /* XCLocalSwiftPackageReference WCMigrate */ = {isa = XCLocalSwiftPackageReference; relativePath = Packages/NexaTransferCore; };
     EB0000000000000000000002 /* TransferCore */ = {isa = XCSwiftPackageProductDependency; package = EB0000000000000000000001 /* XCLocalSwiftPackageReference WCMigrate */; productName = TransferCore; };
     EB0000000000000000000003 /* TransferCore in Frameworks */ = {isa = PBXBuildFile; productRef = EB0000000000000000000002 /* TransferCore */; };
     EB0000000000000000000004 /* NexaWCMigratePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB0000000000000000000005 /* NexaWCMigratePreview.swift */; };

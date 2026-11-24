@@ -54,7 +54,7 @@ The original pinned WQApps manager contains destructive paths without a general 
 ## Original WCMigrate local preview (Debug Simulator only)
 
 The `--nexa-wcmigrate-preview-smoke` fixture creates two disposable
-Nexa-imported sample folders. The real pinned TransferCore preview is
+Nexa-imported sample folders. The upstream-derived TransferCore compatibility package preview is
 called in Replace and Merge modes (keepSource=true). It must report two
 source files (nine bytes, largest five bytes) and one target file;
 their exact original bytes must remain unchanged, with no new copied

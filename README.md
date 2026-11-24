@@ -114,6 +114,12 @@ xcrun simctl launch booted com.example.Nexa
 
 NexaWatch 直接引用固定版本的 HermesEnabler 2 原始 `BQCore.m/h`、各功能面板、恢复验证头文件与配置资源，且新增 **82 条中文／英文界面字符串**。仅在真实 Apple Watch、受支持的 watchOS 27.0～27.2、有效签名 App Group 且用户确认操作风险时，才开放实验功能入口。该范围比上游公布的部分 Beta 范围更保守。**这不是已验证安全的 Watch 系统修改应用；模拟器禁用系统写入，真实设备仍需完成原始配置备份、恢复及表盘变化测试。** 配置见 [NexaWatch 说明](NexaWatch/README.md)。
 
+## WCMigrate 原版核心兼容性接入
+
+原版 Swift Package 仅声明 macOS 平台，直接引用时 iPhone 编译失败。因此 Nexa 改为引用 `Packages/NexaTransferCore`：保留原版 Core/CSupport、五组测试与 GPL 许可证，按原 App 工程声明 iOS 17 部署平台，仅对一处目录 URL 路径等价判断进行有记录的兼容修正。CI 逐字节核对上游源码及该修正。
+
+当前仅接入两个已导入快照的原版迁移预检，原版替换／合并执行只在合成数据副本的测试中调用。上一轮上游暂存测试存在四项失败、深目录 Debug 测试崩溃；新版编译及回归验证尚待 CI。真实微信跨容器迁移、暂存／恢复操作入口仍未完成。
+
 ## 本地迁移工作台（WCMigrate 思路，源码已接入）
 
 新版“备份”页添加 **本地数据迁移**：在用户事先导入 Nexa 的文件夹之间选择来源与目标，预检文件数量和 SHA-256 摘要，然后先复制至专用暂存目录，核对每个文件，最后用独立名称提交到目标文件夹。原始数据不会被删除、覆盖或自动修改。迁移记录存储于 Nexa 私有 Application Support；因进程中断而留下的记录可在再次打开页面时检查并标记为完成或失败。
