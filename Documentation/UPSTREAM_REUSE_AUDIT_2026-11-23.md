@@ -1,0 +1,51 @@
+# Nexa 0.0.1 — pinned upstream reuse audit (2026-11-23)
+
+**Review target:** `feature/nexa-0.0.1-unified`, Draft PR #3, starting at `fffb48a76e38b74e97fbcccf51b500148dc62253`.
+**Verification baseline:** GitHub Actions [45155034638](https://github.com/HamizDev/nexa-ios-toolkit/actions/runs/45155034638) succeeded (source/host regression, iPhone/Watch Simulator, iPhone/Watch unsigned Release device-SDK builds, and distinct five-tab screenshot smoke).
+**Release classification:** working **source/simulator developer preview** only. No owner-signed device IPA, no physical iPhone/Watch acceptance; do not label all upstream functionality integrated.
+
+## What the pinned modules actually contribute
+
+| Module / pinned revision | Directly wired to Nexa | Missing original upstream workflow | Source-backed integration path |
+| --- | --- | --- | --- |
+| **WQFiles** `fe92ae94067983b94fd927e0b4eee52e5a99a4e7` | Vendored original `WQCore` (hex) and `WQArchive` (local ZIP); directly compiled original `WQAccess.m`, `WQLaunchServices.m`, `WQScanTask.m`; experimental user-consented `wq_list`, `wq_read`, `wq_file_version`, `wq_copy_to_local` | Complete original app-data/file-manager UI, editing, safe restore, app backups, cache and trash management, more viewers, Wi-Fi sharing; no verified grant on a real device | Reuse `WQAccess.h/m`, `WQUI.m`, `WQApps.m`, `WQCache.m`, `WQTrash.m`, `WQPlistEditor.m`, `WQSQLiteViewer.m`, `WQMediaStream.m`, `WQSharing.m` and their dependencies as **pinned Objective-C/UIKit components**, exposed through a small SwiftUI adapter; omit the upstream `main.m`. Prioritize read-only and test-owned containers before any destructive option. Original regression entry: `ThirdParty/WQFiles/tests/run_all_tests.sh` |
+| **WCMigrate** `55faba721fd44e04c65be481860c9d93e12f6f61` | Vendored original ETA/progress and `WeChatIdentityResolver`; adapted SQLite inspector. Nexa-local backup, copy and file Merge/Replace are **independent**, not the live app migration engine | Source-target app selection and authorization, live `replace/exchange/merge`, original durable move/recovery checkpoints, plugin configuration and data-staging UI | Import the **original** `Core/DirectMigrationService.swift` actor (`preview`, `migrate`, `resume`), `Core/Models.swift`, `Core/PathSafety.swift`, `Core/DurableJournal.swift`, `Core/DataStaging.swift`, `Core/BackupService.swift`, related configuration/Preferences files and `ContainerAccess/XCTContainerBridge.m/h`; adapt `App/MigrationViews.swift` with only the necessary Nexa UI hosting. Run upstream `Tests/DirectMigrationTests.swift`, `RecoveryTests.swift`, `DataStagingTests.swift`, `FileOperationTests.swift` first with disposable test-owned folders. No SQLite chat-row merge, Keychain/login-state transfer or whole-task rollback is provided upstream |
+| **GestaltX** `311f78999d9f5f062f7e3b4c6374684782be5382` | Original `VersionSupport`, extracted `PlistValueKind`, original read-only `GXMobileGestaltImage`; Nexa-native *imported copy* plist editor and SHA-256 history | Direct device MobileGestalt read/write and versioned cache layouts; original options, presets, staged diff, device backup/verification and system rollback | Prefer the upstream **`GestaltX/GestaltDocument.swift`** (contains both document type and `actor GestaltFileStore`), `GestaltManager.swift`, `Capabilities.swift`, `DeviceCacheOptions.swift`, `MobileGestaltCacheLayout.swift`, `GXCacheDirectory.m/h`, original access and backup metadata modules rather than hand-coding cache offsets. Reuse its original `GestaltFileStore.commit`, `backup` and `restoreHardwareIdentity` only after exact device/build preflight, safe initial backup and device recovery testing. No device-write claims for iOS 26 |
+| **HermesEnabler 2** `c0ae1666cba67ab7fbae6d3e481cc2731f5550a1` | The **original Watch** `BQCore.m`, `ContentModel.swift`, `ContentView.swift`, feature/backup views, `MGDefaults.plist` and `MGOffsets.plist` compile as the embedded NexaWatch target; original watch manager is activated on entering its tools | **Original iPhone companion backup transport and backup-history UI** are absent; physical Watch signed operation, backup transfer, restore and feature effects untested | Reuse `HermesCompanion/WatchConnectivity/WatchConnectivityManager.swift` (verified backup receiver, hash/manifest/history and export), plus relevant `BackupHistoryView.swift` / `BackupDetailView.swift`. Replace/route Nexa's ping-only delegate through **one** `WCSession.delegate` per process, preserving the original incoming `didReceive file` and `didReceiveApplicationContext` handlers. Test backup/restore handoff before enabling any write. Keep original Watch UI/BQCore unchanged. Run `tests/BQRecoveryValidationTests.c` and `tests/test_ultra_layouts.py` in CI |
+
+Original source references:
+- [WQFiles WQAccess interface](https://github.com/kolbicz/WQFiles/blob/fe92ae94067983b94fd927e0b4eee52e5a99a4e7/WQAccess.h) and [complete test runner](https://github.com/kolbicz/WQFiles/blob/fe92ae94067983b94fd927e0b4eee52e5a99a4e7/tests/run_all_tests.sh)
+- [WCMigrate DirectMigrationService](https://github.com/yangokok886/WCMigrate/blob/55faba721fd44e04c65be481860c9d93e12f6f61/Core/DirectMigrationService.swift) and [data-staging service](https://github.com/yangokok886/WCMigrate/blob/55faba721fd44e04c65be481860c9d93e12f6f61/Core/DataStaging.swift)
+- [GestaltX GestaltDocument / GestaltFileStore](https://github.com/huamidev/GestaltX/blob/311f78999d9f5f062f7e3b4c6374684782be5382/GestaltX/GestaltDocument.swift) and [GestaltManager](https://github.com/huamidev/GestaltX/blob/311f78999d9f5f062f7e3b4c6374684782be5382/GestaltX/GestaltManager.swift)
+- [Hermes Watch BQCore API](https://github.com/pookjw/HermesEnabler/blob/c0ae1666cba67ab7fbae6d3e481cc2731f5550a1/HermesEnabler2/BQCore.h) and [original iPhone companion receiver](https://github.com/pookjw/HermesEnabler/blob/c0ae1666cba67ab7fbae6d3e481cc2731f5550a1/HermesCompanion/WatchConnectivity/WatchConnectivityManager.swift)
+
+## Source-integration update
+
+The original pinned Hermes iPhone companion manager has now been added directly to Nexa's phone Xcode target and is instantiated for the whole app lifetime. Nexa's prior Ping-only delegate was replaced by a thin optional callback extension; the phone page now calls upstream history, import, verification, export and transfer-to-Watch methods. This closes the **source-level** missing receiver from the baseline audit below but does not prove paired real-device transport or rollback. A Debug-only iOS Simulator fixture now exercises the original import and checksum code; CI acceptance must be verified separately. The current outstanding list is [IMPLEMENTATION_BACKLOG.md](IMPLEMENTATION_BACKLOG.md).
+
+## Verified concrete interoperability gap: Hermes backup handoff
+
+`NexaWatch/NexaWatchApp.swift` opens upstream Hermes `ContentView`, whose watch-side `WatchConnectivityManager` uses `WCSession.default` for original MobileGestalt backups and `transferFile`. By contrast, the Nexa iPhone `Nexa/Sources/NexaWatchMonitor.swift` has pairing/ping handlers only; it **does not implement `session(_:didReceive: WCSessionFile)` or `session(_:didReceiveApplicationContext:)`**. Therefore a compiled Watch feature screen is **not** proof that original backups reach the iPhone, are recorded or can be sent back for recovery.
+
+Do **not** duplicate a second active `WCSession.delegate` in Nexa's iPhone app. Reuse the upstream companion's backup transfer, verification and persistence as the canonical receiver; retain a thin Nexa diagnostics UI around it. On Watch, original Hermes manager and Nexa's `NexaWatchLink` also alternate the delegate: validate activation/return and backup transfer during transitions.
+
+## Recommended acceptance sequence
+
+1. **Nonprivileged integration first:** preserve pinned commits, compile upstream modules without their `@main`/app entry points and resolve name clashes; keep UI adapters thin. Run original upstream host fixtures, not just newly written happy-path tests.
+2. **Hermes phone companion first:** wire original backup-transfer/verification/history service and verify one-delegate ownership; build a simulator transfer/error-injection regression and use an owner-provisioned paired Watch for full restore proof.
+3. **WCMigrate service second:** import original actor and dependencies, validate source/target mapping on disposable app-owned containers, partial writes, crash recovery, data hashes and file-level mode semantics before any real third-party migration.
+4. **WQFiles extended UI third:** use original vetted controllers and safe I/O primitives for allowed test data; run upstream full regression; explicitly separate read-only viewing from mutations and cache clearing.
+5. **GestaltX device writer last:** reuse original cache layout detection, backups, staged diff, commit and rollback; block unsupported builds, require successful backup verification and proven recovery on a disposable target.
+6. **Finish release gates:** owner-signed iPhone/Watch App Groups, install/pair, exact iOS/watchOS build and device log, VoiceOver/Dynamic Type/English review, signed IPA, source/license notices and a final capability-by-capability acceptance matrix. Do not publish a complete integrated release without these.
+
+## Important prohibitions on readiness claims
+
+- A submodule checkout or Xcode build phase is not a callable Nexa workflow.
+- Local Nexa-only data Merge/Replace is not WCMigrate's app-to-app migration.
+- Local imported plist edits do not touch system MobileGestalt.
+- An App Group entitlement alone does not authorize other applications' private data.
+- Original Watch views without original phone backup receiving are not a fully integrated Hermes companion.
+- Neither upstream code nor Nexa provides verified SQLite message-row merge or a whole-task rollback guarantee.
+- Running source tests and compiling unsigned device SDK targets cannot produce a signed, validated real-device IPA.
+
+**Owner-supplied prerequisites to close real-device gates:** paid Apple Developer team/provisioning, appropriately signed iPhone and paired Watch, stable bundle identifiers and App Groups, supported exact OS/build, and disposable authorized test data. Do not commit credentials or personal backup contents.

@@ -2,3 +2,9 @@
 // Exposes the vendored, GPL-licensed WQFiles WQCore helpers to Swift.
 #import "WQCore.h"
 #import "WQArchive.h"
+#import "WQHexViewer.h"  // Pinned WQFiles original UIKit hex viewer
+#import "WQPlistEditor.h"  // Pinned original read-only plist editor
+#import "WQSQLiteViewer.h"  // Pinned original read-only SQLite browser
+#import "WQAccess.h"
+#import "WQAppsSupport.h"  // Original upstream bundle identifier safety checks
+#import "GXMobileGestaltImage.h"

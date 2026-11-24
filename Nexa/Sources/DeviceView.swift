@@ -35,6 +35,7 @@ enum NexaDeviceStatus {
 
 struct DeviceView: View {
     @EnvironmentObject private var language: NexaLanguage
+    @State private var gestaltImageSummary: String?
 
     var body: some View {
         ZStack {
@@ -66,6 +67,22 @@ struct DeviceView: View {
                                 .font(.caption)
                                 .foregroundStyle(NexaPalette.muted)
                             Divider().overlay(.white.opacity(0.08))
+                            Button {
+                                inspectMobileGestaltLibrary()
+                            } label: {
+                                Label(
+                                    language.code == "en" ? "Inspect loaded MobileGestalt library" : "检查已加载的 MobileGestalt 系统库",
+                                    systemImage: "doc.text.magnifyingglass"
+                                )
+                            }
+                            .buttonStyle(.bordered)
+                            if let gestaltImageSummary {
+                                Text(gestaltImageSummary)
+                                    .font(.caption)
+                                    .foregroundStyle(NexaPalette.muted)
+                                    .textSelection(.enabled)
+                            }
+                            Divider().overlay(.white.opacity(0.08))
                             HStack {
                                 Text(language.t("device.mg"))
                                 Spacer()
@@ -80,6 +97,23 @@ struct DeviceView: View {
         }
         .navigationTitle(language.t("device.title"))
         .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private func inspectMobileGestaltLibrary() {
+        // Original read-only GestaltX helper. No property mutations or
+        // sandbox permission requests are performed here.
+        guard let image = GXCopyMobileGestaltImage(),
+              let strings = image["strings"] as? Data,
+              let constants = image["constants"] as? [Data] else {
+            gestaltImageSummary = language.code == "en"
+                ? "The library snapshot is unavailable (for example, on a simulator)."
+                : "无法获得系统库只读快照（例如模拟器不支持）。"
+            return
+        }
+        let bytes = constants.reduce(0) { $0 + $1.count }
+        gestaltImageSummary = language.code == "en"
+            ? "Read-only: cstrings \(strings.count) bytes, \(constants.count) constant sections (\(bytes) bytes). No system cache read or write."
+            : "只读：字符串段 \(strings.count) 字节，常量数据段 \(constants.count) 个（\(bytes) 字节）。没有读取或修改系统缓存。"
     }
 
     private func info(_ key: String, _ value: String) -> some View {

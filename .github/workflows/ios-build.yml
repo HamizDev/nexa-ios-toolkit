@@ -4,7 +4,229 @@ on:
   pull_request:
   workflow_dispatch:
 
+concurrency:
+  group: nexa-build-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  provenance:
+    runs-on: macos-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout pinned upstream sources
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - name: Audit project membership, licenses and upstream source pins
+        run: python3 Scripts/check_integration.py
+      - name: Verify TransferCore package against the exact pinned originals
+        run: python3 Scripts/check_transfercore.py
+      - name: Check Hermes original iPhone backup receiver and single WCSession delegate
+        run: python3 Scripts/check_hermes_companion_integration.py
+      - name: Audit first-launch disclaimer and upstream risk notices
+        run: python3 Scripts/check_safety.py
+      - name: Validate signed archive script syntax (without signing credentials)
+        run: bash -n Scripts/archive_signed_ipa.sh
+      - name: Test signed iPhone and Watch App Group validation without certificates
+        run: python3 Tests/SignedEntitlementsHostTests.py
+      - name: Compile and test Nexa journaled backup/restore on a disposable host root
+        run: |
+          set -euo pipefail
+          scratch="$(mktemp -d)"
+          trap 'rm -rf "$scratch"' EXIT
+          swiftc -D NEXA_LOCAL_TEST \
+            Nexa/Sources/AppPaths.swift \
+            Vendor/WCMigrate/BackupProgress.swift \
+            Nexa/Sources/BackupManager.swift \
+            Nexa/Sources/NexaBackupRestore.swift \
+            Tests/BackupRestoreHostTests.swift \
+            -o "$scratch/nexa-restore-tests"
+          NEXA_TEST_ROOT="$scratch/TestRoot" "$scratch/nexa-restore-tests"
+      - name: Test upstream WCMigrate LoginInfo2 parser with synthetic fixtures
+        run: |
+          set -euo pipefail
+          scratch="$(mktemp -d)"
+          trap 'rm -rf "$scratch"' EXIT
+          swiftc \
+            Vendor/WCMigrate/WeChatIdentityResolver.swift \
+            Tests/WeChatIdentityHostTests.swift \
+            -o "$scratch/identity-tests"
+          NEXA_TEST_ROOT="$scratch/Fixture" "$scratch/identity-tests"
+      - name: Test Nexa imported-file operations and safe trash
+        run: |
+          set -euo pipefail
+          scratch="$(mktemp -d)"
+          trap 'rm -rf "$scratch"' EXIT
+          swiftc -D NEXA_LOCAL_TEST \
+            Nexa/Sources/AppPaths.swift \
+            Nexa/Sources/NexaLocalFiles.swift \
+            Tests/LocalFilesHostTests.swift \
+            -o "$scratch/nexa-local-files-tests"
+          NEXA_TEST_ROOT="$scratch/TestRoot" "$scratch/nexa-local-files-tests"
+      - name: Verify staged imported-data migrations with synthetic folders
+        run: |
+          set -euo pipefail
+          scratch="$(mktemp -d)"
+          trap 'rm -rf "$scratch"' EXIT
+          swiftc -D NEXA_LOCAL_TEST \
+            Nexa/Sources/AppPaths.swift \
+            Nexa/Sources/NexaLocalFiles.swift \
+            Nexa/Sources/NexaImportMigration.swift \
+            Tests/ImportMigrationHostTests.swift \
+            -o "$scratch/nexa-migration-tests"
+          NEXA_TEST_ROOT="$scratch/TestRoot" "$scratch/nexa-migration-tests"
+      - name: Test imported snapshot Merge / Replace with integrity and crash fixtures
+        run: |
+          set -euo pipefail
+          scratch="$(mktemp -d)"
+          trap 'rm -rf "$scratch"' EXIT
+          swiftc -D NEXA_LOCAL_TEST \
+            Nexa/Sources/AppPaths.swift \
+            Nexa/Sources/NexaLocalFiles.swift \
+            Nexa/Sources/NexaImportMigration.swift \
+            Nexa/Sources/NexaImportCombine.swift \
+            Tests/ImportCombineHostTests.swift \
+            -o "$scratch/nexa-import-combine-tests"
+          NEXA_TEST_ROOT="$scratch/TestRoot" "$scratch/nexa-import-combine-tests"
+      - name: Test original GestaltX typed plist parser
+        run: |
+          set -euo pipefail
+          scratch="$(mktemp -d)"
+          trap 'rm -rf "$scratch"' EXIT
+          swiftc \
+            Vendor/GestaltX/PlistValueKind.swift \
+            Tests/GestaltPlistHostTests.swift \
+            -o "$scratch/gestalt-parser-tests"
+          "$scratch/gestalt-parser-tests"
+      - name: Test imported plist versions, SHA-256 verification and safe restore
+        run: |
+          set -euo pipefail
+          scratch="$(mktemp -d)"
+          trap 'rm -rf "$scratch"' EXIT
+          swiftc -D NEXA_LOCAL_TEST \
+            Nexa/Sources/AppPaths.swift \
+            Nexa/Sources/NexaPlistHistory.swift \
+            Tests/PlistHistoryHostTests.swift \
+            -o "$scratch/nexa-plist-history-tests"
+          NEXA_TEST_ROOT="$scratch/TestRoot" "$scratch/nexa-plist-history-tests"
+      - name: Test safe WQFiles user-selected import naming and paths
+        run: |
+          set -euo pipefail
+          scratch="$(mktemp -d)"
+          trap 'rm -rf "$scratch"' EXIT
+          swiftc \
+            Nexa/Sources/NexaWQImportName.swift \
+            Tests/WQImportNameHostTests.swift \
+            -o "$scratch/wq-local-import-tests"
+          "$scratch/wq-local-import-tests"
+      - name: Targeted upstream WQFiles core, archive and access safety regressions
+        timeout-minutes: 12
+        run: bash Scripts/test_wqfiles_integrated.sh
+      - name: Original HermesEnabler recovery layout and verification fixtures
+        run: |
+          set -euo pipefail
+          scratch="$(mktemp -d)"
+          trap 'rm -rf "$scratch"' EXIT
+          xcrun --sdk macosx clang -std=c11 -Wall -Wextra -Werror -O2 \
+            ThirdParty/HermesEnabler/tests/BQRecoveryValidationTests.c \
+            -o "$scratch/hermes-recovery"
+          "$scratch/hermes-recovery"
+          python3 ThirdParty/HermesEnabler/tests/test_ultra_layouts.py
+          echo "PASS: Hermes pinned-original recovery and layout regressions"
+
+  wq-upstream-tests:
+    # The unchanged upstream checkpoint fixture deliberately blocks one worker
+    # until another completes a chunk. Its normal worker count is cores / 2.
+    # Standard arm64 macOS runners have 3 CPUs; the Intel runner has 4.
+    runs-on: macos-15-intel
+    timeout-minutes: 35
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout exact pinned upstream code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - name: Check fixture concurrency prerequisite
+        run: |
+          set -euo pipefail
+          cores="$(sysctl -n hw.activecpu)"
+          echo "Active CPU count: $cores"
+          test "$cores" -ge 4 || { echo "::error::Original WQFiles checkpoint fixture requires at least two workers"; exit 1; }
+      - name: Full unchanged WQFiles host regression suite
+        timeout-minutes: 25
+        run: |
+          set -euo pipefail
+          WQ_SKIP_IOS_CHECK=1 WQ_TEST_TIMEOUT=900 bash ThirdParty/WQFiles/tests/run_all_tests.sh
+      - name: Preserve upstream host test diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: WQFiles-host-logs-${{ github.run_id }}
+          path: ThirdParty/WQFiles/.work/tests/**/*.log
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 7
+
+  wcmigrate-upstream-tests:
+    runs-on: macos-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout pinned original TransferCore package
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - name: Audit package source copies and narrow compatibility delta
+        run: python3 Scripts/check_transfercore.py
+      - name: Original migration, staging and file-operation fixtures on compatibility package
+        timeout-minutes: 20
+        run: |
+          set -euo pipefail
+          cd Packages/NexaTransferCore
+          sdk="$(xcrun --sdk macosx --show-sdk-path)"
+          mkdir -p "$RUNNER_TEMP/TransferCoreLogs"
+          result=0
+          for suite in DirectMigrationTests DataStagingTests FileOperationTests MoveMigrationTests NexaLocalCopyCompatibilityTests; do
+            swift test --sdk "$sdk" --filter "$suite" 2>&1 | tee "$RUNNER_TEMP/TransferCoreLogs/$suite.log" || result=1
+          done
+          exit "$result"
+      - name: Original recovery fixtures except separately isolated deep-tree test
+        if: success() || failure()
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          cd Packages/NexaTransferCore
+          mkdir -p "$RUNNER_TEMP/TransferCoreLogs"
+          swift test --sdk "$(xcrun --sdk macosx --show-sdk-path)" \
+            --filter RecoveryTests \
+            --skip RecoveryTests/testDeepTreeStopsWithDiagnosticInsteadOfUnboundedRecursion \
+            2>&1 | tee "$RUNNER_TEMP/TransferCoreLogs/recovery.log"
+      - name: Original deep-tree recovery fixture (Debug, required)
+        if: success() || failure()
+        timeout-minutes: 8
+        run: |
+          set -euo pipefail
+          cd Packages/NexaTransferCore
+          mkdir -p "$RUNNER_TEMP/TransferCoreLogs"
+          swift test --sdk "$(xcrun --sdk macosx --show-sdk-path)" \
+            --filter RecoveryTests/testDeepTreeStopsWithDiagnosticInsteadOfUnboundedRecursion \
+            2>&1 | tee "$RUNNER_TEMP/TransferCoreLogs/deep-tree-debug.log"
+      - name: Upload TransferCore test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: WCMigrate-core-logs-${{ github.run_id }}
+          path: ${{ runner.temp }}/TransferCoreLogs/*.log
+          if-no-files-found: warn
+          retention-days: 7
+
   build:
     runs-on: macos-latest
     permissions:
@@ -28,5 +250,271 @@ jobs:
             -configuration Debug \
             -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath "$RUNNER_TEMP/NexaDerived" \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+      - name: Verify bundled Watch app and package unsigned simulator preview
+        run: |
+          set -euo pipefail
+          app="$RUNNER_TEMP/NexaDerived/Build/Products/Debug-iphonesimulator/Nexa.app"
+          test -f "$app/Nexa"
+          test -f "$app/Watch/NexaWatch.app/NexaWatch"
+          /usr/libexec/PlistBuddy -c "Print CFBundleIdentifier" "$app/Info.plist"
+          /usr/libexec/PlistBuddy -c "Print CFBundleIdentifier" "$app/Watch/NexaWatch.app/Info.plist"
+          ditto -c -k --sequesterRsrc --keepParent \
+            "$app" "$RUNNER_TEMP/Nexa-simulator-0.0.1.zip"
+      - name: Upload simulator preview (not a signed IPA)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Nexa-0.0.1-simulator-${{ github.run_id }}
+          path: ${{ runner.temp }}/Nexa-simulator-0.0.1.zip
+          retention-days: 7
+      - name: Boot iOS 26+ simulator before UI smoke
+        timeout-minutes: 16
+        run: |
+          set -euo pipefail
+          simulator="$(xcrun simctl list devices available --json | python3 -c '
+          import json,sys
+          all_devices = json.load(sys.stdin).get("devices", {})
+          eligible = []
+          for runtime, devices in all_devices.items():
+              if "iOS-" not in runtime:
+                  continue
+              try:
+                  major = int(runtime.split("iOS-")[-1].split("-")[0])
+              except ValueError:
+                  continue
+              if major >= 26:
+                  eligible.extend([d for d in devices
+                                   if d.get("isAvailable", False) and
+                                   d.get("name", "").startswith("iPhone")])
+          print(eligible[0]["udid"] if eligible else "")
+          ')"
+          if [[ -z "$simulator" ]]; then
+            echo "::error::No bootable iOS 26+ Simulator runtime; UI smoke cannot be validated."
+            exit 1
+          fi
+          echo "NEXA_UI_SIMULATOR=$simulator" >> "$GITHUB_ENV"
+          echo "Booting $simulator; initial CoreSimulator migration is allowed a separate budget."
+          xcrun simctl boot "$simulator" || true
+          xcrun simctl bootstatus "$simulator" -b
+      - name: Install debug app and wait for initial launch
+        timeout-minutes: 12
+        run: |
+          set -euo pipefail
+          simulator="${NEXA_UI_SIMULATOR:?Simulator boot step did not complete}"
+          app="$RUNNER_TEMP/NexaDerived/Build/Products/Debug-iphonesimulator/Nexa.app"
+          bundle="$(/usr/libexec/PlistBuddy -c 'Print CFBundleIdentifier' "$app/Info.plist")"
+          echo "NEXA_UI_BUNDLE=$bundle" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/NexaUIScreens"
+          xcrun simctl install "$simulator" "$app"
+          xcrun simctl launch "$simulator" "$bundle" --nexa-tab=home
+          data_container="$(xcrun simctl get_app_container "$simulator" "$bundle" data)"
+          for attempt in $(seq 1 60); do
+            [[ "$(cat "$data_container/Documents/.nexa-ui-smoke-current-tab" 2>/dev/null || true)" == home ]] && break
+            sleep 1
+          done
+          test "$(cat "$data_container/Documents/.nexa-ui-smoke-current-tab" 2>/dev/null || true)" = home
+      - name: Verify five main UI tabs
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          simulator="${NEXA_UI_SIMULATOR:?}"
+          bundle="${NEXA_UI_BUNDLE:?}"
+          data_container="$(xcrun simctl get_app_container "$simulator" "$bundle" data)"
+          tab_marker="$data_container/Documents/.nexa-ui-smoke-current-tab"
+          for tab in home files backups explore settings; do
+            xcrun simctl terminate "$simulator" "$bundle" >/dev/null 2>&1 || true
+            rm -f "$tab_marker"
+            xcrun simctl launch "$simulator" "$bundle" "--nexa-tab=$tab"
+            for attempt in $(seq 1 30); do
+              [[ "$(cat "$tab_marker" 2>/dev/null || true)" == "$tab" ]] && break
+              sleep 1
+            done
+            sleep 2
+            actual_tab="$(cat "$tab_marker" 2>/dev/null || true)"
+            if [[ "$actual_tab" != "$tab" ]]; then
+              echo "::error::Expected active UI tab '$tab', app reported '$actual_tab'"
+              exit 1
+            fi
+            xcrun simctl io "$simulator" screenshot "$RUNNER_TEMP/NexaUIScreens/$tab.png"
+            test -s "$RUNNER_TEMP/NexaUIScreens/$tab.png"
+            echo "PASS: Nexa $tab screen launched and captured"
+          done
+      - name: Verify original Hermes backup fixture
+        timeout-minutes: 8
+        run: |
+          set -euo pipefail
+          simulator="${NEXA_UI_SIMULATOR:?}"
+          bundle="${NEXA_UI_BUNDLE:?}"
+          container="$(xcrun simctl get_app_container "$simulator" "$bundle" data)"
+          result_file="$container/Documents/.nexa-hermes-fixture-result"
+          watch_marker="$container/Documents/.nexa-watch-ui-current-view"
+          xcrun simctl terminate "$simulator" "$bundle" >/dev/null 2>&1 || true
+          rm -f "$result_file" "$watch_marker"
+          xcrun simctl launch "$simulator" "$bundle" "--nexa-watch-view" "--nexa-hermes-fixture"
+          for attempt in $(seq 1 35); do
+            [[ -s "$result_file" && -s "$watch_marker" ]] && break
+            sleep 1
+          done
+          test -s "$result_file" || { echo "::error::Original Hermes simulator fixture never responded"; exit 1; }
+          cat "$result_file"
+          grep -q '^PASS: original Hermes' "$result_file" ||
+            { echo "::error::Original Hermes backup fixture failed"; exit 1; }
+          test "$(cat "$watch_marker")" = "watch-companion" ||
+            { echo "::error::Nexa Hermes companion screen failed to launch"; exit 1; }
+          sleep 2
+          xcrun simctl io "$simulator" screenshot "$RUNNER_TEMP/NexaUIScreens/watch-companion.png"
+          test -s "$RUNNER_TEMP/NexaUIScreens/watch-companion.png"
+          echo "PASS: original Hermes iPhone backup fixture and Nexa Watch companion UI"
+      - name: Verify three original read-only WQFiles viewers
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          simulator="${NEXA_UI_SIMULATOR:?}"
+          bundle="${NEXA_UI_BUNDLE:?}"
+          data_container="$(xcrun simctl get_app_container "$simulator" "$bundle" data)"
+          marker="$data_container/Documents/.nexa-wq-native-ui-result"
+          for kind in hex plist sqlite; do
+            xcrun simctl terminate "$simulator" "$bundle" >/dev/null 2>&1 || true
+            rm -f "$marker"
+            xcrun simctl launch "$simulator" "$bundle" "--nexa-wq${kind}-smoke"
+            matched=0
+            for attempt in $(seq 1 30); do
+              if [[ "$(cat "$marker" 2>/dev/null || true)" == "PASS: WQFiles native $kind" ]]; then
+                matched=1
+                break
+              fi
+              sleep 1
+            done
+            if [[ "$matched" != 1 ]]; then
+              echo "::error::Original WQFiles $kind viewer failed to launch"
+              cat "$marker" 2>/dev/null || true
+              exit 1
+            fi
+            sleep 2
+            xcrun simctl io "$simulator" screenshot "$RUNNER_TEMP/NexaUIScreens/wq-original-$kind.png"
+            test -s "$RUNNER_TEMP/NexaUIScreens/wq-original-$kind.png"
+            echo "PASS: original WQFiles $kind read-only viewer launched and captured"
+          done
+      - name: Verify WQFiles App catalog remains gated
+        timeout-minutes: 8
+        run: |
+          set -euo pipefail
+          simulator="${NEXA_UI_SIMULATOR:?}"
+          bundle="${NEXA_UI_BUNDLE:?}"
+          data_container="$(xcrun simctl get_app_container "$simulator" "$bundle" data)"
+          marker="$data_container/Documents/.nexa-wqapps-ui-result"
+          xcrun simctl terminate "$simulator" "$bundle" >/dev/null 2>&1 || true
+          rm -f "$marker"
+          xcrun simctl launch "$simulator" "$bundle" "--nexa-wqapps-smoke"
+          for attempt in $(seq 1 20); do
+            [[ -s "$marker" ]] && break
+            sleep 1
+          done
+          test "$(cat "$marker" 2>/dev/null || true)" = "PASS: app catalog gated" ||
+            { echo "::error::WQFiles app catalog is not gated on Simulator"; exit 1; }
+          sleep 2
+          xcrun simctl io "$simulator" screenshot "$RUNNER_TEMP/NexaUIScreens/wq-app-catalog.png"
+          test -s "$RUNNER_TEMP/NexaUIScreens/wq-app-catalog.png"
+          echo "PASS: WQFiles original LaunchServices catalog remains gated on Simulator"
+      - name: Verify original WCMigrate read-only preview on synthetic imports
+        timeout-minutes: 8
+        run: |
+          set -euo pipefail
+          simulator="${NEXA_UI_SIMULATOR:?}"
+          bundle="${NEXA_UI_BUNDLE:?}"
+          data_container="$(xcrun simctl get_app_container "$simulator" "$bundle" data)"
+          marker="$data_container/Documents/.nexa-wcmigrate-preview-result"
+          xcrun simctl terminate "$simulator" "$bundle" >/dev/null 2>&1 || true
+          rm -f "$marker"
+          xcrun simctl launch "$simulator" "$bundle" --nexa-wcmigrate-preview-smoke
+          for attempt in $(seq 1 45); do
+            [[ -s "$marker" ]] && break
+            sleep 1
+          done
+          cat "$marker"
+          test "$(cat "$marker")" = "PASS: original WCMigrate preview and unchanged imports"
+          sleep 2
+          xcrun simctl io "$simulator" screenshot "$RUNNER_TEMP/NexaUIScreens/wcmigrate-preview.png"
+          test -s "$RUNNER_TEMP/NexaUIScreens/wcmigrate-preview.png"
+      - name: Shut down simulator
+        if: always()
+        run: |
+          if [[ -n "${NEXA_UI_SIMULATOR:-}" ]]; then
+            xcrun simctl shutdown "$NEXA_UI_SIMULATOR" || true
+          fi
+      - name: Upload iOS UI smoke screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Nexa-0.0.1-ui-screens-${{ github.run_id }}
+          path: ${{ runner.temp }}/NexaUIScreens/*.png
+          if-no-files-found: ignore
+          retention-days: 7
+
+
+  device-build:
+    runs-on: macos-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout pinned device sources
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - name: Compile iPhone Release for unsigned generic device
+        run: |
+          set -euo pipefail
+          xcodebuild \
+            -project Nexa.xcodeproj \
+            -scheme Nexa \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath "$RUNNER_TEMP/NexaDeviceDerived" \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+          app="$RUNNER_TEMP/NexaDeviceDerived/Build/Products/Release-iphoneos/Nexa.app"
+          test -f "$app/Nexa"
+          test -f "$app/Watch/NexaWatch.app/NexaWatch"
+      - name: Compile Watch Release for unsigned generic device
+        run: |
+          set -euo pipefail
+          xcodebuild \
+            -project Nexa.xcodeproj \
+            -target NexaWatch \
+            -configuration Release \
+            -sdk watchos \
+            -destination 'generic/platform=watchOS' \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+  watch-build:
+    runs-on: macos-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - name: Check watchOS SDK and localized Hermes resources
+        run: |
+          xcodebuild -version
+          xcrun --sdk watchsimulator --show-sdk-version
+          plutil -lint NexaWatch/Localization/zh-Hans.lproj/Localizable.strings
+          plutil -lint NexaWatch/Localization/en.lproj/Localizable.strings
+      - name: Build NexaWatch simulator app without signing
+        run: |
+          xcodebuild \
+            -project Nexa.xcodeproj \
+            -target NexaWatch \
+            -configuration Debug \
+            -sdk watchsimulator \
+            -destination 'generic/platform=watchOS Simulator' \
             CODE_SIGNING_ALLOWED=NO \
             build

@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 import Combine
+import CryptoKit
 
 // Offline editor for user-imported copies only. Never accepts a privileged system path.
 struct NexaPlistEntry: Identifiable {
@@ -20,6 +21,7 @@ final class NexaPlistEditor: ObservableObject {
     let file: URL
     private var document: [String: Any] = [:]
     private let sizeLimit = 16 * 1024 * 1024
+    private var loadedHash: String?
 
     init(file: URL) {
         self.file = file
@@ -49,6 +51,7 @@ final class NexaPlistEditor: ObservableObject {
                 throw NSError(domain: "Nexa.Plist", code: 2,
                     userInfo: [NSLocalizedDescriptionKey: "Expected a dictionary property list."])
             }
+            loadedHash = SHA256.hash(data: raw).map { String(format: "%02x", $0) }.joined()
             document = root
             editingCacheExtra = root["CacheExtra"] is [String: Any]
             let selected = (root["CacheExtra"] as? [String: Any]) ?? root
@@ -63,7 +66,7 @@ final class NexaPlistEditor: ObservableObject {
         }
     }
 
-    func save(entry: NexaPlistEntry, text: String) -> Bool {
+    func save(entry: NexaPlistEntry, text: String, english: Bool = false) -> Bool {
         do {
             // The parser comes directly from GestaltX. Parsing does not imply
             // permission to edit the original device MobileGestalt file.
@@ -93,18 +96,20 @@ final class NexaPlistEditor: ObservableObject {
                     userInfo: [NSLocalizedDescriptionKey: "Result exceeds 16 MB."])
             }
             let raw = try Data(contentsOf: file)
-            // Always retain a copy of the original imported file before writing.
-            let backupRoot = FileManager.default.urls(
-                for: .applicationSupportDirectory, in: .userDomainMask
-            )[0].appendingPathComponent("Nexa/PlistEditBackups", isDirectory: true)
-            try FileManager.default.createDirectory(
-                at: backupRoot, withIntermediateDirectories: true
-            )
-            let backupURL = backupRoot.appendingPathComponent(UUID().uuidString + ".plist")
-            try raw.write(to: backupURL, options: .atomic)
+            let digest = SHA256.hash(data: raw).map { String(format: "%02x", $0) }.joined()
+            guard digest == loadedHash else {
+                throw NSError(domain: "Nexa.Plist", code: 5,
+                    userInfo: [NSLocalizedDescriptionKey:
+                        english ? "The file changed after opening. Reopen it before editing." :
+                                  "文件在打开后发生了变化，请重新加载后再编辑。"])
+            }
+            // Keep a SHA-256 verified, durable pre-edit version for safe restore.
+            let snapshot = try NexaPlistHistory.backup(file: file, originalData: raw)
             try updated.write(to: file, options: .atomic)
             reload()
-            statusMessage = "Saved an app-local plist copy. Original backed up as \(backupURL.lastPathComponent)."
+            statusMessage = english
+                ? "Saved. Previous version \(snapshot.id.uuidString.prefix(8)) retained."
+                : "已保存，旧版本 \(snapshot.id.uuidString.prefix(8)) 已保留。"
             return true
         } catch {
             statusMessage = error.localizedDescription
@@ -144,8 +149,33 @@ struct NexaPlistInspectorView: View {
                                 .foregroundStyle(NexaPalette.muted)
                         }
                     }
-                    TextField(en ? "Search keys" : "搜索键名", text: $editor.search)
-                        .textFieldStyle(.roundedBorder)
+                    NavigationLink {
+                        NexaPlistHistoryView(file: editor.file)
+                    } label: {
+                        NexaCard {
+                            HStack(spacing: 12) {
+                                Image(systemName: "clock.arrow.circlepath")
+                                    .foregroundStyle(NexaPalette.mint)
+                                    .font(.title2)
+                                VStack(alignment: .leading, spacing: 5) {
+                                    Text(en ? "Version history & restore" : "历史版本与恢复")
+                                        .font(.headline)
+                                    Text(en ? "View SHA-256-verified snapshots" : "查看带 SHA-256 校验的旧版本")
+                                        .font(.caption)
+                                        .foregroundStyle(NexaPalette.muted)
+                                }
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundStyle(NexaPalette.muted)
+                            }
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    NexaSearchField(
+                        placeholder: en ? "Search keys" : "搜索键名",
+                        text: $editor.search,
+                        clearLabel: en ? "Clear search" : "清除搜索"
+                    )
                     ForEach(editor.filtered) { entry in
                         Button { active = entry } label: {
                             NexaCard {
@@ -171,6 +201,7 @@ struct NexaPlistInspectorView: View {
             }
         }
         .navigationTitle(en ? "Plist" : "属性列表")
+        .onAppear(perform: editor.reload)
         .sheet(item: $active) { entry in
             NexaPlistEditSheet(editor: editor, entry: entry)
                 .environmentObject(language)
@@ -223,7 +254,7 @@ struct NexaPlistEditSheet: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button(en ? "Save" : "保存") {
-                        if editor.save(entry: entry, text: value) {
+                        if editor.save(entry: entry, text: value, english: en) {
                             dismiss()
                         }
                     }
