@@ -144,7 +144,7 @@ struct HomeView: View {
     }
 
     private func refresh() {
-        importedCount = ((try? FileManager.default.contentsOfDirectory(at: AppPaths.importFolder, includingPropertiesForKeys: nil)) ?? []).count
+        importedCount = (try? NexaFileLibrary.list(root: AppPaths.importFolder).count) ?? 0
         if let values = try? AppPaths.documents.resourceValues(forKeys: [.volumeAvailableCapacityForImportantUsageKey]) {
             freeSpace = values.volumeAvailableCapacityForImportantUsage ?? 0
         }

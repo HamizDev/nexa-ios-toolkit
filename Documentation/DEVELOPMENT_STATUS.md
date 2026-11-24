@@ -25,7 +25,7 @@ Baseline: `4c3d03ea5e8b95c3c7b54cdf4451fa8b06d8c871` on main.
 - Root file browser shows size (regular files only) and modification date, supports sorting and selection across search filters, and requires explicit confirmation before permanent removal of imported copies.
 - Original WQFiles ZIP engine remains untouched. Its Swift adapter now accepts selected top-level items, uses a hidden staging path before publishing an archive, validates imported ZIP paths, and stages extraction.
 - Added persistent ZIP history with sharing and confirmed deletion of ZIP copies only; unrelated files are excluded.
-- Staged imports reject symlinks and unsupported file types before and after copy. Core operations are run away from the main UI thread.
+- Staged imports reject symlinks and unsupported file types before and after copy. Import and extraction staging directories are siblings of Imports, so backups do not enumerate incomplete staging data. Core operations are run away from the main UI thread; Home uses the same filtered file count as the library.
 - `Scripts/test-file-library.sh` compiled and passed the exact Foundation fixture on Linux Swift: sorting, metadata, hidden/symlink filtering, full batch preflight, staged import, batch removal and archive isolation.
 - Actual Objective-C ZIP calls, SwiftUI compilation and device tests remain pending. The batch removal is not transactional after successful preflight; per-item failures are reported.
 

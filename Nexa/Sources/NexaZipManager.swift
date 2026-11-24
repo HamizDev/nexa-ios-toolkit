@@ -64,7 +64,7 @@ enum NexaZipManager {
         let fm = FileManager.default
         let token = UUID().uuidString
         let output = root.appendingPathComponent("Unpacked-" + token, isDirectory: true)
-        let staging = root.appendingPathComponent(".pending-unpack-" + token, isDirectory: true)
+        let staging = root.deletingLastPathComponent().appendingPathComponent(".nexa-unpack-" + token, isDirectory: true)
         try fm.createDirectory(at: staging, withIntermediateDirectories: false)
         do {
             var extracted: UInt = 0

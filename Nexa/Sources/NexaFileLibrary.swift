@@ -112,7 +112,7 @@ enum NexaFileLibrary {
         try requireRoot(root)
         try validateTree(source)
         let token = UUID().uuidString
-        let staging = root.appendingPathComponent(".pending-" + token)
+        let staging = root.deletingLastPathComponent().appendingPathComponent(".nexa-import-" + token)
         let destination = root.appendingPathComponent(token + "_" + source.lastPathComponent)
         defer { try? fm.removeItem(at: staging) }
         try fm.copyItem(at: source, to: staging)
