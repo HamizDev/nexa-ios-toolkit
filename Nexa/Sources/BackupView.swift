@@ -16,6 +16,7 @@ struct BackupView: View {
     @State private var progressFraction: Double = 0
     @State private var estimate = OperationEstimate()
     @State private var verifiedIDs: Set<String> = []
+    @State private var exportedZIP: URL?
 
     private var en: Bool { language.code == "en" }
 
@@ -49,13 +50,31 @@ struct BackupView: View {
                     }
                     .disabled(busy)
                     Button { importSheet = true } label: {
-                        Label(en ? "Import backup folder" : "导入备份目录", systemImage: "folder.badge.plus")
+                        Label(en ? "Import backup folder or ZIP" : "导入备份目录或 ZIP", systemImage: "folder.badge.plus")
                     }
                     .buttonStyle(.bordered)
                     .disabled(busy)
-                    Text(en ? "Choose a Nexa backup folder containing manifest.json and Payload. It will be copied and verified before being added." :
-                         "选择包含 manifest.json 和 Payload 的 Nexa 备份目录。复制并校验成功后才会加入备份历史。")
+                    Text(en ? "Choose a Nexa backup folder or ZIP containing manifest.json and Payload at its root. ZIP limit: 2 GiB expanded. The package is verified before being added." :
+                         "选择包含 manifest.json 和 Payload 的 Nexa 备份目录或根目录为该结构的 ZIP。解压后上限 2 GiB，校验通过才会加入历史。")
                         .font(.caption).foregroundStyle(NexaPalette.muted)
+                    if let exportedZIP {
+                        NexaCard {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Label(en ? "Verified backup ZIP ready" : "已校验的备份 ZIP", systemImage: "checkmark.seal")
+                                    .font(.headline).foregroundStyle(NexaPalette.mint)
+                                Text(exportedZIP.lastPathComponent)
+                                    .font(.caption).foregroundStyle(NexaPalette.muted)
+                                ShareLink(item: exportedZIP) {
+                                    Label(en ? "Share ZIP" : "分享备份 ZIP", systemImage: "square.and.arrow.up")
+                                }
+                                .buttonStyle(.bordered)
+                                .disabled(busy)
+                                Text(en ? "Saved in Files → Archives. ZIPs are not encrypted; share only with trusted recipients." :
+                                     "已保存到“文件 → 归档历史”。ZIP 未加密，请仅分享给可信对象。")
+                                    .font(.caption).foregroundStyle(NexaPalette.muted)
+                            }
+                        }
+                    }
                     if creating {
                         NexaCard {
                             VStack(alignment: .leading, spacing: 8) {
@@ -108,7 +127,7 @@ struct BackupView: View {
                 .disabled(busy)
             }
         }
-        .fileImporter(isPresented: $importSheet, allowedContentTypes: [.folder], allowsMultipleSelection: false) { result in
+        .fileImporter(isPresented: $importSheet, allowedContentTypes: [.folder, .zip], allowsMultipleSelection: false) { result in
             switch result {
             case .success(let urls):
                 if let folder = urls.first { importBackup(folder) }
@@ -182,6 +201,11 @@ struct BackupView: View {
                     HStack { verifyAndShare(record) }
                     VStack(alignment: .leading) { verifyAndShare(record) }
                 }
+                Button { exportZIP(record) } label: {
+                    Label(en ? "Export verified ZIP" : "导出校验 ZIP", systemImage: "archivebox")
+                }
+                .buttonStyle(.bordered)
+                .disabled(busy || record.manifest == nil)
                 ViewThatFits(in: .horizontal) {
                     HStack { restoreAndDelete(record) }
                     VStack(alignment: .leading) { restoreAndDelete(record) }
@@ -212,6 +236,7 @@ struct BackupView: View {
 
     private func refresh() async {
         verifiedIDs.removeAll()
+        if let zip = exportedZIP, !FileManager.default.fileExists(atPath: zip.path) { exportedZIP = nil }
         do {
             backups = try await Task.detached(priority: .utility) {
                 try BackupManager.listBackups()
@@ -256,7 +281,11 @@ struct BackupView: View {
                     var coordinationError: NSError?
                     var imported: Result<URL, Error>?
                     NSFileCoordinator().coordinate(readingItemAt: source, options: .withoutChanges, error: &coordinationError) { url in
-                        imported = Result { try BackupManager.importBackup(url) }
+                        imported = Result {
+                            let flags = try url.resourceValues(forKeys: [.isDirectoryKey])
+                            if flags.isDirectory == true { return try BackupManager.importBackup(url) }
+                            return try NexaBackupZip.importZIP(url)
+                        }
                     }
                     if let coordinationError { throw coordinationError }
                     guard let imported else { throw BackupPackageLibrary.Failure.invalidPackage }
@@ -265,6 +294,23 @@ struct BackupView: View {
                 await refresh()
                 verifiedIDs.insert(imported.path)
                 message = en ? "Backup copied and verified successfully." : "备份已复制并通过完整性校验。"
+            } catch { message = errorText(error) }
+        }
+    }
+
+    private func exportZIP(_ backup: BackupRecord) {
+        guard !busy else { return }
+        busy = true
+        exportedZIP = nil
+        verifiedIDs.remove(backup.id)
+        Task {
+            defer { busy = false }
+            do {
+                let zip = try await Task.detached(priority: .userInitiated) {
+                    try NexaBackupZip.export(backup.folder)
+                }.value
+                exportedZIP = zip
+                verifiedIDs.insert(backup.id)
             } catch { message = errorText(error) }
         }
     }
@@ -319,6 +365,7 @@ struct BackupView: View {
     private func errorText(_ error: Error) -> String {
         if let error = error as? BackupManager.BackupError { return error.message(in: language.code) }
         if let error = error as? BackupPackageLibrary.Failure { return error.message(in: language.code) }
+        if let error = error as? BackupZipTransport.Failure { return error.message(in: language.code) }
         return error.localizedDescription
     }
 }

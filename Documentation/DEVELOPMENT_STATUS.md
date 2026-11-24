@@ -37,7 +37,17 @@ Baseline: `4c3d03ea5e8b95c3c7b54cdf4451fa8b06d8c871` on main.
 - Added off-main-thread library refresh and confirmed deletion scoped to the backup folder. The source external folder is never modified. Restore remains non-overwriting.
 - `Scripts/test-backup-packages.sh` compiled and passed on Linux Swift 6.2.1: package metadata, logical sizes, verification-before-publication boundary, cleanup, v1 compatibility, malformed package rejection and scoped deletion. This fixture tests the verifier callback boundary, not SHA-256 itself.
 - Extended the macOS CryptoKit integration fixture with a known SHA-256 answer, valid imported-folder round trip, same-length tamper rejection, failure cleanup and deletion scope. It has not been run here because the Linux Swift toolchain lacks CryptoKit. Unified the restore/delete confirmation dialog to avoid competing presentations.
-- CryptoKit, iOS folder picker/sharing, UI and actual device integration remain unverified. Folder import is supported in source; ZIP backup transport is not yet implemented.
+- CryptoKit, iOS folder picker/sharing, UI and actual device integration remain unverified for that increment.
+
+## 2026-11-24 follow-up — portable ZIP backups
+
+- Added a Foundation transport coordinator and production adapter calling the pinned, unchanged WQFiles ZIP writer/extractor and BackupManager SHA-256 verifier.
+- Export verifies the original backup, writes a staged ZIP containing manifest.json and Payload at the root, re-extracts into a fresh staging directory, compares manifest bytes and the complete relative-path/size inventory (including empty directories), verifies hashes again and publishes to Archives only on success.
+- Import accepts user-picked folders or .zip files through existing security-scoped coordination. ZIP extraction is staged, rejects skipped entries, checks the package structure and verifies before publishing as a new backup.
+- Portable transport is capped at 2 GiB expanded, 2.25 GiB compressed file size, and 65,535 inventory entries; directory import remains available independently. The underlying WQFiles extractor also has its own bounds. Exports are ordinary unencrypted ZIPs.
+- Added bilingual ZIP export/share controls; generated archives remain managed by the existing Files → Archives screen.
+- Executed `swiftc BackupZipTransport.swift BackupZipTransportRegression.swift` and the resulting runner on Linux Swift 6.2.1 using actual system zip/unzip and controlled fixture verification: round trip, empty dirs, verification ordering, same-size changed data, failure cleanup, limits and symlinks passed. These are not native WQFiles/CryptoKit tests.
+- Added `Scripts/test-backup-zip-native.sh` and `Tests/BackupZipNativeRegression.swift` for actual macOS Objective-C + CryptoKit integration; execution is pending. Xcode/iOS UI and document provider behavior remain unverified.
 
 ## Remaining acceptance
 

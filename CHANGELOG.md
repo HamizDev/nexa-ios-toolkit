@@ -2,6 +2,8 @@
 
 ## Unreleased — upstream integration branch
 
+- Added portable Nexa backup ZIP import/export source wiring to the pinned WQFiles archive engine and existing SHA-256 verifier. Exports are re-extracted and verified before publication, including exact manifest bytes and directory inventory; import is staged and verified. Linux Swift transport tests passed using system zip/unzip and fixture verification; native Objective-C/CryptoKit integration fixture awaits macOS.
+
 - Added verified import of Nexa backup folders (manifest.json + Payload), metadata and logical-size summaries, session verification status and confirmed local deletion. Foundation package-library regression fixtures passed on Linux Swift. CryptoKit integration and iOS file-provider/UI behavior still require macOS/iOS testing.
 
 - Added root file sorting, metadata, selection and confirmed batch removal, selected-item ZIP creation, persistent archive history/share/delete, staged imports and staged ZIP publication/extraction. Original WQFiles ZIP implementation stays unchanged. Foundation file-library fixtures passed on Linux Swift; ZIP bridge and iOS interface still require Xcode testing.

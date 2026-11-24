@@ -73,4 +73,6 @@ Source details: [UPSTREAM_SOURCES.md](UPSTREAM_SOURCES.md).
 - [x] Source-level verified Nexa backup-folder import, staged publication, history metadata, logical-byte summary and confirmed deletion.
 - [x] Foundation backup-package regression runner passed on Linux Swift (verification-boundary fixture; no CryptoKit claims).
 - [ ] Run the macOS CryptoKit integration fixtures, including valid and tampered imported backups; test folder picking/sharing with local and iCloud providers.
-- [ ] ZIP-based portable backup package import/export remains separate work; current import requires a folder.
+- [x] Source-level ZIP backup transport via original WQFiles engine; root manifest.json + Payload, round-trip export verification, staged import, 2 GiB expanded limit.
+- [x] Linux Swift transport regression with real system ZIP tools and fixture verifier passed.
+- [ ] Run `Scripts/test-backup-zip-native.sh` on macOS for the actual Objective-C and CryptoKit bridge; test ZIP picking, sharing and archive history on iOS.
