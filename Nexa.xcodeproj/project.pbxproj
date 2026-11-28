@@ -46,6 +46,10 @@
     17B0E9BCA1B74316BC5C2B32 /* Nexa-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Nexa-Bridging-Header.h; sourceTree = "<group>"; };
     6D83C9BA9C0C428BA104FA01 /* NexaWatchMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D83C9BA9C0C428BA104FA00 /* NexaWatchMonitor.swift */; };
     6D83C9BA9C0C428BA104FA00 /* NexaWatchMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaWatchMonitor.swift; sourceTree = "<group>"; };
+    F5A700000000000000000001 /* NexaCapabilityStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaCapabilityStatus.swift; sourceTree = "<group>"; };
+    F5A700000000000000000002 /* NexaCapabilityStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A700000000000000000001 /* NexaCapabilityStatus.swift */; };
+    F5A700000000000000000003 /* NexaSafetyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NexaSafetyView.swift; sourceTree = "<group>"; };
+    F5A700000000000000000004 /* NexaSafetyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A700000000000000000003 /* NexaSafetyView.swift */; };
     6D83C9BA9C0C428BA104FA03 /* OperationEstimate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D83C9BA9C0C428BA104FA02 /* OperationEstimate.swift */; };
     6D83C9BA9C0C428BA104FA02 /* OperationEstimate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/WCMigrate/OperationEstimate.swift; sourceTree = SOURCE_ROOT; };
     6D83C9BA9C0C428BA104FA05 /* BackupProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D83C9BA9C0C428BA104FA04 /* BackupProgress.swift */; };
@@ -93,6 +97,8 @@
         6672E1FA71E347D6B69E128B /* SettingsView.swift in Sources */,
         2EC95D90E9F14DE6A00F57F3 /* WQCore.m in Sources */,
         6D83C9BA9C0C428BA104FA01 /* NexaWatchMonitor.swift in Sources */,
+        F5A700000000000000000002 /* NexaCapabilityStatus.swift in Sources */,
+        F5A700000000000000000004 /* NexaSafetyView.swift in Sources */,
         6D83C9BA9C0C428BA104FA03 /* OperationEstimate.swift in Sources */,
         6D83C9BA9C0C428BA104FA05 /* BackupProgress.swift in Sources */,
         6D83C9BA9C0C428BA104FA07 /* VersionSupport.swift in Sources */,
@@ -131,6 +137,8 @@
         AC178C2160F04A64A62D3BA0 /* WQCore.h */,
         17B0E9BCA1B74316BC5C2B32 /* Nexa-Bridging-Header.h */,
         6D83C9BA9C0C428BA104FA00 /* NexaWatchMonitor.swift */,
+        F5A700000000000000000001 /* NexaCapabilityStatus.swift */,
+        F5A700000000000000000003 /* NexaSafetyView.swift */,
         6D83C9BA9C0C428BA104FA02 /* OperationEstimate.swift */,
         6D83C9BA9C0C428BA104FA04 /* BackupProgress.swift */,
         6D83C9BA9C0C428BA104FA06 /* VersionSupport.swift */,

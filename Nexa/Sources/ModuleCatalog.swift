@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum ModulePhase {
+enum ModulePhase: Equatable {
     case partial
     case research
     case pending
@@ -33,6 +33,11 @@ struct SourceModule: Identifiable {
     let repository: URL
     let phase: ModulePhase
 
+    var risk: NexaRisk {
+        guard phase == .partial else { return .researchOnly }
+        return id == "hermes" ? .readOnly : .localChanges
+    }
+
     func subtitle(_ code: String) -> String { code == "en" ? subtitleEn : subtitleZh }
     func details(_ code: String) -> String { code == "en" ? detailsEn : detailsZh }
 }
@@ -47,7 +52,7 @@ enum ModuleCatalog {
         .init(id: "regitela", title: "Regitela", subtitleZh: "文件管理与设备设置", subtitleEn: "File utilities & device settings", detailsZh: "尚未移植 Regitela 的文件或系统配置代码。", detailsEn: "Regitela file and system configuration code has not been integrated.", symbol: "gearshape.2", repository: URL(string: "https://github.com/ichitaso/Regitela")!, phase: .pending),
         .init(id: "worstgestalt", title: "WorstGestalt", subtitleZh: "配置预设与备份恢复", subtitleEn: "Presets, backups & recovery", detailsZh: "未集成其 MobileGestalt 写入引擎或配置预设；任何将来的系统更改必须先通过风险审核。", detailsEn: "The MobileGestalt write engine and presets are not integrated. Future changes require a safety review.", symbol: "square.stack.3d.up", repository: URL(string: "https://github.com/GoldensHQ/worstgestalt")!, phase: .pending),
         .init(id: "worsefiles", title: "WorseFiles", subtitleZh: "中文文件浏览和备份工具", subtitleEn: "Localized file browser & backup", detailsZh: "目前没有移植 WorseFiles 的跨容器文件操作。Nexa 自有文件管理功能仅作用于已导入的文件。", detailsEn: "Cross-container operations from WorseFiles are not integrated. Nexa's own browser is limited to imported files.", symbol: "folder.badge.gearshape", repository: URL(string: "https://github.com/fucknima/worsefiles-ios")!, phase: .research),
-        .init(id: "hermes", title: "HermesEnabler 2", subtitleZh: "Apple Watch 伴侣 App", subtitleEn: "Apple Watch companion app", detailsZh: "已建立真实的 WatchConnectivity 会话监测，显示配对及安装状态。HermesEnabler 的 Watch 端源码以固定版本保留，但尚未合并 watchOS Target 或表盘修改实现。", detailsEn: "Live WatchConnectivity pairing/session monitoring is wired in. The original HermesEnabler Watch source is pinned separately; no Nexa watchOS target or face changes are integrated.", symbol: "applewatch", repository: URL(string: "https://github.com/pookjw/HermesEnabler")!, phase: .partial)
+        .init(id: "hermes", title: "HermesEnabler 2", subtitleZh: "Apple Watch 伴侣 App", subtitleEn: "Apple Watch companion app", detailsZh: "已建立 Nexa 自有的公开 WatchConnectivity 会话监测，区分激活、配对、安装及可达性状态。HermesEnabler 的 Watch 端源码以固定版本保留，但尚未合并 watchOS Target 或表盘修改实现。", detailsEn: "Nexa-owned public WatchConnectivity diagnostics distinguish activation, pairing, installation and reachability. The original HermesEnabler Watch source is pinned separately; no Nexa watchOS target or face changes are integrated.", symbol: "applewatch", repository: URL(string: "https://github.com/pookjw/HermesEnabler")!, phase: .partial)
     ]
 
     static var highlighted: [SourceModule] {
@@ -71,6 +76,7 @@ struct ModuleRow: View {
                     Text(module.title).font(.subheadline.weight(.semibold))
                     Text(module.subtitle(language.code)).font(.caption).foregroundStyle(NexaPalette.muted)
                     Text(module.phase.label(language)).font(.caption2.weight(.medium)).foregroundStyle(module.phase.color)
+                    Text(module.risk.title(language.code)).font(.caption2).foregroundStyle(NexaPalette.muted)
                 }
                 Spacer(minLength: 0)
                 Image(systemName: "chevron.right").font(.caption).foregroundStyle(NexaPalette.muted)
@@ -81,6 +87,18 @@ struct ModuleRow: View {
 
 struct ModulesView: View {
     @EnvironmentObject private var language: NexaLanguage
+    @State private var filter = "all"
+    @State private var search = ""
+    private var en: Bool { language.code == "en" }
+    private var visible: [SourceModule] {
+        let query = search.trimmingCharacters(in: .whitespacesAndNewlines)
+        return ModuleCatalog.modules.filter { module in
+            let matchesFilter = filter == "all" || (filter == "partial" && module.phase == .partial) ||
+                (filter == "reference" && module.phase != .partial)
+            return matchesFilter && (query.isEmpty || module.title.localizedStandardContains(query) ||
+                module.subtitle(language.code).localizedStandardContains(query))
+        }
+    }
 
     var body: some View {
         ZStack {
@@ -88,7 +106,30 @@ struct ModulesView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 12) {
                     NexaHeader(title: language.t("module.title"), subtitle: language.t("module.subtitle"))
-                    ForEach(ModuleCatalog.modules) { module in
+                    NexaCard {
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text(en ? "\(ModuleCatalog.modules.filter { $0.phase == .partial }.count) projects with partial components or diagnostics" : "\(ModuleCatalog.modules.filter { $0.phase == .partial }.count) 个项目已有部分组件或诊断")
+                                .font(.subheadline.weight(.semibold))
+                            Text(en ? "No module is claimed as fully integrated or device-verified." : "目前没有模块被标记为完整接入或已通过真机验收。")
+                                .font(.caption).foregroundStyle(NexaPalette.muted)
+                            NavigationLink(destination: NexaSafetyView()) {
+                                Label(en ? "Safety & scope" : "安全与使用说明", systemImage: "shield.lefthalf.filled")
+                            }
+                        }
+                    }
+                    TextField(en ? "Search modules" : "搜索模块", text: $search)
+                        .textFieldStyle(.roundedBorder)
+                    Picker(en ? "Filter" : "筛选", selection: $filter) {
+                        Text(en ? "All" : "全部").tag("all")
+                        Text(en ? "Partial" : "部分接入").tag("partial")
+                        Text(en ? "Reference" : "研究参考").tag("reference")
+                    }
+                    .pickerStyle(.segmented)
+                    if visible.isEmpty {
+                        Text(en ? "No matching modules." : "没有匹配的模块。")
+                            .foregroundStyle(NexaPalette.muted)
+                    }
+                    ForEach(visible) { module in
                         NavigationLink(destination: ModuleDetailView(module: module)) {
                             ModuleRow(module: module)
                         }
@@ -136,9 +177,19 @@ struct ModuleDetailView: View {
                             }
                         }
                     }
-                    if module.phase != .partial {
-                        Text(language.t("module.warning"))
-                            .font(.footnote).foregroundStyle(NexaPalette.muted)
+                    NexaCard {
+                        VStack(alignment: .leading, spacing: 10) {
+                            Label(module.risk.title(language.code), systemImage: "shield")
+                                .font(.headline)
+                            Text(module.risk.detail(language.code))
+                                .font(.footnote).foregroundStyle(NexaPalette.muted)
+                            Text(language.code == "en" ? "Risk labels describe Nexa's current scope, not the full upstream app. Unintegrated operations remain unavailable." :
+                                 "风险分类仅描述 Nexa 当前接入范围，不代表完整上游 App；未接入的操作仍不可用。")
+                                .font(.caption).foregroundStyle(NexaPalette.muted)
+                            NavigationLink(destination: NexaSafetyView()) {
+                                Label(language.code == "en" ? "Full safety information" : "完整安全说明", systemImage: "info.circle")
+                            }
+                        }
                     }
                 }
                 .padding(20)

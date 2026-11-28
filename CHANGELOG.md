@@ -2,6 +2,8 @@
 
 ## Unreleased — upstream integration branch
 
+- Improved public WatchConnectivity diagnostics with activation-gated optional fields, one retained session delegate, reachability updates, retry, error reporting and foreground refresh. Added bilingual safety/disclaimer screen and module filters with current-scope risk labels. Foundation capability-state tests passed on Linux Swift 6.2.1; WatchConnectivity and SwiftUI require device/Xcode verification. No native watchOS target or additional upstream engine was integrated.
+
 - Added portable Nexa backup ZIP import/export source wiring to the pinned WQFiles archive engine and existing SHA-256 verifier. Exports are re-extracted and verified before publication, including exact manifest bytes and directory inventory; import is staged and verified. Linux Swift transport tests passed using system zip/unzip and fixture verification; native Objective-C/CryptoKit integration fixture awaits macOS.
 
 - Added verified import of Nexa backup folders (manifest.json + Payload), metadata and logical-size summaries, session verification status and confirmed local deletion. Foundation package-library regression fixtures passed on Linux Swift. CryptoKit integration and iOS file-provider/UI behavior still require macOS/iOS testing.

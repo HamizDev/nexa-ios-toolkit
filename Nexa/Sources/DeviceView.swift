@@ -57,7 +57,7 @@ struct DeviceView: View {
                         VStack(alignment: .leading, spacing: 12) {
                             Label(language.t("device.compat"), systemImage: "checkmark.shield")
                                 .font(.headline)
-                            NexaTag(text: NexaDeviceStatus.compatibility(language.code), color: NexaPalette.mint)
+                            NexaTag(text: NexaDeviceStatus.compatibility(language.code), color: NexaPalette.muted)
                             Text(language.t("device.compat.note"))
                                 .font(.footnote).foregroundStyle(NexaPalette.muted)
                             Text(VersionSupport.contains(ProcessInfo.processInfo.operatingSystemVersion)

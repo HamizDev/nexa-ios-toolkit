@@ -76,3 +76,11 @@ Source details: [UPSTREAM_SOURCES.md](UPSTREAM_SOURCES.md).
 - [x] Source-level ZIP backup transport via original WQFiles engine; root manifest.json + Payload, round-trip export verification, staged import, 2 GiB expanded limit.
 - [x] Linux Swift transport regression with real system ZIP tools and fixture verifier passed.
 - [ ] Run `Scripts/test-backup-zip-native.sh` on macOS for the actual Objective-C and CryptoKit bridge; test ZIP picking, sharing and archive history on iOS.
+
+## 2026-11-28 diagnostic and safety follow-up
+
+- [x] Source-level WatchConnectivity session lifecycle, activation gating, reachability, error and retry UI.
+- [x] Bilingual risk classifications, searchable/filterable module catalog and dedicated safety/disclaimer page.
+- [x] Foundation capability-status regression executed on Linux Swift 6.2.1.
+- [ ] Verify actual WatchConnectivity session lifecycle (unsupported hardware, pairing changes, app installation, background/foreground and failure/retry) on iPhone and paired Watch; no native Nexa watchOS target exists yet.
+- [ ] Review accessibility, source provenance and UI status accuracy during full Xcode build acceptance.

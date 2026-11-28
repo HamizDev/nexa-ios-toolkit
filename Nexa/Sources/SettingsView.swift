@@ -31,6 +31,11 @@ struct SettingsView: View {
                                 .foregroundStyle(NexaPalette.muted)
                             Label(language.t("device.mode"), systemImage: "checkmark.shield")
                                 .font(.caption).foregroundStyle(NexaPalette.mint)
+                            NavigationLink(destination: NexaSafetyView()) {
+                                Label(language.code == "en" ? "Safety, scope & disclaimer" : "安全、使用范围与免责声明",
+                                      systemImage: "doc.text.magnifyingglass")
+                                    .font(.subheadline.weight(.medium))
+                            }
                         }
                     }
                     NexaCard {

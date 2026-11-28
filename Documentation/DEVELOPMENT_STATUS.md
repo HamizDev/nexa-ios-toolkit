@@ -49,6 +49,17 @@ Baseline: `4c3d03ea5e8b95c3c7b54cdf4451fa8b06d8c871` on main.
 - Executed `swiftc BackupZipTransport.swift BackupZipTransportRegression.swift` and the resulting runner on Linux Swift 6.2.1 using actual system zip/unzip and controlled fixture verification: round trip, empty dirs, verification ordering, same-size changed data, failure cleanup, limits and symlinks passed. These are not native WQFiles/CryptoKit tests.
 - Added `Scripts/test-backup-zip-native.sh` and `Tests/BackupZipNativeRegression.swift` for actual macOS Objective-C + CryptoKit integration; execution is pending. Xcode/iOS UI and document provider behavior remain unverified.
 
+## 2026-11-28 follow-up — capability scope and Watch diagnostics
+
+Baseline: `705c9460d1026a5bdbfb4ce770cf419325495887`.
+
+- Added a Foundation status model distinguishing unsupported, waiting, activation failure, unpaired, companion missing, unreachable and reachable; pre-activation values remain unknown instead of false.
+- Updated the iPhone WatchConnectivity monitor to use a retained delegate, react to reachability and pairing changes, report activation errors and refresh on foreground entry. No watchOS app target, device messaging or face modification was added.
+- Added a searchable and filterable exploration catalog, per-module risk categories that describe current Nexa capabilities only, and a bilingual safety, scope and disclaimer page reachable from Settings and module details.
+- Added explicit guidance on permanent deletion, unencrypted ZIP export, independent backups, SHA-256 consistency limits and unimplemented upstream capabilities.
+- Compiled and ran `NexaCapabilityStatus.swift` and `CapabilityStatusRegression.swift` with Linux Swift 6.2.1. All regression assertions passed; source and fixture blob hashes were checked before publication.
+- HyeWon offline; native SwiftUI/WatchConnectivity, Xcode, signing and device tests have not been performed. No new upstream implementation was vendored; previously pinned components are unchanged.
+
 ## Remaining acceptance
 
 - [ ] Execute the backup regression fixtures on macOS.
